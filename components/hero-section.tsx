@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,8 +14,17 @@ import {
 import { Search } from "lucide-react";
 
 export function HeroSection() {
+  const router = useRouter();
   const [serviceType, setServiceType] = useState("");
   const [zipCode, setZipCode] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (zipCode.trim()) params.set("q", zipCode.trim());
+    if (serviceType) params.set("serviceType", serviceType);
+    router.push(`/search?${params.toString()}`);
+  };
 
   return (
     <section className="relative bg-primary overflow-hidden">
@@ -43,7 +53,7 @@ export function HeroSection() {
           </p>
 
           {/* Search Bar */}
-          <div className="mt-8 md:mt-10 max-w-3xl mx-auto">
+          <form onSubmit={handleSearch} className="mt-8 md:mt-10 max-w-3xl mx-auto">
             <div className="bg-card rounded-xl p-3 md:p-4 shadow-xl">
               <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1">
@@ -52,25 +62,28 @@ export function HeroSection() {
                       <SelectValue placeholder="Select Service Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="swimming-pool">Swimming Pool</SelectItem>
+                      <SelectItem value="pool">Swimming Pool</SelectItem>
                       <SelectItem value="construction">Construction</SelectItem>
                       <SelectItem value="emergency">Emergency</SelectItem>
                       <SelectItem value="agricultural">Agricultural</SelectItem>
-                      <SelectItem value="potable-water">Potable Water</SelectItem>
+                      <SelectItem value="potable">Potable Water</SelectItem>
+                      <SelectItem value="oil-gas">Oil & Gas</SelectItem>
+                      <SelectItem value="events">Events</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex-1">
                   <Input
                     type="text"
-                    placeholder="Enter ZIP Code"
+                    placeholder="Enter city or ZIP code"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                     className="h-12 bg-background border-border text-foreground"
                   />
                 </div>
-                <Button 
-                  size="lg" 
+                <Button
+                  type="submit"
+                  size="lg"
                   className="h-12 px-8 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                 >
                   <Search className="mr-2 h-5 w-5" />
@@ -78,7 +91,7 @@ export function HeroSection() {
                 </Button>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>
