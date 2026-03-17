@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "services",
+  "info": {
+    "singularName": "service",
+    "pluralName": "services",
+    "displayName": "Service",
+    "description": "Service offering associated with a hauler"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": ["pool", "construction", "agricultural", "emergency", "potable", "events"],
+      "required": true
+    },
+    "waterSource": {
+      "type": "string"
+    },
+    "truckCapacity": {
+      "type": "integer"
+    },
+    "hoseLength": {
+      "type": "integer"
+    },
+    "hauler": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::hauler.hauler",
+      "inversedBy": "services"
+    }
+  }
+}

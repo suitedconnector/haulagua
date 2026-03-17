@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "leads",
+  "info": {
+    "singularName": "lead",
+    "pluralName": "leads",
+    "displayName": "Lead",
+    "description": "Quiz-generated leads from the water calculator"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "serviceType": {
+      "type": "enumeration",
+      "enum": ["pool", "construction", "drinking", "agricultural", "emergency", "event"],
+      "required": true
+    },
+    "estimatedGallons": {
+      "type": "integer"
+    },
+    "zipCode": {
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string"
+    },
+    "optIn": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
