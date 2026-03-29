@@ -436,6 +436,42 @@ export interface ApiCaseStudyCaseStudy extends Schema.CollectionType {
   };
 }
 
+export interface ApiClaimClaim extends Schema.CollectionType {
+  collectionName: 'claims';
+  info: {
+    description: 'Listing claim requests from hauler owners';
+    displayName: 'Claim';
+    pluralName: 'claims';
+    singularName: 'claim';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::claim.claim',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    email: Attribute.Email & Attribute.Required;
+    haulerSlug: Attribute.String & Attribute.Required;
+    message: Attribute.Text;
+    ownerName: Attribute.String & Attribute.Required;
+    phone: Attribute.String;
+    status: Attribute.Enumeration<['pending', 'approved', 'rejected']> &
+      Attribute.DefaultTo<'pending'>;
+    updatedAt: Attribute.DateTime;
+    updatedBy: Attribute.Relation<
+      'api::claim.claim',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiHaulerHauler extends Schema.CollectionType {
   collectionName: 'haulers';
   info: {
@@ -467,6 +503,7 @@ export interface ApiHaulerHauler extends Schema.CollectionType {
     hoseLength: Attribute.Integer;
     industries: Attribute.JSON;
     isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
+    isClaimed: Attribute.Boolean & Attribute.DefaultTo<false>;
     isVerifiedPro: Attribute.Boolean & Attribute.DefaultTo<false>;
     minFee: Attribute.Decimal;
     name: Attribute.String & Attribute.Required;
@@ -1038,6 +1075,7 @@ declare module '@strapi/types' {
       'admin::user': AdminUser;
       'api::blog-post.blog-post': ApiBlogPostBlogPost;
       'api::case-study.case-study': ApiCaseStudyCaseStudy;
+      'api::claim.claim': ApiClaimClaim;
       'api::hauler.hauler': ApiHaulerHauler;
       'api::lead.lead': ApiLeadLead;
       'api::location.location': ApiLocationLocation;

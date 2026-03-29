@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "claims",
+  "info": {
+    "singularName": "claim",
+    "pluralName": "claims",
+    "displayName": "Claim",
+    "description": "Listing claim requests from hauler owners"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "haulerSlug": {
+      "type": "string",
+      "required": true
+    },
+    "ownerName": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string"
+    },
+    "message": {
+      "type": "text"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending"
+    }
+  }
+}

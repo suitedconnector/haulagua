@@ -69,6 +69,10 @@
       "type": "boolean",
       "default": true
     },
+    "isClaimed": {
+      "type": "boolean",
+      "default": false
+    },
     "services": {
       "type": "relation",
       "relation": "oneToMany",

@@ -173,8 +173,6 @@ export default function WaterCalculatorQuiz() {
   const [contactInfo, setContactInfo] = useState({ name: "", email: "", phone: "" });
   const [optIn, setOptIn] = useState(true);
   const [zipError, setZipError] = useState("");
-  const [submitError, setSubmitError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
   const totalSteps = 5;
@@ -285,42 +283,27 @@ export default function WaterCalculatorQuiz() {
   // Captures lead data and logs it
   // ========================================================================
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!contactInfo.name || !contactInfo.email) {
       alert("Please fill in your name and email.");
       return;
     }
 
-    setIsSubmitting(true);
-    setSubmitError("");
+    const leadData = {
+      serviceType,
+      answers,
+      estimatedGallons,
+      zipCode,
+      name: contactInfo.name,
+      email: contactInfo.email,
+      phone: contactInfo.phone,
+      optIn,
+    };
 
-    try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: contactInfo.name,
-          email: contactInfo.email,
-          phone: contactInfo.phone,
-          zipCode,
-          serviceType,
-          estimatedGallons,
-          optIn,
-        }),
-      });
+    console.log("--- LEAD DATA CAPTURED ---");
+    console.log(JSON.stringify(leadData, null, 2));
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSubmitError((data as { error?: string }).error ?? "Submission failed. Please try again.");
-        return;
-      }
-
-      handleNext();
-    } catch {
-      setSubmitError("Network error. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    handleNext();
   };
 
   // ========================================================================
@@ -842,15 +825,11 @@ export default function WaterCalculatorQuiz() {
                   Contact me with quotes from local haulers
                 </label>
               </div>
-              {submitError && (
-                <p className="text-red-600 text-sm text-center font-lato">{submitError}</p>
-              )}
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
                 className="w-full py-3 text-lg font-semibold mt-6"
               >
-                {isSubmitting ? "Submitting..." : "See My Results"}
+                See My Results
               </Button>
             </div>
           </QuizStep>
@@ -911,7 +890,7 @@ export default function WaterCalculatorQuiz() {
                 <Button
                   onClick={() =>
                     router.push(
-                      `/search?zip=${zipCode}&serviceType=${serviceType}`
+                      `/search?q=${zipCode}&serviceType=${serviceType}`
                     )
                   }
                   className="w-full py-4 text-lg font-semibold"

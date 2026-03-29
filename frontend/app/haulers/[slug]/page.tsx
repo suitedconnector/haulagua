@@ -13,6 +13,7 @@ import {
   MapPin,
   ChevronLeft,
   ImageIcon,
+  ShieldAlert,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -54,6 +55,9 @@ type StrapiHauler = {
     hoseLength: number | null;
     waterType: "potable" | "non-potable" | "both";
     isVerifiedPro: boolean;
+    isClaimed: boolean;
+    yearFounded: number | null;
+    insuranceVerified: boolean;
     industries: string[] | null;
     services: { data: StrapiService[] };
     caseStudies: { data: StrapiCaseStudy[] };
@@ -223,9 +227,18 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 <div className="flex flex-wrap items-center gap-3 mb-1">
                   <h1 className="font-serif text-3xl font-bold text-foreground">{a.name}</h1>
                   {a.isVerifiedPro && (
-                    <span className="inline-flex items-center gap-1.5 bg-accent/20 text-amber-700 text-sm font-medium px-3 py-1 rounded-full">
+                    <span
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1 rounded-full"
+                      style={{ backgroundColor: "#F2A900", color: "#fff" }}
+                    >
                       <CheckCircle2 className="h-4 w-4" />
                       Verified Pro
+                    </span>
+                  )}
+                  {!a.isClaimed && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
+                      <ShieldAlert className="h-3.5 w-3.5" />
+                      Unclaimed
                     </span>
                   )}
                 </div>
@@ -338,7 +351,13 @@ export default async function HaulerProfilePage({ params }: PageProps) {
               {/* Contact Card */}
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">Contact</h2>
-                <ContactPanel phone={a.phone} website={a.website} name={a.name} />
+                <ContactPanel
+                  phone={a.phone}
+                  website={a.website}
+                  name={a.name}
+                  slug={a.slug}
+                  isClaimed={a.isClaimed}
+                />
                 {a.email && (
                   <p className="text-xs text-muted-foreground text-center mt-3">
                     or email{" "}
@@ -353,6 +372,24 @@ export default async function HaulerProfilePage({ params }: PageProps) {
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">At a Glance</h2>
                 <dl className="space-y-3">
+                  {a.yearFounded != null && (
+                    <div className="flex items-center justify-between">
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        Year founded
+                      </dt>
+                      <dd className="font-semibold">{a.yearFounded}</dd>
+                    </div>
+                  )}
+                  {a.serviceArea && (
+                    <div className="flex items-start justify-between gap-2">
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                        <MapPin className="h-4 w-4" />
+                        Service area
+                      </dt>
+                      <dd className="font-semibold text-sm text-right">{a.serviceArea}</dd>
+                    </div>
+                  )}
                   {a.minFee != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -387,16 +424,53 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                     </dt>
                     <dd className="font-semibold text-sm">{WATER_TYPE_LABEL[a.waterType] ?? a.waterType}</dd>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Insurance
+                    </dt>
+                    <dd className="font-semibold text-sm">
+                      {a.insuranceVerified ? (
+                        <span style={{ color: "#F2A900" }}>Verified</span>
+                      ) : (
+                        <span className="text-muted-foreground">Unverified</span>
+                      )}
+                    </dd>
+                  </div>
                 </dl>
               </div>
 
+              {/* Claim This Listing CTA */}
+              {!a.isClaimed && (
+                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <ShieldAlert className="h-5 w-5 mt-0.5 shrink-0 text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-[#333333]">Is this your business?</p>
+                      <p className="text-xs text-gray-500 mt-0.5 mb-3">
+                        Claim this listing to update your info, add photos, and manage your profile.
+                      </p>
+                      <Link
+                        href={`/haulers/${a.slug}/claim`}
+                        className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[#005A9C] text-[#005A9C] text-sm font-semibold py-2 px-4 hover:bg-[#005A9C] hover:text-white transition-colors"
+                      >
+                        Claim This Listing
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Verified Pro Badge Card */}
               {a.isVerifiedPro && (
-                <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+                <div
+                  className="rounded-xl p-4 flex items-start gap-3"
+                  style={{ backgroundColor: "#F2A90015", border: "1px solid #F2A90050" }}
+                >
+                  <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "#F2A900" }} />
                   <div>
-                    <p className="font-semibold text-sm text-amber-800">Verified Pro</p>
-                    <p className="text-xs text-amber-700/80 mt-0.5">
+                    <p className="font-semibold text-sm" style={{ color: "#9a6b00" }}>Verified Pro</p>
+                    <p className="text-xs mt-0.5" style={{ color: "#a37300" }}>
                       This hauler has been verified by the Haulagua team for licensing, insurance, and quality standards.
                     </p>
                   </div>
