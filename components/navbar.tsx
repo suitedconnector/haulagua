@@ -23,7 +23,7 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:gap-8">
             <Link
-              href="/find"
+              href="/search"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Find a Hauler
