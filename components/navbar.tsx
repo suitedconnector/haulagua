@@ -40,8 +40,8 @@ export function Navbar() {
             >
               For Haulers
             </Link>
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              Login
+            <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              <Link href="/login">Login</Link>
             </Button>
           </div>
 
@@ -81,8 +81,8 @@ export function Navbar() {
               >
                 For Haulers
               </Link>
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full">
-                Login
+              <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full">
+                <Link href="/login">Login</Link>
               </Button>
             </div>
           </div>
