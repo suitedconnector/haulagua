@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: ".env.local" });
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
@@ -11,7 +11,7 @@ const posts = [
     category: "Pool Fills",
     excerpt:
       "Wondering how many gallons your pool needs — and how to get it delivered fast? Here's exactly what to expect.",
-    content: `Filling a swimming pool with a garden hose can take days. A bulk water hauler can do it in hours.
+    body: `Filling a swimming pool with a garden hose can take days. A bulk water hauler can do it in hours.
 
 **How many gallons does a pool hold?**
 
@@ -44,7 +44,7 @@ Pricing varies by region and distance, but typical rates range from $150–$400 
     category: "Construction",
     excerpt:
       "From dust control to concrete mixing, construction sites have serious water needs. Here's how bulk water delivery works on job sites.",
-    content: `Construction projects consume enormous amounts of water — and a reliable supply is critical to keeping work on schedule.
+    body: `Construction projects consume enormous amounts of water — and a reliable supply is critical to keeping work on schedule.
 
 **Common construction water uses**
 
@@ -77,7 +77,7 @@ Find verified water haulers for your job site on Haulagua.`,
     category: "Rural & Agricultural",
     excerpt:
       "No municipal water connection? No problem. Here's everything rural property owners need to know about bulk water delivery.",
-    content: `Millions of rural properties in Texas and Arizona rely on hauled water as their primary — or only — water source. If you're new to off-grid or rural living, here's what you need to know.
+    body: `Millions of rural properties in Texas and Arizona rely on hauled water as their primary — or only — water source. If you're new to off-grid or rural living, here's what you need to know.
 
 **Who needs hauled water?**
 
