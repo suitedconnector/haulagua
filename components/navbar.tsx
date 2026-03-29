@@ -61,7 +61,7 @@ export function Navbar() {
           <div className="md:hidden border-t border-border py-4">
             <div className="flex flex-col gap-4">
               <Link
-                href="/find"
+                href="/search"
                 className="text-sm font-medium text-foreground hover:text-primary transition-colors px-2 py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
