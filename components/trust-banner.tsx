@@ -1,37 +1,34 @@
-import { ShieldCheck, FileText, Droplets } from "lucide-react";
-
-const trustItems = [
+const stats = [
   {
-    icon: ShieldCheck,
-    title: "Verified Pros",
-    description: "All haulers are vetted and verified",
+    value: "40+",
+    label: "Verified Haulers",
   },
   {
-    icon: FileText,
-    title: "Detailed Profiles",
-    description: "Compare services, pricing & reviews",
+    value: "Texas & Arizona",
+    label: "Service Areas",
   },
   {
-    icon: Droplets,
-    title: "All Services",
-    description: "Pool fills, construction, emergencies & more",
+    value: "Free",
+    label: "to Search",
   },
 ];
 
 export function TrustBanner() {
   return (
-    <section className="bg-card border-b border-border py-8 md:py-12">
+    <section style={{ backgroundColor: "#F8F9FA" }} className="border-b border-border py-10 md:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {trustItems.map((item) => (
-            <div key={item.title} className="flex items-center gap-4">
-              <div className="flex-shrink-0 w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-                <item.icon className="h-7 w-7 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-serif font-semibold text-foreground">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </div>
+        <div className="flex flex-col md:flex-row md:justify-around gap-8 md:gap-4 items-center">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p
+                className="text-3xl md:text-4xl font-bold font-sans"
+                style={{ color: "#005A9C" }}
+              >
+                {stat.value}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground font-medium uppercase tracking-wide">
+                {stat.label}
+              </p>
             </div>
           ))}
         </div>

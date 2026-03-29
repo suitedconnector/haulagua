@@ -1,0 +1,66 @@
+[
+  {
+    "name": "310 Bulk Water",
+    "phone": "(602) 228-8753",
+    "state": "AZ",
+    "rawServices": [
+      "Pool",
+      "Potable",
+      "Tank Rental"
+    ]
+  },
+  {
+    "name": "Alpha Omega Water Hauling",
+    "phone": "(928) 582-1126",
+    "city": "Yavapai",
+    "state": "AZ",
+    "rawServices": [
+      "Pool",
+      "Potablel"
+    ]
+  },
+  {
+    "name": "Apache Junction",
+    "phone": "(480) 474-9603",
+    "city": "Rainmaker Rentals",
+    "state": "AZ",
+    "rawServices": [
+      "Water Truck Rental"
+    ]
+  },
+  {
+    "name": "H2o 2u Potable Water Delivery",
+    "phone": "(928) 535-5620",
+    "city": "Overgaard",
+    "state": "AZ",
+    "rawServices": []
+  },
+  {
+    "name": "Pinetop , White Mountain Water Hauling",
+    "phone": "(928) 240-1165",
+    "city": "Peoria",
+    "state": "AZ",
+    "rawServices": []
+  },
+  {
+    "name": "Andy's Water Truck Service",
+    "phone": "(520) 622-0933",
+    "city": "Tucson",
+    "state": "AZ",
+    "rawServices": []
+  },
+  {
+    "name": "Camel Water Service",
+    "phone": "(520) 744-1300",
+    "city": "Tucson",
+    "state": "AZ",
+    "rawServices": []
+  },
+  {
+    "name": "Splash Water Services",
+    "phone": "(520) 623-3284",
+    "city": "Tucson",
+    "state": "AZ",
+    "rawServices": []
+  }
+]

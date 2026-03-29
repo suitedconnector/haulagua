@@ -5,23 +5,24 @@ import { SearchClient } from "./SearchClient";
 
 export const metadata = {
   title: "Search Haulers — Haulagua",
-  description: "Find bulk water haulers near you. Filter by service type, water type, and budget.",
+  description: "Find bulk water haulers near you. Filter by service type, price, and verified status.",
 };
 
 type SearchPageProps = {
-  searchParams: Promise<{ q?: string; serviceType?: string }>;
+  searchParams: Promise<{ zip?: string; serviceType?: string }>;
 };
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
-  const q = params.q ?? "";
+  const zip = params.zip ?? "";
+  const serviceType = params.serviceType ?? "";
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">
         <Suspense fallback={<div className="p-10 text-center text-muted-foreground">Loading search…</div>}>
-          <SearchClient initialQ={q} />
+          <SearchClient initialZip={zip} initialServiceType={serviceType} />
         </Suspense>
       </main>
       <Footer />

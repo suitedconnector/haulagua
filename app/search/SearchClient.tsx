@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -8,16 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Search, CheckCircle2, Droplets, Truck, Ruler, DollarSign, SlidersHorizontal, X, Info } from "lucide-react";
+  Search,
+  CheckCircle2,
+  ShieldAlert,
+  Droplets,
+  Truck,
+  Ruler,
+  DollarSign,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type StrapiHauler = {
   id: number;
@@ -26,11 +30,14 @@ type StrapiHauler = {
     slug: string;
     city: string;
     state: string;
+    zip: string;
+    serviceArea: string;
     minFee: number;
     truckCapacity: number;
     hoseLength: number;
     waterType: "potable" | "non-potable" | "both";
     isVerifiedPro: boolean;
+    isClaimed: boolean;
     description: string;
     industries: string[] | null;
     services?: {
@@ -41,32 +48,19 @@ type StrapiHauler = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SERVICE_TYPES: { value: string; label: string; tooltip?: string }[] = [
+const SERVICE_TYPES: { value: string; label: string }[] = [
   { value: "pool", label: "Swimming Pool" },
   { value: "construction", label: "Construction" },
-  {
-    value: "potable",
-    label: "Potable Water",
-    tooltip: "Safe drinking water for cisterns, tanks, and livestock",
-  },
+  { value: "potable", label: "Potable / Drinking" },
   { value: "agricultural", label: "Agricultural" },
   { value: "emergency", label: "Emergency" },
   { value: "events", label: "Events" },
 ];
 
-const WATER_TYPES = [
-  { value: "potable", label: "Potable" },
-  { value: "non-potable", label: "Non-Potable" },
-  { value: "both", label: "Both" },
-];
-
-const INDUSTRY_TYPES = [
-  { value: "residential", label: "Residential" },
-  { value: "commercial", label: "Commercial" },
-  { value: "agricultural", label: "Agricultural" },
-  { value: "oil-gas", label: "Oil & Gas" },
-  { value: "municipal", label: "Municipal" },
-  { value: "emergency-management", label: "Emergency Mgmt" },
+const FEE_RANGES = [
+  { value: "under300", label: "Under $300", max: 300 },
+  { value: "300-500", label: "$300 – $500", min: 300, max: 500 },
+  { value: "500plus", label: "$500+", min: 500 },
 ];
 
 const SERVICE_LABEL: Record<string, string> = {
@@ -78,15 +72,6 @@ const SERVICE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
-const INDUSTRY_LABEL: Record<string, string> = {
-  residential: "Residential",
-  commercial: "Commercial",
-  agricultural: "Agricultural",
-  "oil-gas": "Oil & Gas",
-  municipal: "Municipal",
-  "emergency-management": "Emergency Mgmt",
-};
-
 const SERVICE_COLOR: Record<string, string> = {
   pool: "bg-blue-100 text-blue-800",
   construction: "bg-orange-100 text-orange-800",
@@ -96,7 +81,18 @@ const SERVICE_COLOR: Record<string, string> = {
   events: "bg-purple-100 text-purple-800",
 };
 
-// ─── Hauler Card ─────────────────────────────────────────────────────────────
+const SERVICE_TYPE_LABEL: Record<string, string> = {
+  pool: "Swimming Pool",
+  construction: "Construction",
+  drinking: "Drinking Water",
+  potable: "Potable Water",
+  agricultural: "Agricultural",
+  emergency: "Emergency",
+  event: "Events",
+  events: "Events",
+};
+
+// ─── Hauler Card ──────────────────────────────────────────────────────────────
 
 function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
   const a = hauler.attributes;
@@ -105,20 +101,29 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
   return (
     <Link
       href={`/haulers/${a.slug}`}
-      className="block bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all group"
+      className="block bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group"
     >
       <div className="p-5">
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+              <h3 className="font-semibold text-lg text-foreground group-hover:text-[#005A9C] transition-colors truncate">
                 {a.name}
               </h3>
               {a.isVerifiedPro && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium bg-accent/20 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                  style={{ backgroundColor: "#F2A900", color: "#fff" }}
+                >
                   <CheckCircle2 className="h-3 w-3" />
                   Verified Pro
+                </span>
+              )}
+              {!a.isClaimed && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-gray-100 text-gray-500 border border-gray-200">
+                  <ShieldAlert className="h-3 w-3" />
+                  Unclaimed
                 </span>
               )}
             </div>
@@ -128,7 +133,9 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs text-muted-foreground">Starting at</p>
-            <p className="text-xl font-bold text-primary">${a.minFee}</p>
+            <p className="text-xl font-bold" style={{ color: "#005A9C" }}>
+              ${a.minFee}
+            </p>
           </div>
         </div>
 
@@ -138,7 +145,9 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
             {services.map((s) => (
               <span
                 key={s.id}
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${SERVICE_COLOR[s.attributes.type] ?? "bg-gray-100 text-gray-800"}`}
+                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  SERVICE_COLOR[s.attributes.type] ?? "bg-gray-100 text-gray-800"
+                }`}
               >
                 {SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}
               </span>
@@ -175,21 +184,17 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
 function FilterSidebar({
   selectedServices,
   setSelectedServices,
-  selectedWaterTypes,
-  setSelectedWaterTypes,
-  selectedIndustries,
-  setSelectedIndustries,
-  maxFee,
-  setMaxFee,
+  selectedFeeRange,
+  setSelectedFeeRange,
+  verifiedOnly,
+  setVerifiedOnly,
 }: {
   selectedServices: string[];
   setSelectedServices: (v: string[]) => void;
-  selectedWaterTypes: string[];
-  setSelectedWaterTypes: (v: string[]) => void;
-  selectedIndustries: string[];
-  setSelectedIndustries: (v: string[]) => void;
-  maxFee: number;
-  setMaxFee: (v: number) => void;
+  selectedFeeRange: string | null;
+  setSelectedFeeRange: (v: string | null) => void;
+  verifiedOnly: boolean;
+  setVerifiedOnly: (v: boolean) => void;
 }) {
   const toggleService = (val: string) =>
     setSelectedServices(
@@ -198,168 +203,167 @@ function FilterSidebar({
         : [...selectedServices, val]
     );
 
-  const toggleWater = (val: string) =>
-    setSelectedWaterTypes(
-      selectedWaterTypes.includes(val)
-        ? selectedWaterTypes.filter((w) => w !== val)
-        : [...selectedWaterTypes, val]
-    );
-
-  const toggleIndustry = (val: string) =>
-    setSelectedIndustries(
-      selectedIndustries.includes(val)
-        ? selectedIndustries.filter((i) => i !== val)
-        : [...selectedIndustries, val]
-    );
-
   return (
-    <TooltipProvider delayDuration={200}>
-      <aside className="space-y-6">
-        {/* Service Type */}
-        <div>
-          <h3 className="font-serif font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
-            Service Type
-          </h3>
-          <div className="space-y-2">
-            {SERVICE_TYPES.map((st) => (
-              <div key={st.value} className="flex items-center gap-2">
-                <Checkbox
-                  id={`svc-${st.value}`}
-                  checked={selectedServices.includes(st.value)}
-                  onCheckedChange={() => toggleService(st.value)}
-                />
-                <Label htmlFor={`svc-${st.value}`} className="text-sm cursor-pointer flex items-center gap-1.5">
-                  {st.label}
-                  {st.tooltip && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground transition-colors shrink-0" />
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="max-w-[180px] text-xs">
-                        {st.tooltip}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </Label>
-              </div>
-            ))}
-          </div>
+    <aside className="space-y-6">
+      {/* Service Type */}
+      <div>
+        <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
+          Service Type
+        </h3>
+        <div className="space-y-2">
+          {SERVICE_TYPES.map((st) => (
+            <div key={st.value} className="flex items-center gap-2">
+              <Checkbox
+                id={`svc-${st.value}`}
+                checked={selectedServices.includes(st.value)}
+                onCheckedChange={() => toggleService(st.value)}
+              />
+              <Label htmlFor={`svc-${st.value}`} className="text-sm cursor-pointer">
+                {st.label}
+              </Label>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <hr className="border-border" />
+      <hr className="border-border" />
 
-        {/* Industries Served */}
-        <div>
-          <h3 className="font-serif font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
-            Industries Served
-          </h3>
-          <div className="space-y-2">
-            {INDUSTRY_TYPES.map((ind) => (
-              <div key={ind.value} className="flex items-center gap-2">
-                <Checkbox
-                  id={`ind-${ind.value}`}
-                  checked={selectedIndustries.includes(ind.value)}
-                  onCheckedChange={() => toggleIndustry(ind.value)}
-                />
-                <Label htmlFor={`ind-${ind.value}`} className="text-sm cursor-pointer">
-                  {ind.label}
-                </Label>
-              </div>
-            ))}
-          </div>
+      {/* Fee Range */}
+      <div>
+        <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
+          Min Starting Fee
+        </h3>
+        <div className="space-y-2">
+          {FEE_RANGES.map((range) => (
+            <div key={range.value} className="flex items-center gap-2">
+              <Checkbox
+                id={`fee-${range.value}`}
+                checked={selectedFeeRange === range.value}
+                onCheckedChange={() =>
+                  setSelectedFeeRange(
+                    selectedFeeRange === range.value ? null : range.value
+                  )
+                }
+              />
+              <Label htmlFor={`fee-${range.value}`} className="text-sm cursor-pointer flex items-center gap-1">
+                <DollarSign className="h-3 w-3 text-muted-foreground" />
+                {range.label}
+              </Label>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <hr className="border-border" />
+      <hr className="border-border" />
 
-        {/* Water Type */}
-        <div>
-          <h3 className="font-serif font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
-            Water Type
-          </h3>
-          <div className="space-y-2">
-            {WATER_TYPES.map((wt) => (
-              <div key={wt.value} className="flex items-center gap-2">
-                <Checkbox
-                  id={`wt-${wt.value}`}
-                  checked={selectedWaterTypes.includes(wt.value)}
-                  onCheckedChange={() => toggleWater(wt.value)}
-                />
-                <Label htmlFor={`wt-${wt.value}`} className="text-sm cursor-pointer">
-                  {wt.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <hr className="border-border" />
-
-        {/* Max Fee Slider */}
-        <div>
-          <h3 className="font-serif font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
-            Max Starting Fee
-          </h3>
-          <Slider
-            min={0}
-            max={1000}
-            step={25}
-            value={[maxFee]}
-            onValueChange={([v]) => setMaxFee(v)}
-            className="mb-2"
+      {/* Verified Pro Toggle */}
+      <div>
+        <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
+          Verified Pro
+        </h3>
+        <div className="flex items-center gap-3">
+          <Switch
+            id="verified-toggle"
+            checked={verifiedOnly}
+            onCheckedChange={setVerifiedOnly}
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>$0</span>
-            <span className="font-medium text-foreground">
-              {maxFee === 1000 ? "Any" : `≤ $${maxFee}`}
-            </span>
-            <span>$1,000+</span>
-          </div>
+          <Label htmlFor="verified-toggle" className="text-sm cursor-pointer">
+            Show verified only
+          </Label>
         </div>
-      </aside>
-    </TooltipProvider>
+        {verifiedOnly && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Haulers with verified licenses &amp; insurance
+          </p>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+function EmptyState({
+  zip,
+  hasFilters,
+  onClear,
+}: {
+  zip: string;
+  hasFilters: boolean;
+  onClear: () => void;
+}) {
+  return (
+    <div className="text-center py-20">
+      <div
+        className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
+        style={{ backgroundColor: "#005A9C10" }}
+      >
+        <Droplets className="h-8 w-8" style={{ color: "#005A9C" }} />
+      </div>
+      <h3 className="font-semibold text-xl mb-2 text-foreground">No haulers found</h3>
+      <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-6">
+        {zip
+          ? `We couldn't find haulers matching "${zip}".`
+          : "Try searching a city, state, or ZIP code."}{" "}
+        {hasFilters && "Try removing some filters to see more results."}
+      </p>
+      <div className="flex gap-3 justify-center flex-wrap">
+        {hasFilters && (
+          <Button variant="outline" size="sm" onClick={onClear}>
+            Clear filters
+          </Button>
+        )}
+        <Button size="sm" asChild style={{ backgroundColor: "#005A9C" }}>
+          <Link href="/">Try the calculator</Link>
+        </Button>
+      </div>
+    </div>
   );
 }
 
 // ─── Main SearchClient ────────────────────────────────────────────────────────
 
-export function SearchClient({ initialQ }: { initialQ: string }) {
+export function SearchClient({
+  initialZip,
+  initialServiceType,
+}: {
+  initialZip: string;
+  initialServiceType: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [query, setQuery] = useState(initialQ);
-  const [inputValue, setInputValue] = useState(initialQ);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [selectedWaterTypes, setSelectedWaterTypes] = useState<string[]>([]);
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  const [maxFee, setMaxFee] = useState(1000);
-  const [haulers, setHaulers] = useState<StrapiHauler[]>([]);
+  // Initialise filter state from URL params so shared links restore correctly
+  const [zip, setZip] = useState(initialZip);
+  const [inputValue, setInputValue] = useState(initialZip);
+  const [selectedServices, setSelectedServices] = useState<string[]>(() => {
+    const urlServices = searchParams.get("services");
+    if (urlServices) return urlServices.split(",").filter(Boolean);
+    return initialServiceType ? [initialServiceType] : [];
+  });
+  const [selectedFeeRange, setSelectedFeeRange] = useState<string | null>(
+    () => searchParams.get("fee") ?? null
+  );
+  const [verifiedOnly, setVerifiedOnly] = useState(
+    () => searchParams.get("verified") === "1"
+  );
+
+  const [allHaulers, setAllHaulers] = useState<StrapiHauler[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  const feeRangeObj = FEE_RANGES.find((r) => r.value === selectedFeeRange) ?? null;
+
+  // Fetch all active haulers once — filtering happens client-side
   const fetchHaulers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams();
       params.set("populate[services][fields][0]", "type");
-      params.set("pagination[pageSize]", "50");
+      params.set("pagination[pageSize]", "100");
       params.set("filters[isActive][$eq]", "true");
-
-      if (query) {
-        params.set("filters[$or][0][city][$containsi]", query);
-        params.set("filters[$or][1][zip][$containsi]", query);
-        params.set("filters[$or][2][serviceArea][$containsi]", query);
-        params.set("filters[$or][3][state][$containsi]", query);
-      }
-
-      if (selectedWaterTypes.length === 1) {
-        params.set("filters[waterType][$eq]", selectedWaterTypes[0]);
-      }
-
-      if (maxFee < 1000) {
-        params.set("filters[minFee][$lte]", String(maxFee));
-      }
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}/api/haulers?${params.toString()}`,
@@ -367,66 +371,115 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
       );
       if (!res.ok) throw new Error("Failed to load results");
       const data = await res.json();
-      let results: StrapiHauler[] = data.data ?? [];
-
-      // Client-side filter by service type
-      if (selectedServices.length > 0) {
-        results = results.filter((h) =>
-          h.attributes.services?.data?.some((s) =>
-            selectedServices.includes(s.attributes.type)
-          )
-        );
-      }
-
-      // Client-side filter by industries
-      if (selectedIndustries.length > 0) {
-        results = results.filter((h) =>
-          h.attributes.industries?.some((ind) =>
-            selectedIndustries.includes(ind)
-          )
-        );
-      }
-
-      setHaulers(results);
+      setAllHaulers(data.data ?? []);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
-  }, [query, selectedServices, selectedWaterTypes, selectedIndustries, maxFee]);
+  }, []);
 
   useEffect(() => {
     fetchHaulers();
   }, [fetchHaulers]);
 
+  // Client-side filtering — instant, no refetch needed
+  const filteredHaulers = useMemo(() => {
+    let results = allHaulers;
+
+    // Location: match zip, city, state, or serviceArea
+    if (zip) {
+      const q = zip.toLowerCase();
+      results = results.filter((h) => {
+        const a = h.attributes;
+        return (
+          a.city?.toLowerCase().includes(q) ||
+          a.state?.toLowerCase().includes(q) ||
+          a.zip?.includes(q) ||
+          a.serviceArea?.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    // Service type checkboxes
+    if (selectedServices.length > 0) {
+      results = results.filter((h) =>
+        h.attributes.services?.data?.some((s) =>
+          selectedServices.includes(s.attributes.type)
+        )
+      );
+    }
+
+    // Min fee range
+    if (feeRangeObj) {
+      results = results.filter((h) => {
+        const fee = h.attributes.minFee;
+        if (fee == null) return false;
+        if (feeRangeObj.max !== undefined && feeRangeObj.min === undefined)
+          return fee < feeRangeObj.max;
+        if (feeRangeObj.min !== undefined && feeRangeObj.max !== undefined)
+          return fee >= feeRangeObj.min && fee <= feeRangeObj.max;
+        if (feeRangeObj.min !== undefined) return fee >= feeRangeObj.min;
+        return true;
+      });
+    }
+
+    // Verified Pro toggle
+    if (verifiedOnly) {
+      results = results.filter((h) => h.attributes.isVerifiedPro);
+    }
+
+    return results;
+  }, [allHaulers, zip, selectedServices, feeRangeObj, verifiedOnly]);
+
+  // Keep URL in sync so the page is shareable
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (zip) p.set("zip", zip);
+    if (selectedServices.length > 0) p.set("services", selectedServices.join(","));
+    if (selectedFeeRange) p.set("fee", selectedFeeRange);
+    if (verifiedOnly) p.set("verified", "1");
+    router.replace(`/search?${p.toString()}`, { scroll: false });
+  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, router]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setQuery(inputValue);
-    const p = new URLSearchParams(searchParams.toString());
-    if (inputValue) p.set("q", inputValue);
-    else p.delete("q");
-    router.push(`/search?${p.toString()}`);
+    setZip(inputValue.trim());
   };
 
   const clearFilters = () => {
     setSelectedServices([]);
-    setSelectedWaterTypes([]);
-    setSelectedIndustries([]);
-    setMaxFee(1000);
+    setSelectedFeeRange(null);
+    setVerifiedOnly(false);
   };
 
+  const hasFilters =
+    selectedServices.length > 0 || selectedFeeRange !== null || verifiedOnly;
+
   const activeFilterCount =
-    selectedServices.length +
-    selectedWaterTypes.length +
-    selectedIndustries.length +
-    (maxFee < 1000 ? 1 : 0);
-  const hasFilters = activeFilterCount > 0;
+    selectedServices.length + (selectedFeeRange ? 1 : 0) + (verifiedOnly ? 1 : 0);
+
+  // Page heading
+  const serviceLabel = SERVICE_TYPE_LABEL[initialServiceType] ?? initialServiceType;
+  const heading =
+    initialZip && initialServiceType
+      ? `Water Haulers near ${initialZip} for ${serviceLabel}`
+      : initialZip
+      ? `Water Haulers near ${initialZip}`
+      : initialServiceType
+      ? `${serviceLabel} Water Haulers`
+      : "Find Water Haulers";
+
+  const resultCount = loading
+    ? null
+    : `Showing ${filteredHaulers.length} hauler${filteredHaulers.length !== 1 ? "s" : ""}`;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Top search bar */}
-      <div className="bg-primary py-5 px-4">
+      <div className="py-5 px-4" style={{ backgroundColor: "#005A9C" }}>
         <div className="max-w-7xl mx-auto">
+          <h1 className="text-white text-2xl font-bold text-center mb-4">{heading}</h1>
           <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -439,7 +492,8 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
             </div>
             <Button
               type="submit"
-              className="h-11 px-6 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+              className="h-11 px-6 font-semibold text-white border-0"
+              style={{ backgroundColor: "#F2A900" }}
             >
               Search
             </Button>
@@ -451,7 +505,7 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
         {/* Mobile filter toggle */}
         <div className="flex items-center justify-between mb-4 lg:hidden">
           <p className="text-sm text-muted-foreground">
-            {loading ? "Loading…" : `${haulers.length} hauler${haulers.length !== 1 ? "s" : ""} found`}
+            {loading ? "Loading…" : resultCount}
           </p>
           <Button
             variant="outline"
@@ -462,7 +516,10 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
             <SlidersHorizontal className="h-4 w-4" />
             Filters
             {hasFilters && (
-              <span className="bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+              <span
+                className="rounded-full w-4 h-4 text-xs flex items-center justify-center text-white"
+                style={{ backgroundColor: "#005A9C" }}
+              >
                 {activeFilterCount}
               </span>
             )}
@@ -474,7 +531,7 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
           <div className={`w-56 shrink-0 ${mobileFiltersOpen ? "block" : "hidden"} lg:block`}>
             <div className="sticky top-4 bg-white rounded-xl border border-border p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-serif font-bold text-base">Filters</h2>
+                <h2 className="font-bold text-base">Filters</h2>
                 {hasFilters && (
                   <button
                     onClick={clearFilters}
@@ -488,37 +545,27 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
               <FilterSidebar
                 selectedServices={selectedServices}
                 setSelectedServices={setSelectedServices}
-                selectedWaterTypes={selectedWaterTypes}
-                setSelectedWaterTypes={setSelectedWaterTypes}
-                selectedIndustries={selectedIndustries}
-                setSelectedIndustries={setSelectedIndustries}
-                maxFee={maxFee}
-                setMaxFee={setMaxFee}
+                selectedFeeRange={selectedFeeRange}
+                setSelectedFeeRange={setSelectedFeeRange}
+                verifiedOnly={verifiedOnly}
+                setVerifiedOnly={setVerifiedOnly}
               />
             </div>
           </div>
 
           {/* Results */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                {query && (
-                  <p className="text-sm text-muted-foreground mb-0.5">
-                    Results for{" "}
-                    <span className="font-medium text-foreground">"{query}"</span>
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground hidden lg:block">
-                  {loading
-                    ? "Loading…"
-                    : `${haulers.length} hauler${haulers.length !== 1 ? "s" : ""} found`}
-                </p>
-              </div>
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <p className="text-sm text-muted-foreground hidden lg:block">
+                {loading ? "Loading…" : resultCount}
+              </p>
+
+              {/* Active filter badges */}
               {hasFilters && (
                 <div className="flex flex-wrap gap-1.5">
                   {selectedServices.map((s) => (
                     <Badge key={s} variant="secondary" className="gap-1 text-xs">
-                      {SERVICE_LABEL[s]}
+                      {SERVICE_LABEL[s] ?? s}
                       <button
                         onClick={() =>
                           setSelectedServices(selectedServices.filter((x) => x !== s))
@@ -528,34 +575,23 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
                       </button>
                     </Badge>
                   ))}
-                  {selectedIndustries.map((ind) => (
-                    <Badge key={ind} variant="secondary" className="gap-1 text-xs">
-                      {INDUSTRY_LABEL[ind]}
-                      <button
-                        onClick={() =>
-                          setSelectedIndustries(selectedIndustries.filter((x) => x !== ind))
-                        }
-                      >
-                        <X className="h-2.5 w-2.5" />
-                      </button>
-                    </Badge>
-                  ))}
-                  {selectedWaterTypes.map((w) => (
-                    <Badge key={w} variant="secondary" className="gap-1 text-xs">
-                      {WATER_TYPES.find((wt) => wt.value === w)?.label}
-                      <button
-                        onClick={() =>
-                          setSelectedWaterTypes(selectedWaterTypes.filter((x) => x !== w))
-                        }
-                      >
-                        <X className="h-2.5 w-2.5" />
-                      </button>
-                    </Badge>
-                  ))}
-                  {maxFee < 1000 && (
+                  {selectedFeeRange && (
                     <Badge variant="secondary" className="gap-1 text-xs">
-                      <DollarSign className="h-3 w-3" />≤ ${maxFee}
-                      <button onClick={() => setMaxFee(1000)}>
+                      {FEE_RANGES.find((r) => r.value === selectedFeeRange)?.label}
+                      <button onClick={() => setSelectedFeeRange(null)}>
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  )}
+                  {verifiedOnly && (
+                    <Badge
+                      variant="secondary"
+                      className="gap-1 text-xs"
+                      style={{ backgroundColor: "#F2A90020", color: "#b27f00" }}
+                    >
+                      <CheckCircle2 className="h-3 w-3" />
+                      Verified Pro
+                      <button onClick={() => setVerifiedOnly(false)}>
                         <X className="h-2.5 w-2.5" />
                       </button>
                     </Badge>
@@ -591,22 +627,11 @@ export function SearchClient({ initialQ }: { initialQ: string }) {
                   </div>
                 ))}
               </div>
-            ) : haulers.length === 0 ? (
-              <div className="text-center py-16">
-                <Droplets className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
-                <h3 className="font-serif font-semibold text-lg mb-1">No haulers found</h3>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                  Try adjusting your filters or searching a different city or ZIP code.
-                </p>
-                {hasFilters && (
-                  <Button variant="outline" size="sm" onClick={clearFilters} className="mt-4">
-                    Clear filters
-                  </Button>
-                )}
-              </div>
+            ) : filteredHaulers.length === 0 ? (
+              <EmptyState zip={zip} hasFilters={hasFilters} onClear={clearFilters} />
             ) : (
               <div className="grid gap-4">
-                {haulers.map((h) => (
+                {filteredHaulers.map((h) => (
                   <HaulerCard key={h.id} hauler={h} />
                 ))}
               </div>
