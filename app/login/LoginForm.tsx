@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function LoginForm() {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Auth logic to be wired up
+    setLoading(true);
+    setMessage("");
+    // Simulate brief loading — auth to be wired up
+    setTimeout(() => {
+      setLoading(false);
+      setMessage("Auth coming soon. Your account system is not connected yet.");
+    }, 800);
   }
 
   return (
@@ -61,11 +71,15 @@ export function LoginForm() {
           </div>
           <Button
             type="submit"
+            disabled={loading}
             className="w-full text-white font-semibold"
             style={{ backgroundColor: "#005A9C" }}
           >
-            Sign In
+            {loading ? "Signing in…" : "Sign In"}
           </Button>
+          {message && (
+            <p className="text-sm text-center text-muted-foreground pt-2">{message}</p>
+          )}
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Are you a hauler?{" "}
