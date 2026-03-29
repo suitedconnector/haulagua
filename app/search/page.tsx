@@ -1,11 +1,19 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { SearchClient } from "./SearchClient";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Search Haulers — Haulagua",
   description: "Find bulk water haulers near you. Filter by service type, price, and verified status.",
+  openGraph: {
+    title: "Search Haulers — Haulagua",
+    description: "Find bulk water haulers near you. Filter by service type, price, and verified status.",
+    url: "https://haulagua.com/search",
+    siteName: "Haulagua",
+    type: "website",
+  },
 };
 
 type SearchPageProps = {

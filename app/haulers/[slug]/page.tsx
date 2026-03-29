@@ -151,9 +151,18 @@ export async function generateMetadata({ params }: PageProps) {
     const hauler = data.data?.[0];
     if (!hauler) return {};
     const a = hauler.attributes;
+    const title = `${a.name} — Bulk Water Hauling in ${a.city}, ${a.state} | Haulagua`;
+    const description = a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`;
     return {
-      title: `${a.name} — Bulk Water Hauling in ${a.city}, ${a.state} | Haulagua`,
-      description: a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`,
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: `https://haulagua.com/haulers/${slug}`,
+        siteName: "Haulagua",
+        type: "profile",
+      },
     };
   } catch {
     return {};

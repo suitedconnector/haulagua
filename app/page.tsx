@@ -1,4 +1,17 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
+
+export const metadata: Metadata = {
+  title: "Haulagua — Find Bulk Water Haulers Near You",
+  description: "Search and compare verified bulk water haulers for pool fills, construction, agriculture, and emergencies. Free to search across Texas and Arizona.",
+  openGraph: {
+    title: "Haulagua — Find Bulk Water Haulers Near You",
+    description: "Search and compare verified bulk water haulers for pool fills, construction, agriculture, and emergencies.",
+    url: "https://haulagua.com",
+    siteName: "Haulagua",
+    type: "website",
+  },
+};
 import { HeroSection } from "@/components/hero-section";
 import WaterCalculatorQuiz from "@/components/WaterCalculatorQuiz";
 import { TrustBanner } from "@/components/trust-banner";
