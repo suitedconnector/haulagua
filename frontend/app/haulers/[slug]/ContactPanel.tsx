@@ -8,12 +8,14 @@ import { Phone, Globe, MessageSquare, Eye } from "lucide-react";
 export function ContactPanel({
   phone,
   website,
+  email,
   name,
   slug,
   isClaimed,
 }: {
   phone: string | null;
   website: string | null;
+  email: string | null;
   name: string;
   slug: string;
   isClaimed: boolean;
@@ -64,11 +66,11 @@ export function ContactPanel({
         variant="outline"
         className="w-full h-11 gap-2 border-primary text-primary hover:bg-primary/5 font-semibold"
         onClick={() => {
-          const subject = encodeURIComponent(`Quote Request — ${name}`);
+          const subject = encodeURIComponent(`Quote Request - ${name}`);
           const body = encodeURIComponent(
-            `Hi,\n\nI found your listing on Haulagua and I'm interested in a quote for bulk water delivery.\n\nPlease contact me at your earliest convenience.\n\nThank you.`
+            `Hi, I found your listing on HaulAgua.com and would like to request a quote for bulk water delivery.\n\nPlease contact me at your earliest convenience.\n\nThank you.`
           );
-          window.location.href = `mailto:?subject=${subject}&body=${body}`;
+          window.location.href = `mailto:${email ?? ""}?subject=${subject}&body=${body}`;
         }}
       >
         <MessageSquare className="h-4 w-4" />

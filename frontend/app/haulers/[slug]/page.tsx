@@ -363,6 +363,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 <ContactPanel
                   phone={a.phone}
                   website={a.website}
+                  email={a.email ?? null}
                   name={a.name}
                   slug={a.slug}
                   isClaimed={a.isClaimed}
