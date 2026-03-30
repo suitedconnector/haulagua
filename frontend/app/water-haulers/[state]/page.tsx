@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HaulerCard } from "@/components/hauler-card";
@@ -11,9 +12,9 @@ import {
   fromStateSlug,
   getHaulersByState,
   groupHaulersByCity,
-  toCitySlug,
   getAllStatesWithCounts,
 } from "@/lib/location";
+import { fetchCityPhoto } from "@/lib/unsplash";
 
 type PageProps = { params: Promise<{ state: string }> };
 
@@ -39,6 +40,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+type CityWithPhoto = {
+  city: string;
+  slug: string;
+  count: number;
+  photo: string | null;
+};
+
 export default async function StatePage({ params }: PageProps) {
   const { state } = await params;
   const abbr = fromStateSlug(state);
@@ -46,6 +54,16 @@ export default async function StatePage({ params }: PageProps) {
   const haulers = await getHaulersByState(abbr);
   const cities = groupHaulersByCity(haulers);
   const intro = STATE_INTROS[state] ?? STATE_INTRO_DEFAULT;
+
+  // Fetch city photos in parallel
+  const citiesWithPhotos: CityWithPhoto[] = await Promise.all(
+    cities.map(async ({ city, slug, count }) => ({
+      city,
+      slug,
+      count,
+      photo: await fetchCityPhoto(city, stateName),
+    }))
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -75,23 +93,49 @@ export default async function StatePage({ params }: PageProps) {
           </div>
         </section>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-12">
-          {/* Cities */}
-          {cities.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-14">
+
+          {/* City photo grid */}
+          {citiesWithPhotos.length > 0 && (
             <div>
-              <h2 className="font-serif text-xl font-semibold text-foreground mb-4">
+              <h2 className="font-serif text-xl font-semibold text-foreground mb-6">
                 Browse by City
               </h2>
-              <div className="flex flex-wrap gap-3">
-                {cities.map(({ city, slug, count }) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {citiesWithPhotos.map(({ city, slug, count, photo }) => (
                   <Link
                     key={city}
                     href={`/water-haulers/${state}/${slug}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-white hover:border-[#005A9C] hover:text-[#005A9C] transition-colors text-sm font-medium text-foreground"
+                    className="group rounded-xl overflow-hidden border border-border hover:shadow-md hover:border-[#005A9C]/40 transition-all bg-white"
                   >
-                    <MapPin className="h-3.5 w-3.5" />
-                    {city}
-                    <span className="text-muted-foreground ml-1">({count})</span>
+                    {/* Photo or fallback */}
+                    <div className="relative h-40 w-full overflow-hidden">
+                      {photo ? (
+                        <Image
+                          src={photo}
+                          alt={`Bulk water delivery in ${city}, ${stateName}`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: "#005A9C" }}
+                        >
+                          <MapPin className="h-10 w-10 text-white/60" />
+                        </div>
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div className="p-4">
+                      <p className="font-semibold text-foreground group-hover:text-[#005A9C] transition-colors">
+                        {city}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {count} hauler{count !== 1 ? "s" : ""}
+                      </p>
+                    </div>
                   </Link>
                 ))}
               </div>
