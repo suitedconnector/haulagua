@@ -29,6 +29,12 @@ export function Navbar() {
               Find a Hauler
             </Link>
             <Link
+              href="/water-haulers"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+            >
+              By Location
+            </Link>
+            <Link
               href="/resources"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
@@ -66,6 +72,13 @@ export function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Find a Hauler
+              </Link>
+              <Link
+                href="/water-haulers"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-2 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                By Location
               </Link>
               <Link
                 href="/resources"
