@@ -6,6 +6,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/find',
+        destination: '/search',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

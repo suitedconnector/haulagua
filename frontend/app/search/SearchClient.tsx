@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,7 @@ import {
   X,
 } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type StrapiHauler = {
   id: number;
@@ -30,6 +30,8 @@ type StrapiHauler = {
     slug: string;
     city: string;
     state: string;
+    zip: string;
+    serviceArea: string;
     minFee: number;
     truckCapacity: number;
     hoseLength: number;
@@ -90,7 +92,7 @@ const SERVICE_TYPE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
-// ─── Hauler Card ─────────────────────────────────────────────────────────────
+// ─── Hauler Card ──────────────────────────────────────────────────────────────
 
 function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
   const a = hauler.attributes;
@@ -301,15 +303,20 @@ function EmptyState({
       <h3 className="font-semibold text-xl mb-2 text-foreground">No haulers found</h3>
       <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-6">
         {zip
-          ? `We couldn't find haulers near ZIP ${zip}.`
+          ? `We couldn't find haulers matching "${zip}".`
           : "Try searching a city, state, or ZIP code."}{" "}
         {hasFilters && "Try removing some filters to see more results."}
       </p>
-      {hasFilters && (
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
+      <div className="flex gap-3 justify-center flex-wrap">
+        {hasFilters && (
+          <Button variant="outline" size="sm" onClick={onClear}>
+            Clear filters
+          </Button>
+        )}
+        <Button size="sm" asChild style={{ backgroundColor: "#005A9C" }}>
+          <Link href="/">Try the calculator</Link>
         </Button>
-      )}
+      </div>
     </div>
   );
 }
@@ -326,50 +333,37 @@ export function SearchClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Initialise filter state from URL params so shared links restore correctly
   const [zip, setZip] = useState(initialZip);
   const [inputValue, setInputValue] = useState(initialZip);
-  const [selectedServices, setSelectedServices] = useState<string[]>(
-    initialServiceType ? [initialServiceType] : []
+  const [selectedServices, setSelectedServices] = useState<string[]>(() => {
+    const urlServices = searchParams.get("services");
+    if (urlServices) return urlServices.split(",").filter(Boolean);
+    return initialServiceType ? [initialServiceType] : [];
+  });
+  const [selectedFeeRange, setSelectedFeeRange] = useState<string | null>(
+    () => searchParams.get("fee") ?? null
   );
-  const [selectedFeeRange, setSelectedFeeRange] = useState<string | null>(null);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [haulers, setHaulers] = useState<StrapiHauler[]>([]);
+  const [verifiedOnly, setVerifiedOnly] = useState(
+    () => searchParams.get("verified") === "1"
+  );
+
+  const [allHaulers, setAllHaulers] = useState<StrapiHauler[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const feeRangeObj = FEE_RANGES.find((r) => r.value === selectedFeeRange) ?? null;
 
+  // Fetch all active haulers once — filtering happens client-side
   const fetchHaulers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams();
       params.set("populate[services][fields][0]", "type");
-      params.set("pagination[pageSize]", "50");
+      params.set("pagination[pageSize]", "100");
       params.set("filters[isActive][$eq]", "true");
-
-      if (zip) {
-        params.set("filters[$or][0][city][$containsi]", zip);
-        params.set("filters[$or][1][zip][$containsi]", zip);
-        params.set("filters[$or][2][serviceArea][$containsi]", zip);
-        params.set("filters[$or][3][state][$containsi]", zip);
-      }
-
-      if (feeRangeObj) {
-        if (feeRangeObj.max !== undefined && feeRangeObj.min === undefined) {
-          params.set("filters[minFee][$lt]", String(feeRangeObj.max));
-        } else if (feeRangeObj.min !== undefined && feeRangeObj.max !== undefined) {
-          params.set("filters[minFee][$gte]", String(feeRangeObj.min));
-          params.set("filters[minFee][$lte]", String(feeRangeObj.max));
-        } else if (feeRangeObj.min !== undefined) {
-          params.set("filters[minFee][$gte]", String(feeRangeObj.min));
-        }
-      }
-
-      if (verifiedOnly) {
-        params.set("filters[isVerifiedPro][$eq]", "true");
-      }
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}/api/haulers?${params.toString()}`,
@@ -377,36 +371,80 @@ export function SearchClient({
       );
       if (!res.ok) throw new Error("Failed to load results");
       const data = await res.json();
-      let results: StrapiHauler[] = data.data ?? [];
-
-      // Client-side filter by service type
-      if (selectedServices.length > 0) {
-        results = results.filter((h) =>
-          h.attributes.services?.data?.some((s) =>
-            selectedServices.includes(s.attributes.type)
-          )
-        );
-      }
-
-      setHaulers(results);
+      setAllHaulers(data.data ?? []);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
-  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, feeRangeObj]);
+  }, []);
 
   useEffect(() => {
     fetchHaulers();
   }, [fetchHaulers]);
 
+  // Client-side filtering — instant, no refetch needed
+  const filteredHaulers = useMemo(() => {
+    let results = allHaulers;
+
+    // Location: match zip, city, state, or serviceArea
+    if (zip) {
+      const q = zip.toLowerCase();
+      results = results.filter((h) => {
+        const a = h.attributes;
+        return (
+          a.city?.toLowerCase().includes(q) ||
+          a.state?.toLowerCase().includes(q) ||
+          a.zip?.includes(q) ||
+          a.serviceArea?.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    // Service type checkboxes
+    if (selectedServices.length > 0) {
+      results = results.filter((h) =>
+        h.attributes.services?.data?.some((s) =>
+          selectedServices.includes(s.attributes.type)
+        )
+      );
+    }
+
+    // Min fee range
+    if (feeRangeObj) {
+      results = results.filter((h) => {
+        const fee = h.attributes.minFee;
+        if (fee == null) return false;
+        if (feeRangeObj.max !== undefined && feeRangeObj.min === undefined)
+          return fee < feeRangeObj.max;
+        if (feeRangeObj.min !== undefined && feeRangeObj.max !== undefined)
+          return fee >= feeRangeObj.min && fee <= feeRangeObj.max;
+        if (feeRangeObj.min !== undefined) return fee >= feeRangeObj.min;
+        return true;
+      });
+    }
+
+    // Verified Pro toggle
+    if (verifiedOnly) {
+      results = results.filter((h) => h.attributes.isVerifiedPro);
+    }
+
+    return results;
+  }, [allHaulers, zip, selectedServices, feeRangeObj, verifiedOnly]);
+
+  // Keep URL in sync so the page is shareable
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (zip) p.set("zip", zip);
+    if (selectedServices.length > 0) p.set("services", selectedServices.join(","));
+    if (selectedFeeRange) p.set("fee", selectedFeeRange);
+    if (verifiedOnly) p.set("verified", "1");
+    router.replace(`/search?${p.toString()}`, { scroll: false });
+  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, router]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setZip(inputValue);
-    const p = new URLSearchParams(searchParams.toString());
-    if (inputValue) p.set("zip", inputValue);
-    else p.delete("zip");
-    router.push(`/search?${p.toString()}`);
+    setZip(inputValue.trim());
   };
 
   const clearFilters = () => {
@@ -421,7 +459,7 @@ export function SearchClient({
   const activeFilterCount =
     selectedServices.length + (selectedFeeRange ? 1 : 0) + (verifiedOnly ? 1 : 0);
 
-  // Build the page heading
+  // Page heading
   const serviceLabel = SERVICE_TYPE_LABEL[initialServiceType] ?? initialServiceType;
   const heading =
     initialZip && initialServiceType
@@ -431,6 +469,10 @@ export function SearchClient({
       : initialServiceType
       ? `${serviceLabel} Water Haulers`
       : "Find Water Haulers";
+
+  const resultCount = loading
+    ? null
+    : `Showing ${filteredHaulers.length} hauler${filteredHaulers.length !== 1 ? "s" : ""}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -463,7 +505,7 @@ export function SearchClient({
         {/* Mobile filter toggle */}
         <div className="flex items-center justify-between mb-4 lg:hidden">
           <p className="text-sm text-muted-foreground">
-            {loading ? "Loading…" : `${haulers.length} hauler${haulers.length !== 1 ? "s" : ""} found`}
+            {loading ? "Loading…" : resultCount}
           </p>
           <Button
             variant="outline"
@@ -515,9 +557,7 @@ export function SearchClient({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <p className="text-sm text-muted-foreground hidden lg:block">
-                {loading
-                  ? "Loading…"
-                  : `${haulers.length} hauler${haulers.length !== 1 ? "s" : ""} found`}
+                {loading ? "Loading…" : resultCount}
               </p>
 
               {/* Active filter badges */}
@@ -587,11 +627,11 @@ export function SearchClient({
                   </div>
                 ))}
               </div>
-            ) : haulers.length === 0 ? (
+            ) : filteredHaulers.length === 0 ? (
               <EmptyState zip={zip} hasFilters={hasFilters} onClear={clearFilters} />
             ) : (
               <div className="grid gap-4">
-                {haulers.map((h) => (
+                {filteredHaulers.map((h) => (
                   <HaulerCard key={h.id} hauler={h} />
                 ))}
               </div>

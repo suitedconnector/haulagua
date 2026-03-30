@@ -23,7 +23,7 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:gap-8">
             <Link
-              href="/find"
+              href="/search"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Find a Hauler
@@ -40,8 +40,8 @@ export function Navbar() {
             >
               For Haulers
             </Link>
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              Login
+            <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              <Link href="/login">Login</Link>
             </Button>
           </div>
 
@@ -61,7 +61,7 @@ export function Navbar() {
           <div className="md:hidden border-t border-border py-4">
             <div className="flex flex-col gap-4">
               <Link
-                href="/find"
+                href="/search"
                 className="text-sm font-medium text-foreground hover:text-primary transition-colors px-2 py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -81,8 +81,8 @@ export function Navbar() {
               >
                 For Haulers
               </Link>
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full">
-                Login
+              <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full">
+                <Link href="/login">Login</Link>
               </Button>
             </div>
           </div>
