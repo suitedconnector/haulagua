@@ -14,7 +14,7 @@ import {
   groupHaulersByCity,
   getAllStatesWithCounts,
 } from "@/lib/location";
-import { fetchCityPhoto } from "@/lib/unsplash";
+import { fetchCityPhoto } from "@/lib/city-photo";
 
 type PageProps = { params: Promise<{ state: string }> };
 
