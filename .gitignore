@@ -1,1 +1,5 @@
 strapi-export.tar.gz
+node_modules
+.env.local
+.env*.local
+.next/

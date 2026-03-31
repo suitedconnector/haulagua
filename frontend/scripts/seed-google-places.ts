@@ -15,7 +15,9 @@
 import * as path from "path";
 import { config as loadDotenv } from "dotenv";
 
+// Load frontend/.env.local first, then root/.env.local for any missing vars
 loadDotenv({ path: path.resolve(process.cwd(), ".env.local") });
+loadDotenv({ path: path.resolve(process.cwd(), "..", ".env.local"), override: false });
 
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
