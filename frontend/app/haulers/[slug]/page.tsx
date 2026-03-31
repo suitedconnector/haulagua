@@ -4,6 +4,7 @@ import { strapiGet } from "@/src/lib/strapi";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactPanel } from "./ContactPanel";
+import { ReviewForm } from "./ReviewForm";
 import {
   CheckCircle2,
   Truck,
@@ -14,6 +15,7 @@ import {
   ChevronLeft,
   ImageIcon,
   ShieldAlert,
+  Star,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -69,6 +71,22 @@ type StrapiResponse = {
   meta: { pagination: { total: number } };
 };
 
+type StrapiReview = {
+  id: number;
+  attributes: {
+    reviewerName: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    isApproved: boolean;
+  };
+};
+
+type ReviewsResponse = {
+  data: StrapiReview[];
+  meta: { pagination: { total: number } };
+};
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const SERVICE_LABEL: Record<string, string> = {
@@ -112,6 +130,26 @@ const WATER_TYPE_LABEL: Record<string, string> = {
   "non-potable": "Non-Potable",
   both: "Potable & Non-Potable",
 };
+
+// ─── Star Rating Display ──────────────────────────────────────────────────────
+
+function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star
+          key={s}
+          style={{
+            width: size,
+            height: size,
+            fill: s <= rating ? "#F2A900" : "transparent",
+            stroke: s <= rating ? "#F2A900" : "#d1d5db",
+          }}
+        />
+      ))}
+    </span>
+  );
+}
 
 // ─── Photo Gallery Placeholder ────────────────────────────────────────────────
 
@@ -199,6 +237,28 @@ export default async function HaulerProfilePage({ params }: PageProps) {
   const a = hauler.attributes;
   const services = a.services?.data ?? [];
   const caseStudies = a.caseStudies?.data ?? [];
+
+  let approvedReviews: StrapiReview[] = [];
+  try {
+    const reviewData = await strapiGet<ReviewsResponse>({
+      path: "/reviews",
+      params: {
+        "filters[haulerSlug][$eq]": slug,
+        "filters[isApproved][$eq]": "true",
+        "sort[0]": "createdAt:desc",
+        "pagination[pageSize]": "20",
+      },
+      cache: "no-store",
+    });
+    approvedReviews = reviewData.data ?? [];
+  } catch {
+    // Non-critical — show page without reviews if Strapi call fails
+  }
+
+  const avgRating =
+    approvedReviews.length > 0
+      ? approvedReviews.reduce((sum, r) => sum + r.attributes.rating, 0) / approvedReviews.length
+      : null;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -353,6 +413,53 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   </div>
                 </section>
               )}
+
+              {/* Reviews */}
+              <section>
+                {approvedReviews.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <h2 className="font-serif text-xl font-bold">Reviews</h2>
+                      <div className="flex items-center gap-2">
+                        <StarRating rating={Math.round(avgRating!)} />
+                        <span className="font-bold text-lg" style={{ color: "#005A9C" }}>
+                          {avgRating!.toFixed(1)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          ({approvedReviews.length} review{approvedReviews.length !== 1 ? "s" : ""})
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      {approvedReviews.map((review) => (
+                        <div
+                          key={review.id}
+                          className="bg-white border border-border rounded-xl p-5"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <div>
+                              <p className="font-semibold text-sm">{review.attributes.reviewerName}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {new Date(review.attributes.createdAt).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })}
+                              </p>
+                            </div>
+                            <StarRating rating={review.attributes.rating} size={14} />
+                          </div>
+                          <p className="text-sm text-foreground/80 leading-relaxed">
+                            {review.attributes.comment}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <ReviewForm haulerSlug={slug} />
+              </section>
             </div>
 
             {/* ── RIGHT (30%) ── */}

@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reviews",
+  "info": {
+    "singularName": "review",
+    "pluralName": "reviews",
+    "displayName": "Review",
+    "description": "Customer reviews for water haulers"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "haulerSlug": {
+      "type": "string",
+      "required": true
+    },
+    "reviewerName": {
+      "type": "string",
+      "required": true
+    },
+    "rating": {
+      "type": "integer",
+      "required": true,
+      "min": 1,
+      "max": 5
+    },
+    "comment": {
+      "type": "text",
+      "required": true
+    },
+    "isApproved": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
