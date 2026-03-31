@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +46,18 @@ type StrapiHauler = {
   };
 };
 
+type Filters = {
+  zip: string;
+  services: string[];
+  feeRange: string | null;
+  verifiedOnly: boolean;
+};
+
 // ─── Constants ────────────────────────────────────────────────────────────────
+
+const PAGE_SIZE = 20;
+const STRAPI_URL =
+  process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 
 const SERVICE_TYPES: { value: string; label: string }[] = [
   { value: "pool", label: "Swimming Pool" },
@@ -57,10 +68,16 @@ const SERVICE_TYPES: { value: string; label: string }[] = [
   { value: "events", label: "Events" },
 ];
 
-const FEE_RANGES = [
-  { value: "under300", label: "Under $300", max: 300 },
-  { value: "300-500", label: "$300 – $500", min: 300, max: 500 },
-  { value: "500plus", label: "$500+", min: 500 },
+const FEE_RANGES: {
+  value: string;
+  label: string;
+  min?: number;
+  max?: number;
+  op: "lt" | "between" | "gte";
+}[] = [
+  { value: "under300", label: "Under $300", max: 300, op: "lt" },
+  { value: "300-500", label: "$300 – $500", min: 300, max: 500, op: "between" },
+  { value: "500plus", label: "$500+", min: 500, op: "gte" },
 ];
 
 const SERVICE_LABEL: Record<string, string> = {
@@ -92,6 +109,47 @@ const SERVICE_TYPE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
+// ─── Strapi query builder ─────────────────────────────────────────────────────
+
+function buildStrapiParams(filters: Filters, page: number): string {
+  const p = new URLSearchParams();
+
+  p.set("filters[isActive][$eq]", "true");
+  p.set("populate[services][fields][0]", "type");
+  p.set("pagination[pageSize]", String(PAGE_SIZE));
+  p.set("pagination[page]", String(page));
+
+  if (filters.zip) {
+    const q = filters.zip;
+    p.set("filters[$or][0][city][$containsi]", q);
+    p.set("filters[$or][1][state][$containsi]", q);
+    p.set("filters[$or][2][zip][$containsi]", q);
+    p.set("filters[$or][3][serviceArea][$containsi]", q);
+  }
+
+  filters.services.forEach((svc, i) => {
+    p.set(`filters[services][type][$in][${i}]`, svc);
+  });
+
+  const feeObj = FEE_RANGES.find((r) => r.value === filters.feeRange);
+  if (feeObj) {
+    if (feeObj.op === "lt" && feeObj.max !== undefined) {
+      p.set("filters[minFee][$lt]", String(feeObj.max));
+    } else if (feeObj.op === "between") {
+      if (feeObj.min !== undefined) p.set("filters[minFee][$gte]", String(feeObj.min));
+      if (feeObj.max !== undefined) p.set("filters[minFee][$lte]", String(feeObj.max));
+    } else if (feeObj.op === "gte" && feeObj.min !== undefined) {
+      p.set("filters[minFee][$gte]", String(feeObj.min));
+    }
+  }
+
+  if (filters.verifiedOnly) {
+    p.set("filters[isVerifiedPro][$eq]", "true");
+  }
+
+  return p.toString();
+}
+
 // ─── Hauler Card ──────────────────────────────────────────────────────────────
 
 function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
@@ -104,7 +162,6 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
       className="block bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group"
     >
       <div className="p-5">
-        {/* Header row */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -131,15 +188,16 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
               {a.city}, {a.state}
             </p>
           </div>
-          <div className="text-right shrink-0">
-            <p className="text-xs text-muted-foreground">Starting at</p>
-            <p className="text-xl font-bold" style={{ color: "#005A9C" }}>
-              ${a.minFee}
-            </p>
-          </div>
+          {a.minFee != null && (
+            <div className="text-right shrink-0">
+              <p className="text-xs text-muted-foreground">Starting at</p>
+              <p className="text-xl font-bold" style={{ color: "#005A9C" }}>
+                ${a.minFee}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Services badges */}
         {services.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {services.map((s) => (
@@ -155,7 +213,6 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           </div>
         )}
 
-        {/* Specs row */}
         <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Truck className="h-3.5 w-3.5" />
@@ -205,7 +262,6 @@ function FilterSidebar({
 
   return (
     <aside className="space-y-6">
-      {/* Service Type */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Service Type
@@ -228,7 +284,6 @@ function FilterSidebar({
 
       <hr className="border-border" />
 
-      {/* Fee Range */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Min Starting Fee
@@ -245,7 +300,10 @@ function FilterSidebar({
                   )
                 }
               />
-              <Label htmlFor={`fee-${range.value}`} className="text-sm cursor-pointer flex items-center gap-1">
+              <Label
+                htmlFor={`fee-${range.value}`}
+                className="text-sm cursor-pointer flex items-center gap-1"
+              >
                 <DollarSign className="h-3 w-3 text-muted-foreground" />
                 {range.label}
               </Label>
@@ -256,7 +314,6 @@ function FilterSidebar({
 
       <hr className="border-border" />
 
-      {/* Verified Pro Toggle */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Verified Pro
@@ -321,6 +378,33 @@ function EmptyState({
   );
 }
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function SkeletonCards({ count = 3 }: { count?: number }) {
+  return (
+    <div className="grid gap-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-xl border border-border p-5 animate-pulse"
+        >
+          <div className="flex justify-between">
+            <div className="space-y-2 flex-1">
+              <div className="h-5 bg-muted rounded w-48" />
+              <div className="h-3 bg-muted rounded w-24" />
+            </div>
+            <div className="h-8 bg-muted rounded w-16" />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <div className="h-5 bg-muted rounded-full w-16" />
+            <div className="h-5 bg-muted rounded-full w-20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main SearchClient ────────────────────────────────────────────────────────
 
 export function SearchClient({
@@ -333,7 +417,7 @@ export function SearchClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Initialise filter state from URL params so shared links restore correctly
+  // ── Filter state (initialised from URL) ───────────────────────────────────
   const [zip, setZip] = useState(initialZip);
   const [inputValue, setInputValue] = useState(initialZip);
   const [selectedServices, setSelectedServices] = useState<string[]>(() => {
@@ -348,91 +432,92 @@ export function SearchClient({
     () => searchParams.get("verified") === "1"
   );
 
-  const [allHaulers, setAllHaulers] = useState<StrapiHauler[]>([]);
+  // ── Results state ─────────────────────────────────────────────────────────
+  const [haulers, setHaulers] = useState<StrapiHauler[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const feeRangeObj = FEE_RANGES.find((r) => r.value === selectedFeeRange) ?? null;
+  // Abort controller ref — cancel in-flight request when filters change
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Fetch all active haulers once — filtering happens client-side
-  const fetchHaulers = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams();
-      params.set("populate[services][fields][0]", "type");
-      params.set("pagination[pageSize]", "100");
-      params.set("filters[isActive][$eq]", "true");
+  // ── Fetch helpers ─────────────────────────────────────────────────────────
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}/api/haulers?${params.toString()}`,
-        { cache: "no-store" }
-      );
+  const fetchPage = useCallback(
+    async (
+      filters: Filters,
+      pageNum: number,
+      append: boolean,
+      signal: AbortSignal
+    ) => {
+      const qs = buildStrapiParams(filters, pageNum);
+      const res = await fetch(`${STRAPI_URL}/api/haulers?${qs}`, {
+        cache: "no-store",
+        signal,
+      });
       if (!res.ok) throw new Error("Failed to load results");
       const data = await res.json();
-      setAllHaulers(data.data ?? []);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      const newHaulers: StrapiHauler[] = data.data ?? [];
+      const newTotal: number = data.meta?.pagination?.total ?? 0;
+
+      setHaulers((prev) => (append ? [...prev, ...newHaulers] : newHaulers));
+      setTotal(newTotal);
+      setPage(pageNum);
+    },
+    []
+  );
+
+  // ── Effect: refetch from page 1 whenever filters change ──────────────────
 
   useEffect(() => {
-    fetchHaulers();
-  }, [fetchHaulers]);
+    // Abort any in-flight request
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-  // Client-side filtering — instant, no refetch needed
-  const filteredHaulers = useMemo(() => {
-    let results = allHaulers;
+    const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
 
-    // Location: match zip, city, state, or serviceArea
-    if (zip) {
-      const q = zip.toLowerCase();
-      results = results.filter((h) => {
-        const a = h.attributes;
-        return (
-          a.city?.toLowerCase().includes(q) ||
-          a.state?.toLowerCase().includes(q) ||
-          a.zip?.includes(q) ||
-          a.serviceArea?.toLowerCase().includes(q)
-        );
+    setLoading(true);
+    setError(null);
+
+    fetchPage(filters, 1, false, controller.signal)
+      .catch((err) => {
+        if (err instanceof Error && err.name === "AbortError") return;
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
+
+    return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zip, selectedServices, selectedFeeRange, verifiedOnly]);
+
+  // ── Load More ─────────────────────────────────────────────────────────────
+
+  const handleLoadMore = useCallback(async () => {
+    const nextPage = page + 1;
+    const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
+
+    setLoadingMore(true);
+    setError(null);
+
+    const controller = new AbortController();
+    try {
+      await fetchPage(filters, nextPage, true, controller.signal);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoadingMore(false);
     }
+  }, [page, zip, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
 
-    // Service type checkboxes
-    if (selectedServices.length > 0) {
-      results = results.filter((h) =>
-        h.attributes.services?.data?.some((s) =>
-          selectedServices.includes(s.attributes.type)
-        )
-      );
-    }
+  // ── URL sync ──────────────────────────────────────────────────────────────
 
-    // Min fee range
-    if (feeRangeObj) {
-      results = results.filter((h) => {
-        const fee = h.attributes.minFee;
-        if (fee == null) return false;
-        if (feeRangeObj.max !== undefined && feeRangeObj.min === undefined)
-          return fee < feeRangeObj.max;
-        if (feeRangeObj.min !== undefined && feeRangeObj.max !== undefined)
-          return fee >= feeRangeObj.min && fee <= feeRangeObj.max;
-        if (feeRangeObj.min !== undefined) return fee >= feeRangeObj.min;
-        return true;
-      });
-    }
-
-    // Verified Pro toggle
-    if (verifiedOnly) {
-      results = results.filter((h) => h.attributes.isVerifiedPro);
-    }
-
-    return results;
-  }, [allHaulers, zip, selectedServices, feeRangeObj, verifiedOnly]);
-
-  // Keep URL in sync so the page is shareable
   useEffect(() => {
     const p = new URLSearchParams();
     if (zip) p.set("zip", zip);
@@ -441,6 +526,16 @@ export function SearchClient({
     if (verifiedOnly) p.set("verified", "1");
     router.replace(`/search?${p.toString()}`, { scroll: false });
   }, [zip, selectedServices, selectedFeeRange, verifiedOnly, router]);
+
+  // ── Derived ───────────────────────────────────────────────────────────────
+
+  const hasFilters =
+    selectedServices.length > 0 || selectedFeeRange !== null || verifiedOnly;
+
+  const activeFilterCount =
+    selectedServices.length + (selectedFeeRange ? 1 : 0) + (verifiedOnly ? 1 : 0);
+
+  const hasMore = haulers.length < total;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -453,13 +548,6 @@ export function SearchClient({
     setVerifiedOnly(false);
   };
 
-  const hasFilters =
-    selectedServices.length > 0 || selectedFeeRange !== null || verifiedOnly;
-
-  const activeFilterCount =
-    selectedServices.length + (selectedFeeRange ? 1 : 0) + (verifiedOnly ? 1 : 0);
-
-  // Page heading
   const serviceLabel = SERVICE_TYPE_LABEL[initialServiceType] ?? initialServiceType;
   const heading =
     initialZip && initialServiceType
@@ -470,9 +558,13 @@ export function SearchClient({
       ? `${serviceLabel} Water Haulers`
       : "Find Water Haulers";
 
-  const resultCount = loading
-    ? null
-    : `Showing ${filteredHaulers.length} hauler${filteredHaulers.length !== 1 ? "s" : ""}`;
+  const countLabel = loading
+    ? "Loading…"
+    : total === 0
+    ? "No haulers found"
+    : `Showing ${haulers.length} of ${total} hauler${total !== 1 ? "s" : ""}`;
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-background">
@@ -504,9 +596,7 @@ export function SearchClient({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile filter toggle */}
         <div className="flex items-center justify-between mb-4 lg:hidden">
-          <p className="text-sm text-muted-foreground">
-            {loading ? "Loading…" : resultCount}
-          </p>
+          <p className="text-sm text-muted-foreground">{countLabel}</p>
           <Button
             variant="outline"
             size="sm"
@@ -528,7 +618,9 @@ export function SearchClient({
 
         <div className="flex gap-8">
           {/* Sidebar */}
-          <div className={`w-56 shrink-0 ${mobileFiltersOpen ? "block" : "hidden"} lg:block`}>
+          <div
+            className={`w-56 shrink-0 ${mobileFiltersOpen ? "block" : "hidden"} lg:block`}
+          >
             <div className="sticky top-4 bg-white rounded-xl border border-border p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-base">Filters</h2>
@@ -557,7 +649,7 @@ export function SearchClient({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <p className="text-sm text-muted-foreground hidden lg:block">
-                {loading ? "Loading…" : resultCount}
+                {countLabel}
               </p>
 
               {/* Active filter badges */}
@@ -607,34 +699,41 @@ export function SearchClient({
             )}
 
             {loading ? (
-              <div className="grid gap-4">
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-xl border border-border p-5 animate-pulse"
-                  >
-                    <div className="flex justify-between">
-                      <div className="space-y-2 flex-1">
-                        <div className="h-5 bg-muted rounded w-48" />
-                        <div className="h-3 bg-muted rounded w-24" />
-                      </div>
-                      <div className="h-8 bg-muted rounded w-16" />
-                    </div>
-                    <div className="flex gap-2 mt-3">
-                      <div className="h-5 bg-muted rounded-full w-16" />
-                      <div className="h-5 bg-muted rounded-full w-20" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredHaulers.length === 0 ? (
+              <SkeletonCards count={3} />
+            ) : haulers.length === 0 ? (
               <EmptyState zip={zip} hasFilters={hasFilters} onClear={clearFilters} />
             ) : (
-              <div className="grid gap-4">
-                {filteredHaulers.map((h) => (
-                  <HaulerCard key={h.id} hauler={h} />
-                ))}
-              </div>
+              <>
+                <div className="grid gap-4">
+                  {haulers.map((h) => (
+                    <HaulerCard key={h.id} hauler={h} />
+                  ))}
+                </div>
+
+                {/* Load More */}
+                {hasMore && (
+                  <div className="mt-8 text-center">
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Showing {haulers.length} of {total} haulers
+                    </p>
+                    <Button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      variant="outline"
+                      className="min-w-36 border-[#005A9C] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
+                    >
+                      {loadingMore ? "Loading…" : "Load More"}
+                    </Button>
+                  </div>
+                )}
+
+                {/* All loaded */}
+                {!hasMore && total > PAGE_SIZE && (
+                  <p className="mt-8 text-center text-sm text-muted-foreground">
+                    All {total} haulers loaded
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
