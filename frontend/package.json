@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "seed:haulers": "tsx scripts/seed-haulers.ts",
-    "seed:blog": "tsx scripts/seed-blog.ts"
+    "seed:blog": "tsx scripts/seed-blog.ts",
+    "seed:google": "tsx scripts/seed-google-places.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
