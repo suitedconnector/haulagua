@@ -66,6 +66,7 @@ const CITIES: { city: string; state: string; abbr: string }[] = [
 interface PlacesSearchResult {
   place_id: string;
   name: string;
+  types?: string[];
 }
 
 interface PlaceDetails {
@@ -76,6 +77,7 @@ interface PlaceDetails {
   formatted_address?: string;
   editorial_summary?: { overview?: string };
   rating?: number;
+  types?: string[];
   address_components?: {
     long_name: string;
     short_name: string;
@@ -104,6 +106,61 @@ function generateSlug(name: string): string {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+// ─── Relevance filter ─────────────────────────────────────────────────────────
+
+const REQUIRED_KEYWORDS = [
+  "water haul",
+  "bulk water",
+  "water delivery",
+  "water truck",
+  "tank truck",
+  "water transport",
+  "potable water",
+  "cistern",
+  "water hauling",
+];
+
+const EXCLUDE_KEYWORDS = [
+  "bottled water",
+  "alkaline",
+  "culligan",
+  "primo",
+  "nestle",
+  "arrowhead",
+  "plumbing",
+  "construction",
+  "junk",
+  "moving",
+  "towing",
+  "wash",
+  "fire",
+  "utility",
+  "department",
+  "government",
+  "park",
+  "restaurant",
+  "food",
+  "coffee",
+  "tea",
+];
+
+/**
+ * Returns true if the listing is relevant to bulk water hauling.
+ * Checks the business name and Google Places types array.
+ */
+function isRelevant(name: string, types: string[] = []): boolean {
+  const haystack = [name, ...types].join(" ").toLowerCase();
+
+  // Must match at least one required keyword
+  const passes = REQUIRED_KEYWORDS.some((kw) => haystack.includes(kw));
+  if (!passes) return false;
+
+  // Excluded keywords are checked against name only (types like "food" are too broad)
+  const nameLower = name.toLowerCase();
+  const blocked = EXCLUDE_KEYWORDS.some((kw) => nameLower.includes(kw));
+  return !blocked;
 }
 
 // ─── Google Places API ────────────────────────────────────────────────────────
@@ -144,6 +201,7 @@ async function getPlaceDetails(placeId: string): Promise<PlaceDetails | null> {
     "formatted_address",
     "editorial_summary",
     "address_components",
+    "types",
   ].join(",");
 
   const params = new URLSearchParams({
@@ -267,6 +325,7 @@ async function main() {
 
   let totalImported = 0;
   let totalSkipped = 0;
+  let totalFiltered = 0;
   let totalFailed = 0;
 
   // Collect unique place_ids across all searches to avoid re-processing the same
@@ -316,6 +375,12 @@ async function main() {
           continue;
         }
 
+        if (!isRelevant(details.name, details.types)) {
+          console.log(`    🚫  filtered  ${details.name} (not a water hauler)`);
+          totalFiltered++;
+          continue;
+        }
+
         const exists = await slugExists(slug);
         if (exists) {
           console.log(`    ⏭️  skip  ${details.name} (slug "${slug}" exists)`);
@@ -358,7 +423,8 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────");
   console.log(`✅  Imported : ${totalImported}`);
-  console.log(`⏭️  Skipped  : ${totalSkipped}`);
+  console.log(`⏭️  Skipped  : ${totalSkipped} (duplicate slug)`);
+  console.log(`🚫  Filtered : ${totalFiltered} (not a water hauler)`);
   console.log(`❌  Failed   : ${totalFailed}`);
   console.log("─────────────────────────────────────────\n");
 }
