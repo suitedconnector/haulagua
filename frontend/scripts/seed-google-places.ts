@@ -144,6 +144,10 @@ const EXCLUDE_KEYWORDS = [
   "food",
   "coffee",
   "tea",
+  "h mart",
+  "grocery",
+  "supermarket",
+  "asian market",
 ];
 
 /**
