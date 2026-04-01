@@ -87,6 +87,24 @@
     },
     "industries": {
       "type": "json"
+    },
+    "certification": {
+      "type": "string"
+    },
+    "truckCount": {
+      "type": "integer"
+    },
+    "pumpType": {
+      "type": "string"
+    },
+    "hoseMaterial": {
+      "type": "string"
+    },
+    "yearsInBusiness": {
+      "type": "integer"
+    },
+    "serviceRadius": {
+      "type": "integer"
     }
   }
 }

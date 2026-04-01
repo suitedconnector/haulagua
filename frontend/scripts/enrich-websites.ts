@@ -5,10 +5,16 @@
  * (markdown format) and parsing the raw markdown with regex.
  *
  * Extracts:
- *   - truckCapacity  — patterns like "4,000 gallon", "4000 gal"
- *   - hoseLength     — patterns like "200 ft", "200 feet"
- *   - serviceArea    — sentences containing "serving", "service area", "we deliver to" etc.
- *   - description    — first meaningful paragraph (≥ 50 chars)
+ *   - truckCapacity   — "4,000 gallon", "4000 gal"
+ *   - hoseLength      — "200 ft", "200 feet"
+ *   - serviceArea     — sentences containing "serving", "service area", "we deliver to"
+ *   - description     — first meaningful paragraph (≥ 50 chars)
+ *   - certification   — TCEQ numbers, NSF, DOT, state cert mentions
+ *   - truckCount      — "fleet of X trucks", "X truck fleet"
+ *   - pumpType        — PTO, centrifugal, submersible, hydraulic pump mentions
+ *   - hoseMaterial    — FDA/NSF hose material mentions
+ *   - yearsInBusiness — "X years", "since YYYY", "founded YYYY", "established YYYY"
+ *   - serviceRadius   — "within X miles", "up to X miles", "X-mile radius"
  *
  * Only fills missing fields — never overwrites existing data.
  * Skips Facebook URLs entirely.
@@ -35,6 +41,8 @@ if (!STRAPI_TOKEN) {
   process.exit(1);
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface StrapiHauler {
@@ -47,6 +55,12 @@ interface StrapiHauler {
     serviceArea: string | null;
     truckCapacity: number | null;
     hoseLength: number | null;
+    certification: string | null;
+    truckCount: number | null;
+    pumpType: string | null;
+    hoseMaterial: string | null;
+    yearsInBusiness: number | null;
+    serviceRadius: number | null;
   };
 }
 
@@ -55,12 +69,17 @@ interface ExtractedData {
   serviceArea: string | null;
   truckCapacity: number | null;
   hoseLength: number | null;
+  certification: string | null;
+  truckCount: number | null;
+  pumpType: string | null;
+  hoseMaterial: string | null;
+  yearsInBusiness: number | null;
+  serviceRadius: number | null;
 }
 
 // ─── Markdown parsers ─────────────────────────────────────────────────────────
 
 function parseCapacity(md: string): number | null {
-  // Matches: "4,000 gallon", "4000 gal", "4,000-gallon", "4000-gal"
   const re = /\b(\d{1,2}[,.]?\d{3})\s*[-]?\s*gal(?:lon)?s?\b/gi;
   const hits: number[] = [];
   let m: RegExpExecArray | null;
@@ -68,13 +87,10 @@ function parseCapacity(md: string): number | null {
     const n = parseInt(m[1].replace(/[,.]/g, ""), 10);
     if (n >= 500 && n <= 100_000) hits.push(n);
   }
-  if (hits.length === 0) return null;
-  // Return the largest value (most likely to be truck capacity, not a delivery size)
-  return Math.max(...hits);
+  return hits.length ? Math.max(...hits) : null;
 }
 
 function parseHoseLength(md: string): number | null {
-  // Matches: "200 ft", "200 feet", "200-ft hose", "200' hose"
   const re = /\b(\d{2,4})\s*(?:[-]?\s*(?:ft|feet|foot)|')\b(?:[^a-z]|hose|pipe)/gi;
   const hits: number[] = [];
   let m: RegExpExecArray | null;
@@ -82,35 +98,29 @@ function parseHoseLength(md: string): number | null {
     const n = parseInt(m[1], 10);
     if (n >= 50 && n <= 2000) hits.push(n);
   }
-  if (hits.length === 0) return null;
-  return Math.max(...hits);
+  return hits.length ? Math.max(...hits) : null;
 }
 
 function parseServiceArea(md: string): string | null {
-  // Split into sentences and find ones mentioning service area keywords
   const sentences = md
-    .replace(/#{1,6}\s+/g, "") // strip markdown headings
-    .replace(/\*+/g, "")       // strip bold/italic markers
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/\*+/g, "")
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.replace(/\s+/g, " ").trim())
     .filter((s) => s.length > 20 && s.length < 300);
 
-  const SERVICE_AREA_RE =
-    /\b(?:serv(?:ing|ice\s+area)|we\s+deliver\s+to|delivery\s+area|we\s+serve|proudly\s+serv|coverage\s+area|available\s+in|operating\s+in)\b/i;
-
-  const match = sentences.find((s) => SERVICE_AREA_RE.test(s));
-  return match ?? null;
+  const RE = /\b(?:serv(?:ing|ice\s+area)|we\s+deliver\s+to|delivery\s+area|we\s+serve|proudly\s+serv|coverage\s+area|available\s+in|operating\s+in)\b/i;
+  return sentences.find((s) => RE.test(s)) ?? null;
 }
 
 function parseDescription(md: string): string | null {
-  // Strip markdown syntax and find first meaningful paragraph
   const clean = md
-    .replace(/#{1,6}\s+[^\n]+/g, "")     // headings
-    .replace(/!\[.*?\]\(.*?\)/g, "")      // images
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links → text
-    .replace(/[*_`~]+/g, "")             // bold/italic/code
-    .replace(/^[-*+]\s+/gm, "")          // list bullets
-    .replace(/^\d+\.\s+/gm, "")          // numbered lists
+    .replace(/#{1,6}\s+[^\n]+/g, "")
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`~]+/g, "")
+    .replace(/^[-*+]\s+/gm, "")
+    .replace(/^\d+\.\s+/gm, "")
     .replace(/\n{3,}/g, "\n\n");
 
   const paragraphs = clean
@@ -121,12 +131,123 @@ function parseDescription(md: string): string | null {
   return paragraphs[0] ?? null;
 }
 
+function parseCertification(md: string): string | null {
+  const certs: string[] = [];
+
+  // TCEQ license number
+  const tceqMatch = md.match(/TCEQ\s*(?:approved|certified|license[d]?|#|number|no\.?)?\s*[#:]?\s*(\d{4,10})/i);
+  if (tceqMatch) certs.push(`TCEQ #${tceqMatch[1]}`);
+  else if (/\bTCEQ\b/i.test(md)) certs.push("TCEQ Certified");
+
+  // NSF / FDA approved
+  if (/\bNSF[-\s]?61\b/i.test(md)) certs.push("NSF 61");
+  else if (/\bNSF\b.*\bapproved\b|\bapproved\b.*\bNSF\b/i.test(md)) certs.push("NSF Approved");
+
+  // DOT
+  if (/\bDOT[-\s]?(?:certified|compliant|approved|registered|#\s*\d+)\b/i.test(md)) certs.push("DOT Certified");
+
+  // State licensed / insured
+  if (/\bfully\s+(?:licensed\s+(?:and\s+)?)?insured\b/i.test(md)) certs.push("Licensed & Insured");
+  else if (/\bstate\s+(?:licensed|certified)\b/i.test(md)) certs.push("State Licensed");
+
+  return certs.length ? certs.join(", ") : null;
+}
+
+function parseTruckCount(md: string): number | null {
+  // "fleet of 5 trucks", "5-truck fleet", "3 water trucks", "2 tankers"
+  const patterns = [
+    /fleet\s+of\s+(\d+)\s+(?:water\s+)?trucks?/i,
+    /(\d+)[-\s]truck\s+fleet/i,
+    /(\d+)\s+(?:water\s+)?truck[s]?\s+(?:in\s+(?:our\s+)?fleet|available)/i,
+    /(\d+)\s+tanker\s+truck/i,
+  ];
+  for (const re of patterns) {
+    const m = md.match(re);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (n >= 1 && n <= 500) return n;
+    }
+  }
+  return null;
+}
+
+function parsePumpType(md: string): string | null {
+  const types: string[] = [];
+  if (/\bPTO\s+(?:water\s+)?pump/i.test(md)) types.push("PTO");
+  if (/\bcentrifugal\s+pump/i.test(md)) types.push("Centrifugal");
+  if (/\bsubmersible\s+pump/i.test(md)) types.push("Submersible");
+  if (/\bhydraulic\s+pump/i.test(md)) types.push("Hydraulic");
+  if (/\belectric\s+pump/i.test(md)) types.push("Electric");
+  if (/\bgasoline[-\s]powered\s+pump/i.test(md)) types.push("Gasoline");
+  return types.length ? types.join(", ") : null;
+}
+
+function parseHoseMaterial(md: string): string | null {
+  const materials: string[] = [];
+  if (/\bFDA[-\s](?:approved|grade)\s+hose/i.test(md) || /\bFDA\b.*\bhose\b/i.test(md))
+    materials.push("FDA-approved");
+  if (/\bNSF[-\s](?:61\s+)?(?:approved|certified)\s+hose/i.test(md) || /\bNSF\b.*\bhose\b/i.test(md))
+    materials.push("NSF 61");
+  if (/\bstainless\s+steel\s+(?:hose|fitting)/i.test(md)) materials.push("Stainless Steel");
+  if (/\breinforced\s+(?:rubber|pvc)\s+hose/i.test(md)) materials.push("Reinforced Rubber");
+  if (/\bpotable[-\s]grade\s+hose/i.test(md)) materials.push("Potable-grade");
+  return materials.length ? materials.join(", ") : null;
+}
+
+function parseYearsInBusiness(md: string): number | null {
+  // "over 20 years", "more than 15 years in business", "serving since 1998"
+  const sinceMatch = md.match(/\bsince\s+(19\d{2}|20[0-2]\d)\b/i);
+  if (sinceMatch) {
+    const years = CURRENT_YEAR - parseInt(sinceMatch[1], 10);
+    if (years >= 1 && years <= 150) return years;
+  }
+
+  const foundedMatch = md.match(/\b(?:founded|established|in\s+business\s+since)\s+(?:in\s+)?(19\d{2}|20[0-2]\d)\b/i);
+  if (foundedMatch) {
+    const years = CURRENT_YEAR - parseInt(foundedMatch[1], 10);
+    if (years >= 1 && years <= 150) return years;
+  }
+
+  const yearsMatch = md.match(/\b(?:over|more\s+than|nearly|almost)?\s*(\d+)\+?\s+years?\s+(?:of\s+)?(?:in\s+business|experience|serving|of\s+service)/i);
+  if (yearsMatch) {
+    const n = parseInt(yearsMatch[1], 10);
+    if (n >= 1 && n <= 150) return n;
+  }
+
+  return null;
+}
+
+function parseServiceRadius(md: string): number | null {
+  // "within 50 miles", "up to 100 miles", "50-mile radius", "100 mile service area"
+  const patterns = [
+    /within\s+(\d+)\s*[-]?\s*miles?/i,
+    /up\s+to\s+(\d+)\s*[-]?\s*miles?/i,
+    /(\d+)\s*[-]?\s*mile\s+radius/i,
+    /(\d+)\s*[-]?\s*mile\s+service\s+(?:area|range)/i,
+    /service\s+(?:area|range)\s+of\s+(\d+)\s*[-]?\s*miles?/i,
+  ];
+  for (const re of patterns) {
+    const m = md.match(re);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (n >= 5 && n <= 1000) return n;
+    }
+  }
+  return null;
+}
+
 function parseMarkdown(md: string): ExtractedData {
   return {
     truckCapacity: parseCapacity(md),
     hoseLength: parseHoseLength(md),
     serviceArea: parseServiceArea(md),
     description: parseDescription(md),
+    certification: parseCertification(md),
+    truckCount: parseTruckCount(md),
+    pumpType: parsePumpType(md),
+    hoseMaterial: parseHoseMaterial(md),
+    yearsInBusiness: parseYearsInBusiness(md),
+    serviceRadius: parseServiceRadius(md),
   };
 }
 
@@ -153,6 +274,12 @@ async function fetchTXHaulersWithWebsites(): Promise<StrapiHauler[]> {
       "fields[4]": "serviceArea",
       "fields[5]": "truckCapacity",
       "fields[6]": "hoseLength",
+      "fields[7]": "certification",
+      "fields[8]": "truckCount",
+      "fields[9]": "pumpType",
+      "fields[10]": "hoseMaterial",
+      "fields[11]": "yearsInBusiness",
+      "fields[12]": "serviceRadius",
       "pagination[page]": String(page),
       "pagination[pageSize]": "100",
     });
@@ -231,15 +358,18 @@ async function main() {
   for (const hauler of haulers) {
     const a = hauler.attributes;
 
-    // Skip Facebook — Firecrawl blocks it
     if (a.website.includes("facebook.com")) {
       console.log(`  ⏭️  skip    ${a.name} (Facebook URL)`);
       skipped++;
       continue;
     }
 
-    // If all enrichable fields already present, nothing to do
-    if (a.description && a.serviceArea && a.truckCapacity && a.hoseLength) {
+    const allPresent =
+      a.description && a.serviceArea && a.truckCapacity && a.hoseLength &&
+      a.certification && a.truckCount && a.pumpType && a.hoseMaterial &&
+      a.yearsInBusiness && a.serviceRadius;
+
+    if (allPresent) {
       console.log(`  ⏭️  skip    ${a.name} (all fields present)`);
       skipped++;
       continue;
@@ -265,16 +395,17 @@ async function main() {
 
     const extracted = parseMarkdown(markdown);
 
-    // Build patch — only fill missing fields
     const patch: Record<string, string | number | null> = {};
-    if (!a.description && extracted.description)
-      patch.description = extracted.description;
-    if (!a.serviceArea && extracted.serviceArea)
-      patch.serviceArea = extracted.serviceArea;
-    if (!a.truckCapacity && extracted.truckCapacity)
-      patch.truckCapacity = extracted.truckCapacity;
-    if (!a.hoseLength && extracted.hoseLength)
-      patch.hoseLength = extracted.hoseLength;
+    if (!a.description && extracted.description)         patch.description     = extracted.description;
+    if (!a.serviceArea && extracted.serviceArea)         patch.serviceArea     = extracted.serviceArea;
+    if (!a.truckCapacity && extracted.truckCapacity)     patch.truckCapacity   = extracted.truckCapacity;
+    if (!a.hoseLength && extracted.hoseLength)           patch.hoseLength      = extracted.hoseLength;
+    if (!a.certification && extracted.certification)     patch.certification   = extracted.certification;
+    if (!a.truckCount && extracted.truckCount)           patch.truckCount      = extracted.truckCount;
+    if (!a.pumpType && extracted.pumpType)               patch.pumpType        = extracted.pumpType;
+    if (!a.hoseMaterial && extracted.hoseMaterial)       patch.hoseMaterial    = extracted.hoseMaterial;
+    if (!a.yearsInBusiness && extracted.yearsInBusiness) patch.yearsInBusiness = extracted.yearsInBusiness;
+    if (!a.serviceRadius && extracted.serviceRadius)     patch.serviceRadius   = extracted.serviceRadius;
 
     if (Object.keys(patch).length === 0) {
       console.log(`  🈳  no data   ${a.name} (crawled, nothing extracted)`);
@@ -286,9 +417,7 @@ async function main() {
 
     try {
       await updateHauler(hauler.id, patch);
-      const summary = Object.entries(patch)
-        .map(([k, v]) => `${k}=${typeof v === "string" ? v.slice(0, 30) + (v.length > 30 ? "…" : "") : v}`)
-        .join(", ");
+      const summary = Object.keys(patch).join(", ");
       console.log(`  ✅  enriched  ${a.name} → ${summary}`);
       enriched++;
     } catch (err) {
