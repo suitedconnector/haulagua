@@ -10,7 +10,9 @@
     "seed:haulers": "tsx scripts/seed-haulers.ts",
     "seed:blog": "tsx scripts/seed-blog.ts",
     "seed:google": "tsx scripts/seed-google-places.ts",
-    "clean:listings": "tsx scripts/clean-bad-listings.ts"
+    "clean:listings": "tsx scripts/clean-bad-listings.ts",
+    "enrich:google": "tsx scripts/enrich-google.ts",
+    "enrich:websites": "tsx scripts/enrich-websites.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
