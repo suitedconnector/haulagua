@@ -12,7 +12,8 @@
     "seed:google": "tsx scripts/seed-google-places.ts",
     "clean:listings": "tsx scripts/clean-bad-listings.ts",
     "enrich:google": "tsx scripts/enrich-google.ts",
-    "enrich:websites": "tsx scripts/enrich-websites.ts"
+    "enrich:websites": "tsx scripts/enrich-websites.ts",
+    "clean:descriptions": "tsx scripts/clean-descriptions.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
