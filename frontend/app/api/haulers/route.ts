@@ -9,7 +9,9 @@ const STRAPI_URL =
 const STRAPI_TOKEN =
   process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
 
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+// Prefer non-prefixed server-only var; fall back to NEXT_PUBLIC for backwards compat
+const WEB3FORMS_KEY =
+  process.env.WEB3FORMS_KEY ?? process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
 const STRAPI_HEADERS = {
   'Content-Type': 'application/json',
@@ -43,38 +45,53 @@ async function patchCertificate(haulerId: number, certUrl: string): Promise<void
   }
 }
 
-async function sendCertificateNotification({
+async function sendSignupNotification({
   haulerName,
   email,
   city,
   state,
+  phone,
   certUrl,
 }: {
   haulerName: string;
   email: string;
   city: string | null;
   state: string | null;
-  certUrl: string;
+  phone: unknown;
+  certUrl: string | null;
 }) {
-  if (!WEB3FORMS_KEY) return;
+  console.log('[haulers] WEB3FORMS_KEY set:', !!WEB3FORMS_KEY);
+  if (!WEB3FORMS_KEY) {
+    console.warn('[haulers] WEB3FORMS_KEY missing — skipping notification');
+    return;
+  }
+
+  const subject = certUrl
+    ? `New Hauler Signup + Certificate — ${haulerName} — Haulagua`
+    : `New Hauler Signup — ${haulerName} — Haulagua`;
+
+  const lines = [
+    `Hauler:   ${haulerName}`,
+    `Email:    ${email}`,
+    `Phone:    ${typeof phone === 'string' ? phone : '—'}`,
+    `Location: ${[city, state].filter(Boolean).join(', ') || '—'}`,
+  ];
+  if (certUrl) lines.push(`Certificate: ${certUrl}`);
+  lines.push('', 'Review in Strapi admin: https://haulagua.onrender.com/admin');
+
   try {
-    await fetch('https://api.web3forms.com/submit', {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         access_key: WEB3FORMS_KEY,
-        subject: `Insurance Certificate Uploaded — ${haulerName} — Haulagua`,
+        subject,
         from_name: 'Haulagua',
-        message: [
-          `Hauler:      ${haulerName}`,
-          `Email:       ${email}`,
-          `Location:    ${[city, state].filter(Boolean).join(', ') || '—'}`,
-          `Certificate: ${certUrl}`,
-          '',
-          'Review and verify in Strapi admin.',
-        ].join('\n'),
+        message: lines.join('\n'),
       }),
     });
+    const body = await res.json().catch(() => ({}));
+    console.log('[haulers] Web3Forms status:', res.status, JSON.stringify(body));
   } catch (err) {
     console.error('[haulers] Web3Forms notification failed:', err);
   }
@@ -150,20 +167,19 @@ export async function POST(req: NextRequest) {
     const haulerId: number | undefined = data?.data?.id;
 
     // If a cert URL was provided, explicitly PATCH the hauler to guarantee the field is saved.
-    // This handles cases where Strapi silently ignores new fields on the initial POST
-    // (e.g. when schema migration hasn't run yet on the production instance).
     if (certUrl && haulerId) {
       await patchCertificate(haulerId, certUrl);
-
-      // Fire-and-forget notification
-      sendCertificateNotification({
-        haulerName,
-        email: haulerEmail,
-        city: haulerCity,
-        state: haulerState,
-        certUrl,
-      });
     }
+
+    // Always notify on signup — fire-and-forget
+    sendSignupNotification({
+      haulerName,
+      email: haulerEmail,
+      city: haulerCity,
+      state: haulerState,
+      phone,
+      certUrl,
+    });
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (err) {
