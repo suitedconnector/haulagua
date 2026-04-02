@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, ChevronLeft, ShieldCheck } from "lucide-react";
+import { InsuranceUpload } from "@/components/InsuranceUpload";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -49,6 +50,7 @@ export default function ClaimListingPage({ params }: PageProps) {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [insuranceCertificateUrl, setInsuranceCertificateUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -79,6 +81,7 @@ export default function ClaimListingPage({ params }: PageProps) {
           email: email.trim(),
           phone: phone.trim() || null,
           message: message.trim() || null,
+          insuranceCertificateUrl: insuranceCertificateUrl || null,
         }),
       });
 
@@ -205,6 +208,14 @@ export default function ClaimListingPage({ params }: PageProps) {
                   onChange={(e) => setMessage(e.target.value)}
                 />
               </Field>
+
+              <InsuranceUpload
+                label="Insurance Certificate (optional)"
+                hint="Upload your certificate of insurance to apply for Verified Pro status."
+                uploadedUrl={insuranceCertificateUrl}
+                onUpload={setInsuranceCertificateUrl}
+                onClear={() => setInsuranceCertificateUrl("")}
+              />
 
               {submitError && (
                 <p className="text-red-500 text-sm bg-red-50 rounded-lg py-3 px-4 text-center">

@@ -105,6 +105,9 @@
     },
     "serviceRadius": {
       "type": "integer"
+    },
+    "insuranceCertificate": {
+      "type": "string"
     }
   }
 }

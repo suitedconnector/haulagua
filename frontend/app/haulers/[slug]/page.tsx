@@ -62,6 +62,7 @@ type StrapiHauler = {
     yearFounded: number | null;
     insuranceVerified: boolean;
     certification: string | null;
+    insuranceCertificate: string | null;
     industries: string[] | null;
     services: { data: StrapiService[] };
     caseStudies: { data: StrapiCaseStudy[] };
@@ -558,8 +559,15 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                       Insurance
                     </dt>
                     <dd className="font-semibold text-sm">
-                      {a.insuranceVerified ? (
-                        <span style={{ color: "#F2A900" }}>Verified</span>
+                      {a.insuranceCertificate ? (
+                        <a
+                          href={a.insuranceCertificate}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-600 hover:underline"
+                        >
+                          Verified
+                        </a>
                       ) : (
                         <span className="text-muted-foreground">Unverified</span>
                       )}

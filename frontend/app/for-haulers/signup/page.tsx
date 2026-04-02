@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CheckCircle, ArrowRight, ArrowLeft, Droplets } from "lucide-react";
+import { InsuranceUpload } from "@/components/InsuranceUpload";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -61,6 +62,7 @@ type Step2 = {
   waterSource: string;
   potableCertified: boolean;
   overflowPrevention: boolean;
+  insuranceCertificateUrl: string;
 };
 
 type Step3 = {
@@ -203,6 +205,7 @@ export default function HaulerSignupPage() {
     waterSource: "",
     potableCertified: false,
     overflowPrevention: false,
+    insuranceCertificateUrl: "",
   });
 
   const [step3, setStep3] = useState<Step3>({
@@ -289,6 +292,7 @@ export default function HaulerSignupPage() {
       truckCapacity: step2.truckCapacity ? parseInt(step2.truckCapacity) : null,
       hoseLength: step2.hoseLength ? parseInt(step2.hoseLength) : null,
       waterType: waterTypeMap[step2.waterSource] ?? null,
+      insuranceCertificate: step2.insuranceCertificateUrl || null,
       industries: {
         serviceTypes: step2.serviceTypes,
         ownerName: step1.ownerName.trim(),
@@ -607,6 +611,15 @@ export default function HaulerSignupPage() {
                     description="Your truck is equipped with overflow prevention systems"
                   />
                 </div>
+
+                {/* Insurance certificate upload */}
+                <InsuranceUpload
+                  label="Insurance Certificate (optional)"
+                  hint="Upload your certificate of insurance to display a verified badge on your listing."
+                  uploadedUrl={step2.insuranceCertificateUrl}
+                  onUpload={(url) => setStep2((p) => ({ ...p, insuranceCertificateUrl: url }))}
+                  onClear={() => setStep2((p) => ({ ...p, insuranceCertificateUrl: "" }))}
+                />
               </div>
             )}
 
