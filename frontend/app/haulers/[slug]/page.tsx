@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ImageIcon,
   ShieldAlert,
+  Shield,
   Star,
 } from "lucide-react";
 
@@ -60,6 +61,7 @@ type StrapiHauler = {
     isClaimed: boolean;
     yearFounded: number | null;
     insuranceVerified: boolean;
+    certification: string | null;
     industries: string[] | null;
     services: { data: StrapiService[] };
     caseStudies: { data: StrapiCaseStudy[] };
@@ -532,6 +534,15 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                         Hose length
                       </dt>
                       <dd className="font-semibold">{a.hoseLength} ft</dd>
+                    </div>
+                  )}
+                  {a.certification && (
+                    <div className="flex items-center justify-between">
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Shield className="h-4 w-4" />
+                        Certification
+                      </dt>
+                      <dd className="font-semibold text-sm text-right">{a.certification}</dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between">

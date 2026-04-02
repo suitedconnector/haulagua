@@ -13,7 +13,8 @@
     "clean:listings": "tsx scripts/clean-bad-listings.ts",
     "enrich:google": "tsx scripts/enrich-google.ts",
     "enrich:websites": "tsx scripts/enrich-websites.ts",
-    "clean:descriptions": "tsx scripts/clean-descriptions.ts"
+    "clean:descriptions": "tsx scripts/clean-descriptions.ts",
+    "sync:prod": "tsx scripts/sync-to-production.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
