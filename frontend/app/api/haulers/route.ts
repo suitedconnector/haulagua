@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+const STRAPI_URL =
+  process.env.STRAPI_URL ??
+  process.env.NEXT_PUBLIC_STRAPI_URL ??
+  'http://localhost:1337';
+
+// Use production token when available, fall back to local token
+const STRAPI_TOKEN =
+  process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
+
 const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+
+const STRAPI_HEADERS = {
+  'Content-Type': 'application/json',
+  ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
+};
 
 function toSlug(name: string): string {
   return name
@@ -13,7 +25,37 @@ function toSlug(name: string): string {
     .replace(/-+/g, '-');
 }
 
-async function sendCertificateNotification(haulerName: string, certUrl: string) {
+async function patchCertificate(haulerId: number, certUrl: string): Promise<void> {
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/haulers/${haulerId}`, {
+      method: 'PUT',
+      headers: STRAPI_HEADERS,
+      body: JSON.stringify({ data: { insuranceCertificate: certUrl } }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error('[haulers] PATCH certificate failed:', err);
+    } else {
+      console.log('[haulers] insuranceCertificate patched on hauler', haulerId);
+    }
+  } catch (err) {
+    console.error('[haulers] PATCH certificate error:', err);
+  }
+}
+
+async function sendCertificateNotification({
+  haulerName,
+  email,
+  city,
+  state,
+  certUrl,
+}: {
+  haulerName: string;
+  email: string;
+  city: string | null;
+  state: string | null;
+  certUrl: string;
+}) {
   if (!WEB3FORMS_KEY) return;
   try {
     await fetch('https://api.web3forms.com/submit', {
@@ -24,15 +66,17 @@ async function sendCertificateNotification(haulerName: string, certUrl: string) 
         subject: `Insurance Certificate Uploaded — ${haulerName} — Haulagua`,
         from_name: 'Haulagua',
         message: [
-          `Hauler: ${haulerName}`,
-          `Certificate URL: ${certUrl}`,
+          `Hauler:      ${haulerName}`,
+          `Email:       ${email}`,
+          `Location:    ${[city, state].filter(Boolean).join(', ') || '—'}`,
+          `Certificate: ${certUrl}`,
           '',
           'Review and verify in Strapi admin.',
         ].join('\n'),
       }),
     });
   } catch (err) {
-    console.error('Web3Forms notification failed:', err);
+    console.error('[haulers] Web3Forms notification failed:', err);
   }
 }
 
@@ -57,16 +101,23 @@ export async function POST(req: NextRequest) {
   }
 
   const haulerName = (name as string).trim();
+  const haulerEmail = (email as string).trim().toLowerCase();
+  const haulerCity = typeof city === 'string' ? city.trim() || null : null;
+  const haulerState = typeof state === 'string' ? state.trim() || null : null;
+  const certUrl =
+    typeof insuranceCertificate === 'string' && insuranceCertificate.trim()
+      ? insuranceCertificate.trim()
+      : null;
 
   const payload = {
     data: {
       name: haulerName,
-      slug: toSlug(name as string),
-      email: (email as string).trim().toLowerCase(),
+      slug: toSlug(haulerName),
+      email: haulerEmail,
       phone: phone ?? null,
       website: website ?? null,
-      city: city ?? null,
-      state: state ?? null,
+      city: haulerCity,
+      state: haulerState,
       zip: zip ?? null,
       description: description ?? null,
       serviceArea: serviceArea ?? null,
@@ -77,37 +128,46 @@ export async function POST(req: NextRequest) {
       isVerifiedPro: false,
       isActive: true,
       industries: industries ?? null,
-      insuranceCertificate: typeof insuranceCertificate === 'string' && insuranceCertificate.trim()
-        ? insuranceCertificate.trim()
-        : null,
+      // Include in creation payload; will also be patched separately to guarantee it saves
+      insuranceCertificate: certUrl,
     },
   };
 
   try {
     const res = await fetch(`${STRAPI_URL}/api/haulers`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
-      },
+      headers: STRAPI_HEADERS,
       body: JSON.stringify(payload),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      console.error('Strapi error:', data);
+      console.error('[haulers] Strapi POST error:', data);
       return NextResponse.json({ error: 'Failed to create listing' }, { status: 500 });
     }
 
-    // Fire-and-forget notification when a certificate was uploaded
-    if (payload.data.insuranceCertificate) {
-      sendCertificateNotification(haulerName, payload.data.insuranceCertificate);
+    const haulerId: number | undefined = data?.data?.id;
+
+    // If a cert URL was provided, explicitly PATCH the hauler to guarantee the field is saved.
+    // This handles cases where Strapi silently ignores new fields on the initial POST
+    // (e.g. when schema migration hasn't run yet on the production instance).
+    if (certUrl && haulerId) {
+      await patchCertificate(haulerId, certUrl);
+
+      // Fire-and-forget notification
+      sendCertificateNotification({
+        haulerName,
+        email: haulerEmail,
+        city: haulerCity,
+        state: haulerState,
+        certUrl,
+      });
     }
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (err) {
-    console.error('Hauler create error:', err);
+    console.error('[haulers] create error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
