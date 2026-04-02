@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+// STRAPI_URL (server-only) takes precedence; falls back to the public var, then localhost
+const STRAPI_URL =
+  process.env.STRAPI_URL ??
+  process.env.NEXT_PUBLIC_STRAPI_URL ??
+  'http://localhost:1337';
+
+// Use production token when available (live site), fall back to local token
+const STRAPI_TOKEN =
+  process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
