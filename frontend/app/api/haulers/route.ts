@@ -92,7 +92,9 @@ async function sendSignupNotification({
         message: lines.join('\n'),
       }),
     });
-    const responseBody = await res.json().catch(() => ({}));
+    const rawText = await res.text();
+    let responseBody: unknown;
+    try { responseBody = JSON.parse(rawText); } catch { responseBody = rawText; }
     console.log('[haulers] Web3Forms response:', res.status, JSON.stringify(responseBody));
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
