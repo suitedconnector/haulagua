@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendClaimNotification({
   haulerSlug,
@@ -19,7 +21,7 @@ async function sendClaimNotification({
   message: string | null;
   insuranceCertificateUrl: string | null;
 }) {
-  if (!WEB3FORMS_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
   const lines = [
     `Business Slug: ${haulerSlug}`,
@@ -33,21 +35,17 @@ async function sendClaimNotification({
   }
 
   try {
-    await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: insuranceCertificateUrl
-          ? `New Listing Claim + Insurance Certificate — ${haulerSlug} — Haulagua`
-          : `New Listing Claim — ${haulerSlug} — Haulagua`,
-        from_name: ownerName,
-        email,
-        message: lines.join('\n'),
-      }),
+    const { error } = await resend.emails.send({
+      from: 'Haulagua <notifications@haulagua.com>',
+      to: ADMIN_EMAIL,
+      subject: insuranceCertificateUrl
+        ? `New Listing Claim + Insurance Certificate — ${haulerSlug} — Haulagua`
+        : `New Listing Claim — ${haulerSlug} — Haulagua`,
+      text: lines.join('\n'),
     });
+    if (error) console.error('[claims] Resend error:', error.message);
   } catch (err) {
-    console.error('Web3Forms notification failed:', err);
+    console.error('[claims] Resend error:', err);
   }
 }
 
@@ -135,7 +133,7 @@ export async function POST(req: NextRequest) {
       patchHaulerCertificate((haulerSlug as string).trim(), certUrl);
     }
 
-    sendClaimNotification({
+    await sendClaimNotification({
       haulerSlug: (haulerSlug as string).trim(),
       ownerName: (ownerName as string).trim(),
       email: (email as string).trim().toLowerCase(),

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 const STRAPI_URL =
   process.env.STRAPI_URL ??
@@ -9,9 +10,8 @@ const STRAPI_URL =
 const STRAPI_TOKEN =
   process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
 
-// Prefer non-prefixed server-only var; fall back to NEXT_PUBLIC for backwards compat
-const WEB3FORMS_KEY =
-  process.env.WEB3FORMS_KEY ?? process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const STRAPI_HEADERS = {
   'Content-Type': 'application/json',
@@ -60,9 +60,8 @@ async function sendSignupNotification({
   phone: unknown;
   certUrl: string | null;
 }) {
-  console.log('[haulers] WEB3FORMS_KEY set:', !!WEB3FORMS_KEY);
-  if (!WEB3FORMS_KEY) {
-    console.warn('[haulers] WEB3FORMS_KEY missing — skipping notification');
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[haulers] RESEND_API_KEY missing — skipping notification');
     return;
   }
 
@@ -80,25 +79,21 @@ async function sendSignupNotification({
   lines.push('', 'Review in Strapi admin: https://haulagua.onrender.com/admin');
 
   try {
-    console.log('[haulers] Sending Web3Forms notification...');
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject,
-        from_name: 'Haulagua',
-        email,
-        message: lines.join('\n'),
-      }),
+    console.log('[haulers] Sending Resend notification...');
+    const { error } = await resend.emails.send({
+      from: 'Haulagua <notifications@haulagua.com>',
+      to: ADMIN_EMAIL,
+      subject,
+      text: lines.join('\n'),
     });
-    const rawText = await res.text();
-    let responseBody: unknown;
-    try { responseBody = JSON.parse(rawText); } catch { responseBody = rawText; }
-    console.log('[haulers] Web3Forms response:', res.status, JSON.stringify(responseBody));
+    if (error) {
+      console.log('[haulers] Resend error:', error.message);
+    } else {
+      console.log('[haulers] Resend notification sent');
+    }
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
-    console.log('[haulers] Web3Forms error:', error.message);
+    console.log('[haulers] Resend error:', error.message);
   }
 }
 

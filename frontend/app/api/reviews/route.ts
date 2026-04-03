@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendReviewNotification({
   haulerSlug,
@@ -15,9 +17,9 @@ async function sendReviewNotification({
   rating: number;
   comment: string;
 }) {
-  if (!WEB3FORMS_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
-  const summary = [
+  const text = [
     `Hauler Slug:   ${haulerSlug}`,
     `Reviewer Name: ${reviewerName}`,
     `Rating:        ${rating}/5`,
@@ -28,19 +30,15 @@ async function sendReviewNotification({
   ].join('\n');
 
   try {
-    await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: `New Review (${rating}/5) for ${haulerSlug} — Haulagua.com`,
-        from_name: reviewerName,
-        email: 'noreply@haulagua.com',
-        message: summary,
-      }),
+    const { error } = await resend.emails.send({
+      from: 'Haulagua <notifications@haulagua.com>',
+      to: ADMIN_EMAIL,
+      subject: `New Review (${rating}/5) for ${haulerSlug} — Haulagua.com`,
+      text,
     });
+    if (error) console.error('[reviews] Resend error:', error.message);
   } catch (err) {
-    console.error('Web3Forms review notification failed:', err);
+    console.error('[reviews] Resend error:', err);
   }
 }
 
@@ -91,7 +89,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to submit review' }, { status: 500 });
     }
 
-    sendReviewNotification({
+    await sendReviewNotification({
       haulerSlug: haulerSlug.trim(),
       reviewerName: reviewerName.trim(),
       rating,
