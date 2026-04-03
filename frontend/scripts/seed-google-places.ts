@@ -148,6 +148,27 @@ const EXCLUDE_KEYWORDS = [
   "grocery",
   "supermarket",
   "asian market",
+  // Additional exclusions
+  "wellness",
+  "carpet",
+  "servpro",
+  "city of",
+  "county",
+  "municipal",
+  "utilities",
+  "treatment",
+  "water & ice",
+  "water and ice",
+  "bottled",
+  "5 gallon",
+  "dispenser",
+  "cooler",
+  "purified",
+  "distilled",
+  "reverse osmosis",
+  "water store",
+  "water shop",
+  "water station",
 ];
 
 /**
