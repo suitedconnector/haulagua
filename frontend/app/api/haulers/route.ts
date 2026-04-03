@@ -163,8 +163,21 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error('[haulers] Strapi POST error:', data);
-      return NextResponse.json({ error: 'Failed to create listing' }, { status: 500 });
+      console.error('[haulers] Strapi POST error status:', res.status);
+      console.error('[haulers] Strapi POST error body:', JSON.stringify(data, null, 2));
+
+      const isUnique =
+        data?.error?.message === 'This attribute must be unique' ||
+        JSON.stringify(data).includes('unique');
+
+      if (isUnique) {
+        return NextResponse.json(
+          { error: 'A listing with this business name or email already exists.' },
+          { status: 409 }
+        );
+      }
+
+      return NextResponse.json({ error: 'Failed to create listing', detail: data }, { status: 500 });
     }
 
     const haulerId: number | undefined = data?.data?.id;
