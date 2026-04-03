@@ -80,6 +80,7 @@ async function sendSignupNotification({
   lines.push('', 'Review in Strapi admin: https://haulagua.onrender.com/admin');
 
   try {
+    console.log('[haulers] Sending Web3Forms notification...');
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -87,13 +88,15 @@ async function sendSignupNotification({
         access_key: WEB3FORMS_KEY,
         subject,
         from_name: 'Haulagua',
+        email,
         message: lines.join('\n'),
       }),
     });
-    const body = await res.json().catch(() => ({}));
-    console.log('[haulers] Web3Forms status:', res.status, JSON.stringify(body));
+    const responseBody = await res.json().catch(() => ({}));
+    console.log('[haulers] Web3Forms response:', res.status, JSON.stringify(responseBody));
   } catch (err) {
-    console.error('[haulers] Web3Forms notification failed:', err);
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.log('[haulers] Web3Forms error:', error.message);
   }
 }
 
@@ -171,8 +174,8 @@ export async function POST(req: NextRequest) {
       await patchCertificate(haulerId, certUrl);
     }
 
-    // Always notify on signup — fire-and-forget
-    sendSignupNotification({
+    // Await notification so logs aren't cut off before Vercel sends the response
+    await sendSignupNotification({
       haulerName,
       email: haulerEmail,
       city: haulerCity,
