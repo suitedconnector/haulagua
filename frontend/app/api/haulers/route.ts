@@ -11,7 +11,6 @@ const STRAPI_TOKEN =
   process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const STRAPI_HEADERS = {
   'Content-Type': 'application/json',
@@ -80,6 +79,7 @@ async function sendSignupNotification({
 
   try {
     console.log('[haulers] Sending Resend notification...');
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { error } = await resend.emails.send({
       from: 'Haulagua <notifications@haulagua.com>',
       to: ADMIN_EMAIL,

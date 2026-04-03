@@ -4,7 +4,6 @@ import { Resend } from 'resend';
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendReviewNotification({
   haulerSlug,
@@ -30,6 +29,7 @@ async function sendReviewNotification({
   ].join('\n');
 
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { error } = await resend.emails.send({
       from: 'Haulagua <notifications@haulagua.com>',
       to: ADMIN_EMAIL,
