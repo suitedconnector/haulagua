@@ -48,6 +48,8 @@ const SUBSTRING_FLAGS: string[] = [
   "coming soon",
   "under construction",
   "lorem ipsum",
+  // Non-hauler business types
+  "beverage",
   // Error pages
   "account has expired",
   "media error",
