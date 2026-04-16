@@ -233,14 +233,6 @@ export default async function HaulerProfilePage({ params }: PageProps) {
         "populate[caseStudies][fields][0]": "title",
         "populate[caseStudies][fields][1]": "description",
         "pagination[pageSize]": "1",
-        "fields[0]": "name",
-        "fields[1]": "slug",
-        "fields[2]": "ada",
-        "fields[3]": "lgbtqFriendly",
-        "fields[4]": "veteranOwned",
-        "fields[5]": "womenOwned",
-        "fields[6]": "hours",
-        "fields[7]": "plusCode",
       },
       cache: "no-store",
     });
@@ -578,6 +570,12 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                         Certification
                       </dt>
                       <dd className="font-semibold text-sm text-right">{a.certification}</dd>
+                    </div>
+                  )}
+                  {a.hours && (
+                    <div className="flex items-start justify-between gap-2">
+                      <dt className="text-sm text-muted-foreground shrink-0">🕐 Hours</dt>
+                      <dd className="font-semibold text-sm text-right whitespace-pre-line">{a.hours}</dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between">
