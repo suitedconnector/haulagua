@@ -66,6 +66,12 @@ type StrapiHauler = {
     industries: string[] | null;
     services: { data: StrapiService[] };
     caseStudies: { data: StrapiCaseStudy[] };
+    ada: boolean | null;
+    lgbtqFriendly: boolean | null;
+    veteranOwned: boolean | null;
+    womenOwned: boolean | null;
+    hours: string | null;
+    plusCode: string | null;
   };
 };
 
@@ -311,6 +317,26 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
                       <ShieldAlert className="h-3.5 w-3.5" />
                       Unclaimed
+                    </span>
+                  )}
+                  {a.ada && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
+                      ♿ ADA Accessible
+                    </span>
+                  )}
+                  {a.lgbtqFriendly && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">
+                      🏳️‍🌈 LGBTQ+ Friendly
+                    </span>
+                  )}
+                  {a.veteranOwned && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700">
+                      🎖️ Veteran Owned
+                    </span>
+                  )}
+                  {a.womenOwned && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-pink-100 text-pink-700">
+                      ⚡ Women Owned
                     </span>
                   )}
                 </div>
