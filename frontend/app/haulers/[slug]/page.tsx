@@ -575,7 +575,11 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   {a.hours && (
                     <div className="flex items-start justify-between gap-2">
                       <dt className="text-sm text-muted-foreground shrink-0">🕐 Hours</dt>
-                      <dd className="font-semibold text-sm text-right whitespace-pre-line">{a.hours}</dd>
+                      <dd className="text-sm text-right">
+                        {a.hours.split(/(?=Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)/).map((line, i) => (
+                          <div key={i}>{line.trim()}</div>
+                        ))}
+                      </dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between">
