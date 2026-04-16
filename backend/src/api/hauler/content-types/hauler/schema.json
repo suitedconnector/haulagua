@@ -108,6 +108,28 @@
     },
     "insuranceCertificate": {
       "type": "string"
+    },
+    "ada": {
+      "type": "boolean",
+      "default": false
+    },
+    "lgbtqFriendly": {
+      "type": "boolean",
+      "default": false
+    },
+    "veteranOwned": {
+      "type": "boolean",
+      "default": false
+    },
+    "womenOwned": {
+      "type": "boolean",
+      "default": false
+    },
+    "hours": {
+      "type": "string"
+    },
+    "plusCode": {
+      "type": "string"
     }
   }
 }
