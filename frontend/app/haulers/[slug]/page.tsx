@@ -162,18 +162,30 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 
 // ─── Photo Gallery Placeholder ────────────────────────────────────────────────
 
-function GalleryPlaceholder() {
+function GalleryPlaceholder({ name, city, state }: { name: string; city: string; state: string }) {
   return (
     <div className="grid grid-cols-3 gap-2">
-      <div className="col-span-2 row-span-2 bg-muted rounded-xl flex flex-col items-center justify-center h-48 border border-border">
-        <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
-        <p className="text-xs text-muted-foreground mt-2">Primary Photo</p>
+      <div className="col-span-2 row-span-2 rounded-xl overflow-hidden h-48 relative">
+        <img
+          src="/images/placeholder-hauler.svg"
+          alt={`${name} - bulk water delivery in ${city}, ${state}`}
+          className="w-full h-full object-cover"
+        />
       </div>
-      {[1, 2].map((i) => (
-        <div key={i} className="bg-muted rounded-xl flex items-center justify-center h-24 border border-border">
-          <ImageIcon className="h-6 w-6 text-muted-foreground/40" />
-        </div>
-      ))}
+      <div className="rounded-xl overflow-hidden h-24 relative">
+        <img
+          src="/images/placeholder-hauler.svg"
+          alt={`${name} - water truck and equipment`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="rounded-xl overflow-hidden h-24 relative">
+        <img
+          src="/images/placeholder-hauler.svg"
+          alt={`${name} - service area and operations`}
+          className="w-full h-full object-cover"
+        />
+      </div>
     </div>
   );
 }
