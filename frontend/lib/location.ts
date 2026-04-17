@@ -102,7 +102,7 @@ export async function getHaulersByState(stateAbbr: string): Promise<StrapiHauler
         "pagination[pageSize]": "100",
         "sort[0]": "isVerifiedPro:desc",
       },
-      cache: "force-cache",
+      cache: "no-store",
       tags: [`haulers-state-${stateAbbr}`],
     });
     return data.data ?? [];
@@ -126,7 +126,7 @@ export async function getHaulersByCity(
         "pagination[pageSize]": "100",
         "sort[0]": "isVerifiedPro:desc",
       },
-      cache: "force-cache",
+      cache: "no-store",
       tags: [`haulers-city-${stateAbbr}-${city}`],
     });
     return data.data ?? [];
@@ -144,7 +144,7 @@ export async function getAllStatesWithCounts(): Promise<{ abbr: string; name: st
         "fields[0]": "state",
         "pagination[pageSize]": "1000",
       },
-      cache: "force-cache",
+      cache: "no-store",
       tags: ["haulers-states"],
     });
     const counts: Record<string, number> = {};
