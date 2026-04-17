@@ -344,6 +344,17 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   <MapPin className="h-4 w-4" />
                   {a.address ? `${a.address}, ` : ""}{a.city}, {a.state} {a.zip}
                 </p>
+                {a.plusCode && (
+                  <a
+                    href={`https://plus.codes/${a.plusCode}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#005A9C] mt-1"
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                    {a.plusCode} (Open in Maps)
+                  </a>
+                )}
                 {a.industries && a.industries.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {a.industries.map((ind) => (
@@ -360,7 +371,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
 
               {/* Photo Gallery */}
               <section>
-                <GalleryPlaceholder />
+                  <GalleryPlaceholder name={a.name} city={a.city} state={a.state} />
               </section>
 
               {/* About */}
