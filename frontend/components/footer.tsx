@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WaveDivider } from "@/components/WaveDivider";
 
 const footerLinks = {
   services: {
@@ -42,7 +43,9 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-card border-t border-border">
+    <>
+      <WaveDivider flip className="bg-card" />
+      <footer className="bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Logo and tagline */}
@@ -99,5 +102,6 @@ export function Footer() {
         </div>
       </div>
     </footer>
+    </>
   );
 }
