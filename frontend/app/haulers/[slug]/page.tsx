@@ -168,27 +168,31 @@ function GalleryPlaceholder({ name, city, state, slug }: { name: string; city: s
   const secondary = TRUCK_PLACEHOLDERS[(slug.length + 1) % TRUCK_PLACEHOLDERS.length];
   const tertiary = TRUCK_PLACEHOLDERS[(slug.length + 2) % TRUCK_PLACEHOLDERS.length];
   return (
-    <div className="grid grid-cols-3 gap-2">
-      <div className="col-span-2 row-span-2 rounded-xl overflow-hidden h-48 relative">
+    <div style={{ display: "grid", gridTemplateColumns: "60% 40%", gap: "8px", height: "320px" }}>
+      {/* Primary — full left column */}
+      <div style={{ overflow: "hidden", borderRadius: "12px" }}>
         <img
           src={primary}
           alt={`${name} - bulk water delivery in ${city}, ${state}`}
-          className="w-full h-full object-cover"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
       </div>
-      <div className="rounded-xl overflow-hidden h-24 relative">
-        <img
-          src={secondary}
-          alt={`${name} - water truck and equipment`}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="rounded-xl overflow-hidden h-24 relative">
-        <img
-          src={tertiary}
-          alt={`${name} - service area and operations`}
-          className="w-full h-full object-cover"
-        />
+      {/* Right column — two stacked images */}
+      <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: "8px" }}>
+        <div style={{ overflow: "hidden", borderRadius: "12px" }}>
+          <img
+            src={secondary}
+            alt={`${name} - water truck and equipment`}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </div>
+        <div style={{ overflow: "hidden", borderRadius: "12px" }}>
+          <img
+            src={tertiary}
+            alt={`${name} - service area and operations`}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </div>
       </div>
     </div>
   );

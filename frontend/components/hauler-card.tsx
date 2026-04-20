@@ -61,7 +61,7 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <img
-          src="https://haulagua.onrender.com/uploads/city_wave_c18d482265.svg"
+          src="/city_wave.svg"
           alt=""
           className="absolute bottom-0 left-0 w-full pointer-events-none"
           style={{ height: "44px", objectFit: "fill" }}

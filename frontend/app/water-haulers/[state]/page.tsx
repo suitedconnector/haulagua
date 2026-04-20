@@ -14,7 +14,7 @@ import {
   groupHaulersByCity,
   getAllStatesWithCounts,
 } from "@/lib/location";
-import { fetchCityPhoto } from "@/lib/city-photo";
+import cityPhotoCache from "@/data/city-photos.json";
 
 type PageProps = { params: Promise<{ state: string }> };
 
@@ -55,15 +55,14 @@ export default async function StatePage({ params }: PageProps) {
   const cities = groupHaulersByCity(haulers);
   const intro = STATE_INTROS[state] ?? STATE_INTRO_DEFAULT;
 
-  // Fetch city photos in parallel
-  const citiesWithPhotos: CityWithPhoto[] = await Promise.all(
-    cities.map(async ({ city, slug, count }) => ({
-      city,
-      slug,
-      count,
-      photo: await fetchCityPhoto(city, stateName),
-    }))
-  );
+  // Look up city photos from local cache — zero API calls at runtime
+  const cache = cityPhotoCache as Record<string, string>;
+  const citiesWithPhotos: CityWithPhoto[] = cities.map(({ city, slug, count }) => ({
+    city,
+    slug,
+    count,
+    photo: cache[`${city}|${stateName}`] ?? null,
+  }));
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -128,7 +127,7 @@ export default async function StatePage({ params }: PageProps) {
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%)" }} />
                       {/* Wave image */}
                       <img
-                        src="https://haulagua.onrender.com/uploads/city_wave_c18d482265.svg"
+                        src="/city_wave.svg"
                         alt=""
                         className="absolute bottom-0 left-0 w-full"
                         style={{ height: "44px", objectFit: "fill" }}
