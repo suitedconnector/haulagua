@@ -122,19 +122,51 @@ export default async function StatePage({ params }: PageProps) {
                         <div
                           className="w-full h-full flex items-center justify-center"
                           style={{ backgroundColor: "#005A9C" }}
-                        >
-                          <MapPin className="h-10 w-10 text-white/60" />
-                        </div>
+                        />
                       )}
+                      {/* Gradient overlay for sign readability */}
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%)" }} />
+                      {/* Wave image */}
+                      <img
+                        src="https://haulagua.onrender.com/uploads/city_wave_c18d482265.svg"
+                        alt=""
+                        className="absolute bottom-0 left-0 w-full"
+                        style={{ height: "44px", objectFit: "fill" }}
+                      />
+                      {/* City welcome sign overlay */}
+                      <div className="absolute inset-0 flex items-end justify-center pointer-events-none" style={{ paddingBottom: "0" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <div style={{
+                            backgroundColor: "#2d6e2d",
+                            border: "4px solid white",
+                            borderRadius: "6px",
+                            padding: "8px 18px",
+                            textAlign: "center",
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+                            minWidth: "160px",
+                            maxWidth: "88%",
+                          }}>
+                            <p style={{ color: "white", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "2px" }}>
+                              Welcome to
+                            </p>
+                            <p style={{ color: "white", fontSize: "20px", fontWeight: 800, lineHeight: 1.1, fontFamily: "Georgia, serif" }}>
+                              {city}
+                            </p>
+                            <p style={{ color: "white", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginTop: "2px" }}>
+                              {stateName}
+                            </p>
+                          </div>
+                          {/* Post */}
+                          <div style={{ width: "8px", height: "28px", backgroundColor: "#a0a0a0", boxShadow: "inset -2px 0 3px rgba(0,0,0,0.2)" }} />
+                        </div>
+                      </div>
                     </div>
                     {/* Info */}
-                    <div className="p-4">
-                      <p className="font-semibold text-foreground group-hover:text-[#005A9C] transition-colors">
-                        {city}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-0.5">
+                    <div className="px-4 py-3 flex items-center gap-2" style={{ backgroundColor: "#0461AA" }}>
+                      <p className="text-sm font-bold text-white">
                         {count} hauler{count !== 1 ? "s" : ""}
                       </p>
+                      <i className="fa-solid fa-truck-droplet" style={{ color: "white", fontSize: "18px", opacity: 0.85 }} />
                     </div>
                   </Link>
                 ))}

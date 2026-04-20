@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { CheckCircle2, ShieldAlert, Truck, Ruler, Droplets } from "lucide-react";
+import Image from "next/image";
+import { CheckCircle2, ShieldAlert, Ruler, Droplets } from "lucide-react";
+import { getPlaceholderImage } from "@/src/lib/placeholders";
 
 export type StrapiHauler = {
   id: number;
@@ -24,12 +26,12 @@ export type StrapiHauler = {
 };
 
 const SERVICE_COLOR: Record<string, string> = {
-  pool: "bg-blue-100 text-blue-800",
-  construction: "bg-orange-100 text-orange-800",
-  potable: "bg-green-100 text-green-800",
-  agricultural: "bg-lime-100 text-lime-800",
-  emergency: "bg-red-100 text-red-800",
-  events: "bg-purple-100 text-purple-800",
+  pool: "bg-white/20 text-white",
+  construction: "bg-white/20 text-white",
+  potable: "bg-white/20 text-white",
+  agricultural: "bg-white/20 text-white",
+  emergency: "bg-white/20 text-white",
+  events: "bg-white/20 text-white",
 };
 
 const SERVICE_LABEL: Record<string, string> = {
@@ -48,13 +50,28 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
   return (
     <Link
       href={`/haulers/${a.slug}`}
-      className="block bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group"
+      className="block rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group overflow-hidden" style={{ backgroundColor: "#0461AA" }}
     >
-      <div className="p-5">
+      <div className="relative h-36 w-full bg-gray-100">
+        <Image
+          src={getPlaceholderImage(a.slug)}
+          alt={`${a.name} - bulk water hauling`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+        <img
+          src="https://haulagua.onrender.com/uploads/city_wave_c18d482265.svg"
+          alt=""
+          className="absolute bottom-0 left-0 w-full pointer-events-none"
+          style={{ height: "44px", objectFit: "fill" }}
+        />
+      </div>
+      <div className="p-5" style={{ backgroundColor: "#0461AA" }}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-lg text-foreground group-hover:text-[#005A9C] transition-colors truncate">
+              <h3 className="font-semibold text-lg text-white truncate">
                 {a.name}
               </h3>
               {a.isVerifiedPro && (
@@ -67,20 +84,20 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
                 </span>
               )}
               {!a.isClaimed && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-gray-100 text-gray-500 border border-gray-200">
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-white/20 text-white">
                   <ShieldAlert className="h-3 w-3" />
                   Unclaimed
                 </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-sm text-white/70 mt-0.5">
               {a.city && `${a.city}, `}{a.state}
             </p>
           </div>
           {a.minFee != null && (
             <div className="text-right shrink-0">
-              <p className="text-xs text-muted-foreground">Starting at</p>
-              <p className="text-xl font-bold" style={{ color: "#005A9C" }}>
+              <p className="text-xs text-white/70">Starting at</p>
+              <p className="text-xl font-bold text-white">
                 ${a.minFee}
               </p>
             </div>
@@ -102,10 +119,10 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-muted-foreground">
+        <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-white/70">
           {a.truckCapacity != null && (
             <span className="flex items-center gap-1">
-              <Truck className="h-3.5 w-3.5" />
+              <i className="fa-solid fa-truck-droplet" style={{ fontSize: "13px" }} />
               {a.truckCapacity.toLocaleString()} gal
             </span>
           )}

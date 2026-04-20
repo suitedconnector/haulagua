@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { strapiGet } from "@/src/lib/strapi";
+import { TRUCK_PLACEHOLDERS, getPlaceholderImage } from "@/src/lib/placeholders";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactPanel } from "./ContactPanel";
@@ -162,26 +163,29 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 
 // ─── Photo Gallery Placeholder ────────────────────────────────────────────────
 
-function GalleryPlaceholder({ name, city, state }: { name: string; city: string; state: string }) {
+function GalleryPlaceholder({ name, city, state, slug }: { name: string; city: string; state: string; slug: string }) {
+  const primary = getPlaceholderImage(slug);
+  const secondary = TRUCK_PLACEHOLDERS[(slug.length + 1) % TRUCK_PLACEHOLDERS.length];
+  const tertiary = TRUCK_PLACEHOLDERS[(slug.length + 2) % TRUCK_PLACEHOLDERS.length];
   return (
     <div className="grid grid-cols-3 gap-2">
       <div className="col-span-2 row-span-2 rounded-xl overflow-hidden h-48 relative">
         <img
-          src="/images/placeholder-hauler.svg"
+          src={primary}
           alt={`${name} - bulk water delivery in ${city}, ${state}`}
           className="w-full h-full object-cover"
         />
       </div>
       <div className="rounded-xl overflow-hidden h-24 relative">
         <img
-          src="/images/placeholder-hauler.svg"
+          src={secondary}
           alt={`${name} - water truck and equipment`}
           className="w-full h-full object-cover"
         />
       </div>
       <div className="rounded-xl overflow-hidden h-24 relative">
         <img
-          src="/images/placeholder-hauler.svg"
+          src={tertiary}
           alt={`${name} - service area and operations`}
           className="w-full h-full object-cover"
         />
@@ -383,7 +387,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
 
               {/* Photo Gallery */}
               <section>
-                  <GalleryPlaceholder name={a.name} city={a.city} state={a.state} />
+                  <GalleryPlaceholder name={a.name} city={a.city} state={a.state} slug={a.slug} />
               </section>
 
               {/* About */}

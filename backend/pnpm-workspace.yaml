@@ -1,0 +1,7 @@
+ignoredBuiltDependencies:
+  - '@strapi/strapi'
+  - '@swc/core'
+  - better-sqlite3
+  - core-js-pure
+  - esbuild
+  - sharp
