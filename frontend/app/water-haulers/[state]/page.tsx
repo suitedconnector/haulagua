@@ -61,7 +61,7 @@ export default async function StatePage({ params }: PageProps) {
     city,
     slug,
     count,
-    photo: cache[`${city}|${stateName}`] ?? null,
+    photo: cache[`${city}|${abbr}`] ?? null,
   }));
 
   return (
