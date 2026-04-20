@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle2, ShieldAlert, Ruler, Droplets } from "lucide-react";
 import { getPlaceholderImage } from "@/src/lib/placeholders";
+import { CityWave } from "@/components/city-wave";
 
 export type StrapiHauler = {
   id: number;
@@ -60,7 +61,7 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        <img src="/city_wave.svg" alt="" width="100%" height="44" className="absolute bottom-0 left-0 pointer-events-none" style={{ objectFit: "fill" }} />
+        <CityWave className="absolute bottom-0 left-0 pointer-events-none" />
       </div>
       <div className="p-5" style={{ backgroundColor: "#0461AA" }}>
         <div className="flex items-start justify-between gap-3">

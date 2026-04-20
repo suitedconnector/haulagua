@@ -15,6 +15,7 @@ import {
   getAllStatesWithCounts,
 } from "@/lib/location";
 import cityPhotoCache from "@/data/city-photos.json";
+import { CityWave } from "@/components/city-wave";
 
 type PageProps = { params: Promise<{ state: string }> };
 
@@ -126,7 +127,7 @@ export default async function StatePage({ params }: PageProps) {
                       {/* Gradient overlay for sign readability */}
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%)" }} />
                       {/* Wave */}
-                      <img src="/city_wave.svg" alt="" width="100%" height="44" className="absolute bottom-0 left-0" style={{ objectFit: "fill" }} />
+                      <CityWave className="absolute bottom-0 left-0" />
                       {/* City welcome sign overlay */}
                       <div className="absolute inset-0 flex items-end justify-center pointer-events-none" style={{ paddingBottom: "0" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
