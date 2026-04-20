@@ -60,10 +60,7 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        <svg viewBox="0 0 390 44" preserveAspectRatio="none" width="100%" height="44" className="absolute bottom-0 left-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,44 L0,22 C65,8 130,32 195,20 C260,8 325,28 390,16 L390,44 Z" fill="#067ABC" opacity="0.77"/>
-          <path d="M0,44 L0,32 C65,20 130,40 195,30 C260,20 325,38 390,28 L390,44 Z" fill="#0461AA"/>
-        </svg>
+        <img src="/city_wave.svg" alt="" width="100%" height="44" className="absolute bottom-0 left-0 pointer-events-none" style={{ objectFit: "fill" }} />
       </div>
       <div className="p-5" style={{ backgroundColor: "#0461AA" }}>
         <div className="flex items-start justify-between gap-3">
