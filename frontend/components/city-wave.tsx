@@ -8,15 +8,14 @@ export function CityWave({ className }: { className?: string }) {
       preserveAspectRatio="none"
       className={className}
     >
-      {/* lighter blue wave, slightly higher */}
+      {/* lighter blue wave, thicker */}
       <path
-        d="M0,24 Q98,8 195,24 Q293,40 390,24 L390,44 L0,44 Z"
-        fill="#067ABC"
-        opacity="0.77"
+        d="M0,14 Q98,-4 195,14 Q293,32 390,14 L390,44 L0,44 Z"
+        fill="#2AA0DC"
       />
       {/* dark blue wave, fills bottom */}
       <path
-        d="M0,30 Q98,14 195,30 Q293,46 390,30 L390,44 L0,44 Z"
+        d="M0,28 Q98,12 195,28 Q293,44 390,28 L390,44 L0,44 Z"
         fill="#0461AA"
       />
     </svg>
