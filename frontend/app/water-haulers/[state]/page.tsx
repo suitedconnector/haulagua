@@ -129,7 +129,7 @@ export default async function StatePage({ params }: PageProps) {
                       {/* Wave */}
                       <CityWave className="absolute bottom-0 left-0" />
                       {/* City welcome sign overlay */}
-                      <div className="absolute inset-0 flex items-end justify-center pointer-events-none" style={{ paddingBottom: "0" }}>
+                      <div className="absolute inset-0 flex items-end justify-center pointer-events-none" style={{ paddingBottom: "16px" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                           <div style={{
                             backgroundColor: "#2d6e2d",
