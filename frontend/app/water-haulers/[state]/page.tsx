@@ -126,7 +126,7 @@ export default async function StatePage({ params }: PageProps) {
                       {/* Gradient overlay for sign readability */}
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%)" }} />
                       {/* Wave */}
-                      <svg viewBox="0 0 390 44" preserveAspectRatio="none" className="absolute bottom-0 left-0 w-full" style={{ height: "44px" }} xmlns="http://www.w3.org/2000/svg">
+                      <svg viewBox="0 0 390 44" preserveAspectRatio="none" width="100%" height="44" className="absolute bottom-0 left-0" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0,44 L0,22 C65,8 130,32 195,20 C260,8 325,28 390,16 L390,44 Z" fill="#067ABC" opacity="0.77"/>
                         <path d="M0,44 L0,32 C65,20 130,40 195,30 C260,20 325,38 390,28 L390,44 Z" fill="#0461AA"/>
                       </svg>
