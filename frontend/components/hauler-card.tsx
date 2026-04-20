@@ -61,8 +61,8 @@ export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <svg viewBox="0 0 390 44" preserveAspectRatio="none" className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: "44px" }} xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,44 L0,28 C30,18 60,10 97,18 C134,26 160,38 195,38 C230,38 256,26 293,18 C330,10 360,18 390,28 L390,44 Z" fill="#0461AA" opacity="0.7"/>
-          <path d="M0,44 L0,34 C40,24 80,16 130,24 C180,32 210,40 260,36 C310,32 350,24 390,32 L390,44 Z" fill="#0461AA"/>
+          <path d="M0,44 L0,22 C65,8 130,32 195,20 C260,8 325,28 390,16 L390,44 Z" fill="#067ABC" opacity="0.77"/>
+          <path d="M0,44 L0,32 C65,20 130,40 195,30 C260,20 325,38 390,28 L390,44 Z" fill="#0461AA"/>
         </svg>
       </div>
       <div className="p-5" style={{ backgroundColor: "#0461AA" }}>
