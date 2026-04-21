@@ -10,7 +10,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 relative" style={{ height: "100px", overflow: "visible" }}>      <div style={{ position: "absolute", inset: 0, zIndex: 0, lineHeight: 0 }}>
-        <svg width="100%" height="100%" viewBox="0 0 390 100" preserveAspectRatio="none">
+        <svg width="100%" height="100%" viewBox="0 0 390 100" preserveAspectRatio="none" style={{ filter: "drop-shadow(0 25px 12px rgba(0, 90, 156, 0.4))" }}>
           <path d="M0,0 L390,0 L390,75 Q293,100 195,75 Q98,50 0,75 Z" fill="white" />
         </svg>
       </div>

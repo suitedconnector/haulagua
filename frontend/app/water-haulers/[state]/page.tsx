@@ -161,7 +161,9 @@ export default async function StatePage({ params }: PageProps) {
               </div>
             </section>
             {/* wave up out of gradient — bg matches section bottom */}
-            <WaveDivider topColor="#F0F6FC" bottomColor="#ffffff" />
+              <div style={{ backgroundColor: "#ffffff" }}>
+                <WaveDivider topColor="#F0F6FC" />
+              </div>
           </>
         )}
 
@@ -214,7 +216,10 @@ export default async function StatePage({ params }: PageProps) {
                 </div>
               </div>
             </section>
-            <WaveDivider topColor="white" bottomColor="rgb(214, 232, 247)" />
+            {/* wave up out of gradient — bg matches section bottom */}
+              <div style={{ backgroundColor: "#D6E8F7" }}>
+                <WaveDivider topColor="white" />
+              </div>
           </>
         )}
 
@@ -236,7 +241,10 @@ export default async function StatePage({ params }: PageProps) {
                 </div>
               </div>
             </section>
-            <WaveDivider topColor="white" bottomColor="#F8FBFF" />
+            {/* wave up out of gradient — bg matches section bottom */}
+              <div style={{ backgroundColor: "white" }}>
+                <WaveDivider topColor="#F8FBFF" />
+              </div>
           </>
         )}
 
@@ -268,11 +276,13 @@ export default async function StatePage({ params }: PageProps) {
             )}
           </div>
         </section>
-
+        {/* wave up out of gradient — bg matches section bottom */}
+          <div style={{ backgroundColor: "#C8DCF0 " }}>
+            <WaveDivider topColor="white" />
+          </div>
         {/* ── FAQ — light gradient, TX only ── */}
         {isTX && (
           <>
-            <WaveDivider topColor="#ffffff" bottomColor="rgb(200, 220, 240)"/>
             <section className="py-12 md:py-16" style={{ background: "linear-gradient(to bottom, #C8DCF0, #F0F6FC)" }}>
               <div className={INNER}>
                 <h2 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#333333" }}>
