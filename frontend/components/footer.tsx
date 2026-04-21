@@ -44,7 +44,7 @@ const footerLinks = {
 export function Footer() {
   return (
     <>
-      <WaveDivider flip className="bg-card" />
+      <WaveDivider topColor="rgb(240, 246, 252)" bottomColor="white" />
       <footer className="bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">

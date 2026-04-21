@@ -138,7 +138,9 @@ export default async function StatePage({ params }: PageProps) {
         </section>
 
         {/* wave: hero bottom color bleeds into wave top */}
-        <WaveDivider topColor="#2A7FC1" bottomColor="rgb(200, 220, 240)" />
+        <div style={{ backgroundColor: "rgb(200, 220, 240)" }}>
+          <WaveDivider topColor="#2A7FC1" />
+        </div>
 
         {/* ── Services — light gradient, TX only ── */}
         {isTX && (
@@ -159,7 +161,7 @@ export default async function StatePage({ params }: PageProps) {
               </div>
             </section>
             {/* wave up out of gradient — bg matches section bottom */}
-            <WaveDivider flip topColor="#F0F6FC" bottomColor="white" />
+            <WaveDivider topColor="#F0F6FC" bottomColor="#ffffff" />
           </>
         )}
 
@@ -234,7 +236,7 @@ export default async function StatePage({ params }: PageProps) {
                 </div>
               </div>
             </section>
-            <WaveDivider flip topColor="#F8FBFF" bottomColor="white" />
+            <WaveDivider topColor="white" bottomColor="#F8FBFF" />
           </>
         )}
 
@@ -270,7 +272,7 @@ export default async function StatePage({ params }: PageProps) {
         {/* ── FAQ — light gradient, TX only ── */}
         {isTX && (
           <>
-            <WaveDivider topColor="white" bottomColor="rgb(200, 220, 240)" />
+            <WaveDivider topColor="#ffffff" bottomColor="rgb(200, 220, 240)"/>
             <section className="py-12 md:py-16" style={{ background: "linear-gradient(to bottom, #C8DCF0, #F0F6FC)" }}>
               <div className={INNER}>
                 <h2 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#333333" }}>

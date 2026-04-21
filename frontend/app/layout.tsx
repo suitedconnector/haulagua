@@ -47,7 +47,7 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
       </head>
-      <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`}>
+      <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 100px, white 100px)" }}>
         {children}
         <Analytics />
       </body>
