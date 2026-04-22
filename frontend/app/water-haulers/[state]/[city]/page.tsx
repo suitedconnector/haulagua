@@ -163,7 +163,7 @@ export default async function CityPage({ params }: PageProps) {
 
         {/* ── Hero ── */}
         <section
-          className="py-12 md:py-16"
+          className="py-6 md:py-8"
           style={{ background: "linear-gradient(to bottom, #005A9C, #2A7FC1)" }}
         >
           <div className={INNER}>
@@ -215,12 +215,12 @@ export default async function CityPage({ params }: PageProps) {
         </section>
 
         {/* wave: hero → haulers */}
-        <div style={{ backgroundColor: "#ffffff" }}>
+        <div style={{ backgroundColor: "#F0F6FC" }}>
           <WaveDivider topColor="#2A7FC1" />
         </div>
 
         {/* ── Haulers ── */}
-        <section id="all-haulers" className="py-16 md:py-5 bg-white scroll-mt-20">
+        <section id="all-haulers" className="py-8 md:py-8 bg-white scroll-mt-20" style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}>
           <div className={INNER}>
             {haulers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
@@ -278,7 +278,7 @@ export default async function CityPage({ params }: PageProps) {
               <WaveDivider topColor="white" />
             </div>
             <section
-              className="py-6 md:py-5"
+              className="py-8 md:py-8"
               style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
             >
               <div className={INNER}>
@@ -304,7 +304,7 @@ export default async function CityPage({ params }: PageProps) {
               <WaveDivider topColor="white" />
             </div>
             <section
-              className="py-12 md:py-16"
+              className="py-8 md:py-8"
               style={{ background: "linear-gradient(to bottom, #D6E8F7, #F8FBFF)" }}
             >
               <div className={INNER}>
@@ -335,10 +335,13 @@ export default async function CityPage({ params }: PageProps) {
         )}
 
         {/* ── FAQs ── */}
+            <div style={{ backgroundColor: "#C8DCF0" }}>
+              <WaveDivider topColor="white" />
+            </div>
         {faqs.length > 0 && (
           <section
-            className="py-12 md:py-16"
-            style={{ background: "linear-gradient(to bottom, #C8DCF0, #F0F6FC)" }}
+            className="py-8 md:py-8"
+            style={{ background: "linear-gradient(to bottom, #C8DCF0, #ffffff" }}
           >
             <div className={INNER}>
               <h2
@@ -368,9 +371,12 @@ export default async function CityPage({ params }: PageProps) {
         )}
 
         {/* ── CTA for haulers ── */}
+            <div style={{ backgroundColor: "#F8FBFF" }}>
+              <WaveDivider topColor="#ffffff" />
+            </div>
         <section
-          className="py-12 md:py-16"
-          style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
+          className="py-8 md:py-8"
+          style={{ background: "linear-gradient(to bottom, #F8FBFF, #F0F6FC)" }}
         >
           <div className={INNER}>
             <div className="rounded-xl bg-white border border-[#005A9C]/20 p-8 text-center shadow-sm">

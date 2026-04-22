@@ -80,10 +80,20 @@
   --sidebar-ring: #3D8FD1;
 }
 
+@theme {
+  --color-brand-blue: #0461AA;
+  --color-brand-lightblue: #2AA0DC;
+  --color-brand-gold: #F2A900;
+  --color-brand-charcoal: #333333;
+  --color-brand-bg: #F8F9FA;
+}
+
 @theme inline {
   --font-sans: var(--font-lato), 'Lato', system-ui, sans-serif;
   --font-serif: var(--font-montserrat), 'Montserrat', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-montserrat: var(--font-montserrat), 'Montserrat', system-ui, sans-serif;
+  --font-lato: var(--font-lato), 'Lato', system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -128,5 +138,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .logo-haul {
+    @apply font-montserrat text-2xl font-bold tracking-tight text-brand-blue;
+  }
+  .logo-agua {
+    @apply font-montserrat text-2xl font-normal tracking-tight text-brand-lightblue;
   }
 }

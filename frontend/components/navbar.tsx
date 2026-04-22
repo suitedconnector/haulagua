@@ -16,12 +16,9 @@ export function Navbar() {
       </div>
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <span className="font-serif text-2xl tracking-tight">
-              <span className="font-bold text-primary">HAUL</span>
-              <span className="font-light text-foreground">AGUA</span>
-            </span>
-          </Link>
+            <Link href="/">
+              <span className="logo-haul">Haul</span><span className="logo-agua">agua</span>
+            </Link>
           <div className="hidden md:flex md:items-center md:gap-8">
             <Link href="/search" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Find a Hauler</Link>
             <Link href="/water-haulers" className="text-sm font-medium text-foreground hover:text-primary transition-colors">By Location</Link>

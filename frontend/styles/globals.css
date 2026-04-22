@@ -37,6 +37,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --brand-blue: #0461AA;
+  --brand-lightblue: #2AA0DC;
+  --brand-gold: #F2A900;
+  --brand-charcoal: #333333;
 }
 
 .dark {
@@ -77,6 +81,8 @@
 @theme inline {
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-montserrat: var(--font-montserrat);
+  --font-lato: var(--font-lato);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -123,3 +129,4 @@
     @apply bg-background text-foreground;
   }
 }
+

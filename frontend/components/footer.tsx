@@ -44,20 +44,17 @@ const footerLinks = {
 export function Footer() {
   return (
     <>
-      <WaveDivider topColor="rgb(240, 246, 252)" bottomColor="white" />
+      <WaveDivider topColor="#0461AA" bottomColor="white" />
       <footer className="bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Logo and tagline */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="inline-block">
-              <span className="font-serif text-2xl tracking-tight">
-                <span className="font-bold text-primary">HAUL</span>
-                <span className="font-light text-foreground">AGUA</span>
-              </span>
+            <Link href="/">
+              <span className="logo-haul">Haul</span><span className="logo-agua">agua</span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              Fast, Reliable Bulk Water Delivery
+              The Bulk Water Haulers Directory
             </p>
           </div>
 

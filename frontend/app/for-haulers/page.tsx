@@ -143,7 +143,7 @@ export default function ForHaulersPage() {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="bg-primary py-20 md:py-28">
+        <section className="bg-primary py-12 md:py-14">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <Badge
               className="mb-6 bg-accent text-accent-foreground font-semibold uppercase tracking-widest text-xs px-3 py-1"
@@ -181,7 +181,7 @@ export default function ForHaulersPage() {
         </section>
 
         {/* ── Benefits ── */}
-        <section className="py-16 md:py-20 bg-background">
+        <section className="py-10 md:py-12 bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
@@ -218,7 +218,7 @@ export default function ForHaulersPage() {
         </section>
 
         {/* ── Pricing ── */}
-        <section className="py-16 md:py-20 bg-card">
+        <section className="py-10 md:py-12 bg-card">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
@@ -313,7 +313,7 @@ export default function ForHaulersPage() {
         </section>
 
         {/* ── How it works ── */}
-        <section id="how-it-works" className="py-16 md:py-20 bg-background">
+        <section id="how-it-works" className="py-10 md:py-12 bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
@@ -351,7 +351,7 @@ export default function ForHaulersPage() {
         </section>
 
         {/* ── FAQ ── */}
-        <section className="py-16 md:py-20 bg-card">
+        <section className="py-10 md:py-12 bg-card">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
@@ -382,7 +382,7 @@ export default function ForHaulersPage() {
         </section>
 
         {/* ── Bottom CTA Banner ── */}
-        <section className="py-16 md:py-20 bg-foreground">
+        <section className="py-10 md:py-12" style={{ background: "#0461AA" }}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-background">
               Ready to Grow Your Business?

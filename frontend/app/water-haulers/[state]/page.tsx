@@ -244,7 +244,7 @@ export default async function StatePage({ params }: PageProps) {
 
         {/* ── Hero ── */}
         <section
-          className="py-12 md:py-16"
+          className="py-6 md:py-8"
           style={{ background: "linear-gradient(to bottom, #005A9C, #2A7FC1)" }}
         >
           <div className={INNER}>
@@ -302,7 +302,7 @@ export default async function StatePage({ params }: PageProps) {
         </div>
 
         {/* ── All Haulers ── */}
-        <section id="all-haulers" className="py-12 md:py-16 bg-white scroll-mt-20">
+        <section id="all-haulers" className="py-8 md:py-10 bg-white scroll-mt-20">
           <div className={INNER}>
             {haulers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
@@ -347,8 +347,11 @@ export default async function StatePage({ params }: PageProps) {
         </section>
 
         {/* ── Expanded body copy + anchor nav ── */}
+        <div style={{ backgroundColor: "#F0F6FC" }}>
+          <WaveDivider topColor="#ffffff" />
+        </div>
         <section
-          className="py-10 md:py-14"
+          className="py-8 md:py-10"
           style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
         >
           <div className={INNER}>
@@ -391,7 +394,7 @@ export default async function StatePage({ params }: PageProps) {
         {/* ── Cities ── */}
         {hasCities && (
           <>
-            <section id="cities" className="py-12 md:py-16 bg-white">
+            <section id="cities" className="py-8 md:py-10 bg-white">
               <div className={INNER}>
                 <h2
                   className="font-serif text-2xl font-semibold mb-6"
@@ -529,7 +532,7 @@ export default async function StatePage({ params }: PageProps) {
         {/* ── Counties — Coming Soon ── */}
         <section
           id="counties"
-          className="py-12 md:py-16"
+          className="py-8 md:py-10"
           style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
         >
           <div className={INNER}>
@@ -570,7 +573,7 @@ export default async function StatePage({ params }: PageProps) {
             </div>
             <section
               id="regions"
-              className="py-12 md:py-16"
+              className="py-8 md:py-10"
               style={{
                 background: "linear-gradient(to bottom, #D6E8F7, #F8FBFF)",
               }}
@@ -624,7 +627,7 @@ export default async function StatePage({ params }: PageProps) {
         {/* ── FAQ — TX only ── */}
         {isTX && (
           <section
-            className="py-12 md:py-16"
+            className="py-8 md:py-10"
             style={{
               background: "linear-gradient(to bottom, #C8DCF0, #F0F6FC)",
             }}

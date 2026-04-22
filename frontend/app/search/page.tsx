@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { SearchClient } from "./SearchClient";
+import { WaveDivider } from "@/components/WaveDivider";
 
 export const metadata: Metadata = {
   title: "Search Haulers — Haulagua",
