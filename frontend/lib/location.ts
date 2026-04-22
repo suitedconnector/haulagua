@@ -176,3 +176,47 @@ export function groupHaulersByCity(
     .map(([city, count]) => ({ city, slug: toCitySlug(city), count }))
     .sort((a, b) => b.count - a.count);
 }
+// ─── Location content type ────────────────────────────────────────────────────
+
+export type StrapiLocation = {
+  id: number;
+  attributes: {
+    city: string;
+    state: string;
+    slug: string;
+    metaTitle?: string;
+    metaDescription?: string;
+    introShort?: string;
+    introLong?: string;
+    localContext?: string;
+    availableServices?: string[];
+    faqs?: { question: string; answer: string }[];
+    nearbyCities?: { data: { id: number; attributes: { city: string; slug: string; state: string } }[] };
+  };
+};
+
+type StrapiLocationResponse = { data: StrapiLocation[]; meta: { pagination: { total: number } } };
+
+export async function getLocationByCity(
+  stateAbbr: string,
+  city: string
+): Promise<StrapiLocation | null> {
+  try {
+    const data = await strapiGet<StrapiLocationResponse>({
+      path: "/locations",
+      params: {
+        "filters[state][$eq]": stateAbbr.toUpperCase(),
+        "filters[city][$containsi]": city,
+        "populate[nearbyCities][fields][0]": "city",
+        "populate[nearbyCities][fields][1]": "slug",
+        "populate[nearbyCities][fields][2]": "state",
+        "pagination[pageSize]": "1",
+      },
+      cache: "no-store",
+      tags: [`location-${stateAbbr}-${city}`],
+    });
+    return data.data?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
