@@ -29,6 +29,27 @@
     },
     "metaDescription": {
       "type": "text"
+    },
+    "introShort": {
+      "type": "text"
+    },
+    "introLong": {
+      "type": "richtext"
+    },
+    "localContext": {
+      "type": "richtext"
+    },
+    "availableServices": {
+      "type": "json"
+    },
+    "faqs": {
+      "type": "json"
+    },
+    "nearbyCities": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::location.location",
+      "inversedBy": "nearbyCities"
     }
   }
 }
