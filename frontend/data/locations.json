@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "city": "Austin",
+        "state": "TX",
+        "slug": "austin",
+        "metaTitle": "Bulk Water Delivery in Austin, TX | HaulAgua",
+        "metaDescription": "Find bulk water haulers in Austin, Texas for pool fills, potable water delivery, construction, and more.",
+        "createdAt": "2026-04-22T03:18:49.554Z",
+        "updatedAt": "2026-04-22T07:05:07.571Z",
+        "introShort": "Austin and the surrounding Hill Country are one of the busiest markets for bulk water delivery in Texas. From rural cisterns west of the city to pool fills in the suburbs, local haulers serve residential, agricultural, and construction customers across Travis and Williamson counties.",
+        "introLong": "Austin's rapid growth has created strong year-round demand for bulk water hauling across every sector. Rural properties in the Hill Country frequently rely on delivered water for drinking and household use, while the booming construction industry needs water trucks for dust control and site preparation. Pool fills are in high demand across Austin's suburban neighborhoods, and agricultural operations in surrounding counties depend on reliable water delivery during dry months.",
+        "localContext": "Haulers delivering potable water in the Austin area must be licensed by the Texas Commission on Environmental Quality (TCEQ). Travis County and surrounding Hill Country properties without municipal water access are a primary market. The Austin metro is one of the fastest-growing cities in the US, driving consistent construction water demand across major corridors including US-183, SH-130, and the 290 West corridor.",
+        "availableServices": [
+          "pool",
+          "potable",
+          "construction",
+          "agricultural",
+          "emergency",
+          "events",
+          "oil-gas"
+        ],
+        "faqs": [
+          {
+            "answer": "Bulk water delivery in Austin typically costs between $200 and $500 per load depending on water type, volume, and distance. Potable water delivery generally costs more than non-potable. Most Austin haulers have a minimum fee in the $200–$300 range.",
+            "question": "How much does bulk water delivery cost in Austin, TX?"
+          },
+          {
+            "answer": "Yes. Several Austin-area haulers are licensed by the TCEQ to deliver potable drinking water to rural cisterns and holding tanks. Always confirm your hauler holds a valid TCEQ potable water carrier license before accepting delivery.",
+            "question": "Can I get potable water delivered to my property near Austin?"
+          },
+          {
+            "answer": "Most Austin pool fills take one day. A standard residential pool of 10,000–20,000 gallons requires 2–4 truckloads. Most haulers can complete the job in a single visit with proper scheduling.",
+            "question": "How long does it take to fill a pool in Austin with a water truck?"
+          },
+          {
+            "answer": "Yes. Most Austin-area haulers service the broader Hill Country including Dripping Springs, Marble Falls, Spicewood, Wimberley, and Canyon Lake. Service area and travel fees vary by hauler — confirm coverage when requesting a quote.",
+            "question": "Do Austin water haulers serve surrounding Hill Country cities?"
+          },
+          {
+            "answer": "Potable water is safe for drinking, cooking, and bathing and requires a TCEQ-licensed carrier. Non-potable water is used for pool fills, dust control, irrigation, and construction. Always specify which type you need when contacting a hauler.",
+            "question": "What is the difference between potable and non-potable water delivery in Austin?"
+          }
+        ],
+        "nearbyCities": {
+          "data": []
+        }
+      }
+    }
+  ]
+}

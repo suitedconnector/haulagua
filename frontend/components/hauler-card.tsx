@@ -19,6 +19,7 @@ export type StrapiHauler = {
     waterType?: "potable" | "non-potable" | "both" | null;
     isVerifiedPro: boolean;
     isClaimed: boolean;
+    isActive?: boolean;
     description?: string | null;
     services?: {
       data: { id: number; attributes: { type: string } }[];

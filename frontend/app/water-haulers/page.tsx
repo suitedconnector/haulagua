@@ -1,10 +1,8 @@
-// src/app/water-haulers/page.tsx
-// Replace your existing file with this
-
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { getAllStatesWithCounts } from "@/lib/location";
 
 export const metadata: Metadata = {
   title: "Find Bulk Water Haulers in Your State | Haulagua",
@@ -13,65 +11,57 @@ export const metadata: Metadata = {
 };
 
 // ─── State data ──────────────────────────────────────────────────────────────
-// status: "live" | "priority" | "soon"
-// Update haulerCount and status as you expand
-const STATES: {
-  name: string;
-  slug: string;
-  abbr: string;
-  status: "live" | "priority" | "soon";
-  haulerCount?: number;
-}[] = [
-  { name: "Alabama", slug: "alabama", abbr: "AL", status: "soon" },
-  { name: "Alaska", slug: "alaska", abbr: "AK", status: "soon" },
-  { name: "Arizona", slug: "arizona", abbr: "AZ", status: "live", haulerCount: 42 },
-  { name: "Arkansas", slug: "arkansas", abbr: "AR", status: "soon" },
-  { name: "California", slug: "california", abbr: "CA", status: "soon" },
-  { name: "Colorado", slug: "colorado", abbr: "CO", status: "soon" },
-  { name: "Connecticut", slug: "connecticut", abbr: "CT", status: "soon" },
-  { name: "Delaware", slug: "delaware", abbr: "DE", status: "soon" },
-  { name: "Florida", slug: "florida", abbr: "FL", status: "soon" },
-  { name: "Georgia", slug: "georgia", abbr: "GA", status: "soon" },
-  { name: "Hawaii", slug: "hawaii", abbr: "HI", status: "soon" },
-  { name: "Idaho", slug: "idaho", abbr: "ID", status: "soon" },
-  { name: "Illinois", slug: "illinois", abbr: "IL", status: "soon" },
-  { name: "Indiana", slug: "indiana", abbr: "IN", status: "soon" },
-  { name: "Iowa", slug: "iowa", abbr: "IA", status: "soon" },
-  { name: "Kansas", slug: "kansas", abbr: "KS", status: "soon" },
-  { name: "Kentucky", slug: "kentucky", abbr: "KY", status: "soon" },
-  { name: "Louisiana", slug: "louisiana", abbr: "LA", status: "soon" },
-  { name: "Maine", slug: "maine", abbr: "ME", status: "soon" },
-  { name: "Maryland", slug: "maryland", abbr: "MD", status: "soon" },
-  { name: "Massachusetts", slug: "massachusetts", abbr: "MA", status: "soon" },
-  { name: "Michigan", slug: "michigan", abbr: "MI", status: "soon" },
-  { name: "Minnesota", slug: "minnesota", abbr: "MN", status: "soon" },
-  { name: "Mississippi", slug: "mississippi", abbr: "MS", status: "soon" },
-  { name: "Missouri", slug: "missouri", abbr: "MO", status: "soon" },
-  { name: "Montana", slug: "montana", abbr: "MT", status: "soon" },
-  { name: "Nebraska", slug: "nebraska", abbr: "NE", status: "soon" },
-  { name: "Nevada", slug: "nevada", abbr: "NV", status: "soon" },
-  { name: "New Hampshire", slug: "new-hampshire", abbr: "NH", status: "soon" },
-  { name: "New Jersey", slug: "new-jersey", abbr: "NJ", status: "soon" },
-  { name: "New Mexico", slug: "new-mexico", abbr: "NM", status: "soon" },
-  { name: "New York", slug: "new-york", abbr: "NY", status: "soon" },
-  { name: "North Carolina", slug: "north-carolina", abbr: "NC", status: "soon" },
-  { name: "North Dakota", slug: "north-dakota", abbr: "ND", status: "soon" },
-  { name: "Ohio", slug: "ohio", abbr: "OH", status: "soon" },
-  { name: "Oklahoma", slug: "oklahoma", abbr: "OK", status: "soon" },
-  { name: "Oregon", slug: "oregon", abbr: "OR", status: "soon" },
-  { name: "Pennsylvania", slug: "pennsylvania", abbr: "PA", status: "soon" },
-  { name: "Rhode Island", slug: "rhode-island", abbr: "RI", status: "soon" },
-  { name: "South Carolina", slug: "south-carolina", abbr: "SC", status: "soon" },
-  { name: "South Dakota", slug: "south-dakota", abbr: "SD", status: "soon" },
-  { name: "Tennessee", slug: "tennessee", abbr: "TN", status: "soon" },
-  { name: "Texas", slug: "texas", abbr: "TX", status: "live", haulerCount: 20 },
-  { name: "Utah", slug: "utah", abbr: "UT", status: "soon" },
-  { name: "Vermont", slug: "vermont", abbr: "VT", status: "soon" },
-  { name: "Virginia", slug: "virginia", abbr: "VA", status: "soon" },
-  { name: "Washington", slug: "washington", abbr: "WA", status: "soon" },
-  { name: "West Virginia", slug: "west-virginia", abbr: "WV", status: "soon" },
-  { name: "Wisconsin", slug: "wisconsin", abbr: "WI", status: "soon" },
-  { name: "Wyoming", slug: "wyoming", abbr: "WY", status: "soon" },
+const STATE_LIST: { name: string; slug: string; abbr: string }[] = [
+  { name: "Alabama", slug: "alabama", abbr: "AL" },
+  { name: "Alaska", slug: "alaska", abbr: "AK" },
+  { name: "Arizona", slug: "arizona", abbr: "AZ" },
+  { name: "Arkansas", slug: "arkansas", abbr: "AR" },
+  { name: "California", slug: "california", abbr: "CA" },
+  { name: "Colorado", slug: "colorado", abbr: "CO" },
+  { name: "Connecticut", slug: "connecticut", abbr: "CT" },
+  { name: "Delaware", slug: "delaware", abbr: "DE" },
+  { name: "Florida", slug: "florida", abbr: "FL" },
+  { name: "Georgia", slug: "georgia", abbr: "GA" },
+  { name: "Hawaii", slug: "hawaii", abbr: "HI" },
+  { name: "Idaho", slug: "idaho", abbr: "ID" },
+  { name: "Illinois", slug: "illinois", abbr: "IL" },
+  { name: "Indiana", slug: "indiana", abbr: "IN" },
+  { name: "Iowa", slug: "iowa", abbr: "IA" },
+  { name: "Kansas", slug: "kansas", abbr: "KS" },
+  { name: "Kentucky", slug: "kentucky", abbr: "KY" },
+  { name: "Louisiana", slug: "louisiana", abbr: "LA" },
+  { name: "Maine", slug: "maine", abbr: "ME" },
+  { name: "Maryland", slug: "maryland", abbr: "MD" },
+  { name: "Massachusetts", slug: "massachusetts", abbr: "MA" },
+  { name: "Michigan", slug: "michigan", abbr: "MI" },
+  { name: "Minnesota", slug: "minnesota", abbr: "MN" },
+  { name: "Mississippi", slug: "mississippi", abbr: "MS" },
+  { name: "Missouri", slug: "missouri", abbr: "MO" },
+  { name: "Montana", slug: "montana", abbr: "MT" },
+  { name: "Nebraska", slug: "nebraska", abbr: "NE" },
+  { name: "Nevada", slug: "nevada", abbr: "NV" },
+  { name: "New Hampshire", slug: "new-hampshire", abbr: "NH" },
+  { name: "New Jersey", slug: "new-jersey", abbr: "NJ" },
+  { name: "New Mexico", slug: "new-mexico", abbr: "NM" },
+  { name: "New York", slug: "new-york", abbr: "NY" },
+  { name: "North Carolina", slug: "north-carolina", abbr: "NC" },
+  { name: "North Dakota", slug: "north-dakota", abbr: "ND" },
+  { name: "Ohio", slug: "ohio", abbr: "OH" },
+  { name: "Oklahoma", slug: "oklahoma", abbr: "OK" },
+  { name: "Oregon", slug: "oregon", abbr: "OR" },
+  { name: "Pennsylvania", slug: "pennsylvania", abbr: "PA" },
+  { name: "Rhode Island", slug: "rhode-island", abbr: "RI" },
+  { name: "South Carolina", slug: "south-carolina", abbr: "SC" },
+  { name: "South Dakota", slug: "south-dakota", abbr: "SD" },
+  { name: "Tennessee", slug: "tennessee", abbr: "TN" },
+  { name: "Texas", slug: "texas", abbr: "TX" },
+  { name: "Utah", slug: "utah", abbr: "UT" },
+  { name: "Vermont", slug: "vermont", abbr: "VT" },
+  { name: "Virginia", slug: "virginia", abbr: "VA" },
+  { name: "Washington", slug: "washington", abbr: "WA" },
+  { name: "West Virginia", slug: "west-virginia", abbr: "WV" },
+  { name: "Wisconsin", slug: "wisconsin", abbr: "WI" },
+  { name: "Wyoming", slug: "wyoming", abbr: "WY" },
 ];
 
 // ─── FAQ data ─────────────────────────────────────────────────────────────────
@@ -113,12 +103,23 @@ const faqSchema = {
 };
 
 // ─── Page component ───────────────────────────────────────────────────────────
-export default function WaterHaulersPage() {
-  const liveCount = STATES.filter((s) => s.status === "live").length;
-  const totalHaulers = STATES.filter((s) => s.haulerCount).reduce(
-    (sum, s) => sum + (s.haulerCount ?? 0),
-    0
+export default async function WaterHaulersPage() {
+  const stateCounts = await getAllStatesWithCounts();
+  const countByAbbr = Object.fromEntries(
+    stateCounts.map(({ abbr, count }) => [abbr.toUpperCase(), count])
   );
+
+  const STATES = STATE_LIST.map((s) => {
+    const count = countByAbbr[s.abbr] ?? 0;
+    return {
+      ...s,
+      haulerCount: count > 0 ? count : undefined,
+      status: (count > 0 ? "live" : "soon") as "live" | "soon",
+    };
+  });
+
+  const liveCount = STATES.filter((s) => s.status === "live").length;
+  const totalHaulers = STATES.reduce((sum, s) => sum + (s.haulerCount ?? 0), 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -156,7 +157,7 @@ export default function WaterHaulersPage() {
                 return (
                   <span key={state.slug} className="inline-flex items-center">
                     <Link
-                      href={`/water-haulers/${state.slug}`}
+                      href={`/water-haulers/${state.abbr.toLowerCase()}`}
                       className="font-lato font-bold text-white underline underline-offset-2 decoration-[#F2A900] hover:text-[#F2A900] transition-colors"
                     >
                       {state.name}
