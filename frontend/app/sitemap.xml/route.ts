@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { strapiGet } from '@/src/lib/strapi';
+import haulersData from '@/data/haulers.json';
 import {
   getAllStatesWithCounts,
   getHaulersByState,
@@ -9,40 +9,12 @@ import {
 
 const BASE_URL = 'https://www.haulagua.com';
 
-type StrapiItem = { id: number; attributes: { slug: string } };
-type StrapiListResponse = { data: StrapiItem[] };
-
-async function getHaulerSlugs(): Promise<string[]> {
-  try {
-    const data = await strapiGet<StrapiListResponse>({
-      path: '/haulers',
-      params: {
-        'filters[isActive][$eq]': 'true',
-        'fields[0]': 'slug',
-        'pagination[pageSize]': '1000',
-      },
-      cache: 'no-store',
-    });
-    return (data.data ?? []).map((h) => h.attributes.slug).filter(Boolean);
-  } catch {
-    return [];
-  }
-}
-
-async function getBlogSlugs(): Promise<string[]> {
-  try {
-    const data = await strapiGet<StrapiListResponse>({
-      path: '/blog-posts',
-      params: {
-        'fields[0]': 'slug',
-        'pagination[pageSize]': '1000',
-      },
-      cache: 'no-store',
-    });
-    return (data.data ?? []).map((p) => p.attributes.slug).filter(Boolean);
-  } catch {
-    return [];
-  }
+function getHaulerSlugs(): string[] {
+  const haulers = (haulersData as { data: { attributes: { slug: string; isActive: boolean } }[] }).data;
+  return haulers
+    .filter((h) => h.attributes.isActive !== false)
+    .map((h) => h.attributes.slug)
+    .filter(Boolean);
 }
 
 type UrlEntry = {
@@ -64,7 +36,7 @@ function buildXml(entries: UrlEntry[]): string {
 }
 
 export async function GET() {
-  const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const now = new Date().toISOString().split('T')[0];
   const entries: UrlEntry[] = [];
 
   // Static pages
@@ -92,15 +64,9 @@ export async function GET() {
   }
 
   // Hauler profiles
-  const haulerSlugs = await getHaulerSlugs();
+  const haulerSlugs = getHaulerSlugs();
   for (const slug of haulerSlugs) {
     entries.push({ url: `${BASE_URL}/haulers/${slug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
-  }
-
-  // Blog posts
-  const blogSlugs = await getBlogSlugs();
-  for (const slug of blogSlugs) {
-    entries.push({ url: `${BASE_URL}/resources/${slug}`, lastmod: now, changefreq: 'monthly', priority: '0.6' });
   }
 
   return new NextResponse(buildXml(entries), {

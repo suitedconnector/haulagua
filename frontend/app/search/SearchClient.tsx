@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import haulersData from "@/data/haulers.json";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,8 +57,8 @@ type Filters = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 20;
-const STRAPI_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
+
+const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
 
 const SERVICE_TYPES: { value: string; label: string }[] = [
   { value: "pool", label: "Swimming Pool" },
@@ -109,45 +110,38 @@ const SERVICE_TYPE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
-// ─── Strapi query builder ─────────────────────────────────────────────────────
+// ─── Client-side filter ───────────────────────────────────────────────────────
 
-function buildStrapiParams(filters: Filters, page: number): string {
-  const p = new URLSearchParams();
-
-  p.set("filters[isActive][$eq]", "true");
-  p.set("populate[services][fields][0]", "type");
-  p.set("pagination[pageSize]", String(PAGE_SIZE));
-  p.set("pagination[page]", String(page));
-
-  if (filters.zip) {
-    const q = filters.zip;
-    p.set("filters[$or][0][city][$containsi]", q);
-    p.set("filters[$or][1][state][$containsi]", q);
-    p.set("filters[$or][2][zip][$containsi]", q);
-    p.set("filters[$or][3][serviceArea][$containsi]", q);
-  }
-
-  filters.services.forEach((svc, i) => {
-    p.set(`filters[services][type][$in][${i}]`, svc);
-  });
-
+function applyFilters(filters: Filters): StrapiHauler[] {
+  const q = filters.zip.toLowerCase().trim();
   const feeObj = FEE_RANGES.find((r) => r.value === filters.feeRange);
-  if (feeObj) {
-    if (feeObj.op === "lt" && feeObj.max !== undefined) {
-      p.set("filters[minFee][$lt]", String(feeObj.max));
-    } else if (feeObj.op === "between") {
-      if (feeObj.min !== undefined) p.set("filters[minFee][$gte]", String(feeObj.min));
-      if (feeObj.max !== undefined) p.set("filters[minFee][$lte]", String(feeObj.max));
-    } else if (feeObj.op === "gte" && feeObj.min !== undefined) {
-      p.set("filters[minFee][$gte]", String(feeObj.min));
+
+  return allHaulers.filter((h) => {
+    const a = h.attributes;
+
+    if (q) {
+      const fields = [a.city, a.state, a.zip, a.serviceArea];
+      if (!fields.some((f) => f?.toLowerCase().includes(q))) return false;
     }
-  }
 
-  if (filters.verifiedOnly) {
-    p.set("filters[isVerifiedPro][$eq]", "true");
-  }
+    if (filters.services.length > 0) {
+      const types = a.services?.data.map((s) => s.attributes.type) ?? [];
+      if (!filters.services.some((svc) => types.includes(svc))) return false;
+    }
 
-  return p.toString();
+    if (feeObj && a.minFee != null) {
+      if (feeObj.op === "lt" && feeObj.max !== undefined && a.minFee >= feeObj.max) return false;
+      if (feeObj.op === "between") {
+        if (feeObj.min !== undefined && a.minFee < feeObj.min) return false;
+        if (feeObj.max !== undefined && a.minFee > feeObj.max) return false;
+      }
+      if (feeObj.op === "gte" && feeObj.min !== undefined && a.minFee < feeObj.min) return false;
+    }
+
+    if (filters.verifiedOnly && !a.isVerifiedPro) return false;
+
+    return true;
+  });
 }
 
 // ─── Hauler Card ──────────────────────────────────────────────────────────────
@@ -442,78 +436,33 @@ export function SearchClient({
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Abort controller ref — cancel in-flight request when filters change
-  const abortRef = useRef<AbortController | null>(null);
+  // ── Filter helpers ────────────────────────────────────────────────────────
 
-  // ── Fetch helpers ─────────────────────────────────────────────────────────
+  const fetchPage = useCallback((filters: Filters, pageNum: number) => {
+    const filtered = applyFilters(filters);
+    setHaulers(filtered.slice(0, pageNum * PAGE_SIZE));
+    setTotal(filtered.length);
+    setPage(pageNum);
+  }, []);
 
-  const fetchPage = useCallback(
-    async (
-      filters: Filters,
-      pageNum: number,
-      append: boolean,
-      signal: AbortSignal
-    ) => {
-      const qs = buildStrapiParams(filters, pageNum);
-      const res = await fetch(`${STRAPI_URL}/api/haulers?${qs}`, {
-        cache: "no-store",
-        signal,
-      });
-      if (!res.ok) throw new Error("Failed to load results");
-      const data = await res.json();
-      const newHaulers: StrapiHauler[] = data.data ?? [];
-      const newTotal: number = data.meta?.pagination?.total ?? 0;
-
-      setHaulers((prev) => (append ? [...prev, ...newHaulers] : newHaulers));
-      setTotal(newTotal);
-      setPage(pageNum);
-    },
-    []
-  );
-
-  // ── Effect: refetch from page 1 whenever filters change ──────────────────
+  // ── Effect: refilter from page 1 whenever filters change ─────────────────
 
   useEffect(() => {
-    // Abort any in-flight request
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
     const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
-
     setLoading(true);
     setError(null);
-
-    fetchPage(filters, 1, false, controller.signal)
-      .catch((err) => {
-        if (err instanceof Error && err.name === "AbortError") return;
-        setError(err instanceof Error ? err.message : "Something went wrong");
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zip, selectedServices, selectedFeeRange, verifiedOnly]);
+    fetchPage(filters, 1);
+    setLoading(false);
+  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
 
   // ── Load More ─────────────────────────────────────────────────────────────
 
-  const handleLoadMore = useCallback(async () => {
+  const handleLoadMore = useCallback(() => {
     const nextPage = page + 1;
     const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
-
     setLoadingMore(true);
-    setError(null);
-
-    const controller = new AbortController();
-    try {
-      await fetchPage(filters, nextPage, true, controller.signal);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoadingMore(false);
-    }
+    fetchPage(filters, nextPage);
+    setLoadingMore(false);
   }, [page, zip, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
 
   // ── URL sync ──────────────────────────────────────────────────────────────

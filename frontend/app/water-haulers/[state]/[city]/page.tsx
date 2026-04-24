@@ -263,7 +263,7 @@ export default async function CityPage({ params }: PageProps) {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {haulers.map((hauler) => (
-                    <HaulerCard key={hauler.id} hauler={hauler} />
+                    <HaulerCard key={hauler.id} hauler={hauler} refPath={`/water-haulers/${state}/${city}`} />
                   ))}
                 </div>
               </>

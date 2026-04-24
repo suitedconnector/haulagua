@@ -45,13 +45,14 @@ const SERVICE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
-export function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
+export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?: string }) {
   const a = hauler.attributes;
   const services = a.services?.data ?? [];
+  const href = refPath ? `/haulers/${a.slug}?ref=${encodeURIComponent(refPath)}` : `/haulers/${a.slug}`;
 
   return (
     <Link
-      href={`/haulers/${a.slug}`}
+      href={href}
       className="block rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group overflow-hidden" style={{ backgroundColor: "#0461AA" }}
     >
       <div className="relative h-36 w-full bg-gray-100">

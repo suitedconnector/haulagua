@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HaulerCard } from "@/components/hauler-card";
 import { WaveDivider } from "@/components/WaveDivider";
-import { CityWave } from "@/components/city-wave";
 import {
   MapPin,
   ArrowLeft,
@@ -28,7 +26,7 @@ import {
 } from "@/lib/location";
 import cityPhotoCache from "@/data/city-photos.json";
 
-type PageProps = { params: Promise<{ state: string }> };
+type PageProps = { params: Promise<{ state: string }>; searchParams: Promise<{ service?: string }> };
 
 // ─── Service Types ─────────────────────────────────────────────────────────────
 
@@ -169,13 +167,25 @@ type CityWithPhoto = {
   photo: string | null;
 };
 
-export default async function StatePage({ params }: PageProps) {
+export default async function StatePage({ params, searchParams }: PageProps) {
   const { state } = await params;
+  const { service } = await searchParams;
   const abbr = fromStateSlug(state);
   const stateName = STATE_NAMES[state] ?? abbr;
   const haulers = await getHaulersByState(abbr);
   const cities = groupHaulersByCity(haulers);
   const isTX = state === "tx";
+
+  const activeServiceType = SERVICE_TYPES.find((st) => st.slug === service) ?? null;
+  const displayedHaulers = activeServiceType
+    ? haulers.filter((h) => {
+        const a = h.attributes;
+        return (
+          a.services?.data?.some((s) => s.attributes.type === activeServiceType.slug) ||
+          (a.industries?.includes(activeServiceType.slug) ?? false)
+        );
+      })
+    : haulers;
 
   const cache = cityPhotoCache as Record<string, string>;
   const citiesWithPhotos: CityWithPhoto[] = cities.map(
@@ -250,7 +260,8 @@ export default async function StatePage({ params }: PageProps) {
           <div className={INNER}>
             <Link
               href="/water-haulers"
-              className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 text-white/80 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-bold mb-6 transition-colors"
+              style={{ color: "#F2A900" }}
             >
               <ArrowLeft className="h-4 w-4" />
               All States
@@ -267,10 +278,6 @@ export default async function StatePage({ params }: PageProps) {
                 <p className="mt-4 text-lg text-white/85 max-w-xl">
                   {shortIntro}
                 </p>
-                <p className="mt-3 text-sm text-white/60">
-                  {haulers.length} hauler{haulers.length !== 1 ? "s" : ""}{" "}
-                  found in {stateName}
-                </p>
               </div>
 
               {/* Right — Service type thumbnail links */}
@@ -282,7 +289,7 @@ export default async function StatePage({ params }: PageProps) {
                   {SERVICE_TYPES.map(({ name, slug, icon: Icon }) => (
                     <Link
                       key={slug}
-                      href="#all-haulers"
+                      href={`?service=${slug}#all-haulers`}
                       className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/20 hover:border-white/40"
                     >
                       <Icon className="h-4 w-4 shrink-0 text-[#F2A900]" />
@@ -331,14 +338,22 @@ export default async function StatePage({ params }: PageProps) {
             ) : (
               <>
                 <h2
-                  className="font-serif text-2xl font-semibold mb-6"
+                  className="font-serif text-2xl font-semibold mb-4 flex items-baseline gap-3"
                   style={{ color: "#333333" }}
                 >
                   Bulk Water Haulers in {stateName}
+                  <span className="text-sm font-normal text-muted-foreground">· {displayedHaulers.length} hauler{displayedHaulers.length !== 1 ? "s" : ""}</span>
                 </h2>
+                {activeServiceType && (
+                  <div className="flex items-center gap-2 mb-5 text-sm">
+                    <span className="text-muted-foreground">Showing: {activeServiceType.name}</span>
+                    <span className="text-muted-foreground">·</span>
+                    <Link href={`/water-haulers/${state}#all-haulers`} className="hover:underline" style={{ color: "#005A9C" }}>Clear filter</Link>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {haulers.map((hauler) => (
-                    <HaulerCard key={hauler.id} hauler={hauler} />
+                  {displayedHaulers.map((hauler) => (
+                    <HaulerCard key={hauler.id} hauler={hauler} refPath={`/water-haulers/${state}`} />
                   ))}
                 </div>
               </>
@@ -393,140 +408,27 @@ export default async function StatePage({ params }: PageProps) {
 
         {/* ── Cities ── */}
         {hasCities && (
-          <>
-            <section id="cities" className="py-8 md:py-10 bg-white">
-              <div className={INNER}>
-                <h2
-                  className="font-serif text-2xl font-semibold mb-6"
-                  style={{ color: "#333333" }}
-                >
-                  Browse by City
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {citiesWithPhotos.map(({ city, slug, count, photo }) => (
-                    <Link
-                      key={city}
-                      href={`/water-haulers/${state}/${slug}`}
-                      className="group rounded-xl overflow-hidden border border-border hover:shadow-md hover:border-[#005A9C]/40 transition-all bg-white"
-                    >
-                      <div className="relative h-40 w-full overflow-hidden">
-                        {photo ? (
-                          <Image
-                            src={photo}
-                            alt={`Bulk water delivery in ${city}, ${stateName}`}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <div
-                            className="w-full h-full"
-                            style={{ backgroundColor: "#005A9C" }}
-                          />
-                        )}
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            background:
-                              "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%)",
-                          }}
-                        />
-                        <CityWave className="absolute bottom-0 left-0" />
-                        <div
-                          className="absolute inset-0 flex items-end justify-center pointer-events-none"
-                          style={{ paddingBottom: "16px" }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                backgroundColor: "#2d6e2d",
-                                border: "4px solid white",
-                                borderRadius: "6px",
-                                padding: "8px 18px",
-                                textAlign: "center",
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
-                                minWidth: "160px",
-                                maxWidth: "88%",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  color: "white",
-                                  fontSize: "9px",
-                                  fontWeight: 700,
-                                  letterSpacing: "0.18em",
-                                  textTransform: "uppercase",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                Welcome to
-                              </p>
-                              <p
-                                style={{
-                                  color: "white",
-                                  fontSize: "20px",
-                                  fontWeight: 800,
-                                  lineHeight: 1.1,
-                                  fontFamily: "Georgia, serif",
-                                }}
-                              >
-                                {city}
-                              </p>
-                              <p
-                                style={{
-                                  color: "white",
-                                  fontSize: "9px",
-                                  fontWeight: 700,
-                                  letterSpacing: "0.18em",
-                                  textTransform: "uppercase",
-                                  marginTop: "2px",
-                                }}
-                              >
-                                {stateName}
-                              </p>
-                            </div>
-                            <div
-                              style={{
-                                width: "8px",
-                                height: "28px",
-                                backgroundColor: "#a0a0a0",
-                                boxShadow: "inset -2px 0 3px rgba(0,0,0,0.2)",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="px-4 py-3 flex items-center gap-2"
-                        style={{ backgroundColor: "#0461AA" }}
-                      >
-                        <p className="text-sm font-bold text-white">
-                          {count} hauler{count !== 1 ? "s" : ""}
-                        </p>
-                        <i
-                          className="fa-solid fa-truck-droplet"
-                          style={{
-                            color: "white",
-                            fontSize: "18px",
-                            opacity: 0.85,
-                          }}
-                        />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+          <section id="cities" className="py-8 md:py-10 bg-white">
+            <div className={INNER}>
+              <h2
+                className="font-serif text-2xl font-semibold mb-6"
+                style={{ color: "#333333" }}
+              >
+                Browse Cities in {stateName}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {citiesWithPhotos.map(({ city, slug }) => (
+                  <Link
+                    key={slug}
+                    href={`/water-haulers/${state}/${slug}`}
+                    className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium transition-all hover:bg-[#005A9C] hover:text-white"
+                  >
+                    {city}
+                  </Link>
+                ))}
               </div>
-            </section>
-            <div style={{ backgroundColor: "#F0F6FC" }}>
-              <WaveDivider topColor="white" />
             </div>
-          </>
+          </section>
         )}
 
         {/* ── Counties — Coming Soon ── */}

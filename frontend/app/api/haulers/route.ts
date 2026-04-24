@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import haulersData from '@/data/haulers.json';
 
-const STRAPI_URL =
-  process.env.STRAPI_URL ??
-  process.env.NEXT_PUBLIC_STRAPI_URL ??
-  'http://localhost:1337';
-
-// Use production token when available, fall back to local token
-const STRAPI_TOKEN =
-  process.env.STRAPI_PROD_API_TOKEN ?? process.env.STRAPI_API_TOKEN;
+const allHaulers = (haulersData as { data: Array<{ attributes: { name: string; email: string | null } }> }).data;
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
-
-const STRAPI_HEADERS = {
-  'Content-Type': 'application/json',
-  ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
-};
 
 function toSlug(name: string): string {
   return name
@@ -24,24 +13,6 @@ function toSlug(name: string): string {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
-}
-
-async function patchCertificate(haulerId: number, certUrl: string): Promise<void> {
-  try {
-    const res = await fetch(`${STRAPI_URL}/api/haulers/${haulerId}`, {
-      method: 'PUT',
-      headers: STRAPI_HEADERS,
-      body: JSON.stringify({ data: { insuranceCertificate: certUrl } }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.error('[haulers] PATCH certificate failed:', err);
-    } else {
-      console.log('[haulers] insuranceCertificate patched on hauler', haulerId);
-    }
-  } catch (err) {
-    console.error('[haulers] PATCH certificate error:', err);
-  }
 }
 
 async function sendSignupNotification({
@@ -75,7 +46,6 @@ async function sendSignupNotification({
     `Location: ${[city, state].filter(Boolean).join(', ') || '—'}`,
   ];
   if (certUrl) lines.push(`Certificate: ${certUrl}`);
-  lines.push('', 'Review in Strapi admin: https://haulagua.onrender.com/admin');
 
   try {
     console.log('[haulers] Sending Resend notification...');
@@ -95,6 +65,10 @@ async function sendSignupNotification({
     const error = err instanceof Error ? err : new Error(String(err));
     console.log('[haulers] Resend error:', error.message);
   }
+}
+
+export async function GET() {
+  return NextResponse.json(haulersData, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -126,77 +100,46 @@ export async function POST(req: NextRequest) {
       ? insuranceCertificate.trim()
       : null;
 
-  const payload = {
-    data: {
-      name: haulerName,
-      slug: toSlug(haulerName),
-      email: haulerEmail,
-      phone: phone ?? null,
-      website: website ?? null,
-      city: haulerCity,
-      state: haulerState,
-      zip: zip ?? null,
-      description: description ?? null,
-      serviceArea: serviceArea ?? null,
-      minFee: minFee ? Number(minFee) : null,
-      truckCapacity: truckCapacity ? Number(truckCapacity) : null,
-      hoseLength: hoseLength ? Number(hoseLength) : null,
-      waterType: waterType ?? null,
-      isVerifiedPro: false,
-      isActive: true,
-      industries: industries ?? null,
-      // Include in creation payload; will also be patched separately to guarantee it saves
-      insuranceCertificate: certUrl,
-    },
-  };
-
-  try {
-    const res = await fetch(`${STRAPI_URL}/api/haulers`, {
-      method: 'POST',
-      headers: STRAPI_HEADERS,
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error('[haulers] Strapi POST error status:', res.status);
-      console.error('[haulers] Strapi POST error body:', JSON.stringify(data, null, 2));
-
-      const isUnique =
-        data?.error?.message === 'This attribute must be unique' ||
-        JSON.stringify(data).includes('unique');
-
-      if (isUnique) {
-        return NextResponse.json(
-          { error: 'A listing with this business name or email already exists.' },
-          { status: 409 }
-        );
-      }
-
-      return NextResponse.json({ error: 'Failed to create listing', detail: data }, { status: 500 });
-    }
-
-    const haulerId: number | undefined = data?.data?.id;
-
-    // If a cert URL was provided, explicitly PATCH the hauler to guarantee the field is saved.
-    if (certUrl && haulerId) {
-      await patchCertificate(haulerId, certUrl);
-    }
-
-    // Await notification so logs aren't cut off before Vercel sends the response
-    await sendSignupNotification({
-      haulerName,
-      email: haulerEmail,
-      city: haulerCity,
-      state: haulerState,
-      phone,
-      certUrl,
-    });
-
-    return NextResponse.json({ success: true, data }, { status: 201 });
-  } catch (err) {
-    console.error('[haulers] create error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  const isDuplicate = allHaulers.some(
+    (h) =>
+      h.attributes.name.toLowerCase() === haulerName.toLowerCase() ||
+      (h.attributes.email && h.attributes.email.toLowerCase() === haulerEmail)
+  );
+  if (isDuplicate) {
+    return NextResponse.json(
+      { error: 'A listing with this business name or email already exists.' },
+      { status: 409 }
+    );
   }
+
+  // Log the submission so it can be added to the JSON manually
+  console.log('[haulers] New signup:', JSON.stringify({
+    name: haulerName,
+    slug: toSlug(haulerName),
+    email: haulerEmail,
+    phone: phone ?? null,
+    website: website ?? null,
+    city: haulerCity,
+    state: haulerState,
+    zip: zip ?? null,
+    description: description ?? null,
+    serviceArea: serviceArea ?? null,
+    minFee: minFee ? Number(minFee) : null,
+    truckCapacity: truckCapacity ? Number(truckCapacity) : null,
+    hoseLength: hoseLength ? Number(hoseLength) : null,
+    waterType: waterType ?? null,
+    industries: industries ?? null,
+    insuranceCertificate: certUrl,
+  }));
+
+  await sendSignupNotification({
+    haulerName,
+    email: haulerEmail,
+    city: haulerCity,
+    state: haulerState,
+    phone,
+    certUrl,
+  });
+
+  return NextResponse.json({ success: true }, { status: 201 });
 }

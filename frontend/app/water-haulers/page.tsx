@@ -135,7 +135,7 @@ export default async function WaterHaulersPage() {
       <section className="bg-[#0461AA] pt-16 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-montserrat text-4xl md:text-5xl font-bold text-white mb-4 leading-tighter">
-            Find Bulk Water Haulers   
+            Find Bulk Water Haulers    
             <br className="hidden md:block" />
             in Your State
           </h1>

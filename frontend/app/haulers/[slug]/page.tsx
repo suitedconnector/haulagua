@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { strapiGet } from "@/src/lib/strapi";
 import { TRUCK_PLACEHOLDERS, getPlaceholderImage } from "@/src/lib/placeholders";
+import { toCitySlug, fromCitySlug, STATE_NAMES } from "@/lib/location";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactPanel } from "./ContactPanel";
 import { ReviewForm } from "./ReviewForm";
+import haulersData from "@/data/haulers.json";
 import {
   CheckCircle2,
   Truck,
@@ -14,7 +15,6 @@ import {
   DollarSign,
   MapPin,
   ChevronLeft,
-  ImageIcon,
   ShieldAlert,
   Shield,
   Star,
@@ -76,26 +76,9 @@ type StrapiHauler = {
   };
 };
 
-type StrapiResponse = {
-  data: StrapiHauler[];
-  meta: { pagination: { total: number } };
-};
+// ─── Static data ──────────────────────────────────────────────────────────────
 
-type StrapiReview = {
-  id: number;
-  attributes: {
-    reviewerName: string;
-    rating: number;
-    comment: string;
-    createdAt: string;
-    isApproved: boolean;
-  };
-};
-
-type ReviewsResponse = {
-  data: StrapiReview[];
-  meta: { pagination: { total: number } };
-};
+const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -161,7 +144,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   );
 }
 
-// ─── Photo Gallery Placeholder ────────────────────────────────────────────────
+// ─── Photo Gallery ────────────────────────────────────────────────────────────
 
 function GalleryPlaceholder({ name, city, state, slug }: { name: string; city: string; state: string; slug: string }) {
   const primary = getPlaceholderImage(slug);
@@ -169,29 +152,15 @@ function GalleryPlaceholder({ name, city, state, slug }: { name: string; city: s
   const tertiary = TRUCK_PLACEHOLDERS[(slug.length + 2) % TRUCK_PLACEHOLDERS.length];
   return (
     <div style={{ display: "grid", gridTemplateColumns: "60% 40%", gap: "8px", height: "320px" }}>
-      {/* Primary — full left column */}
-      <div style={{ overflow: "hidden", borderRadius: "12px" }}>
-        <img
-          src={primary}
-          alt={`${name} - bulk water delivery in ${city}, ${state}`}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
+      <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden" }}>
+        <img src={primary} alt={`${name} - bulk water delivery in ${city}, ${state}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
-      {/* Right column — two stacked images */}
-      <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: "8px" }}>
-        <div style={{ overflow: "hidden", borderRadius: "12px" }}>
-          <img
-            src={secondary}
-            alt={`${name} - water truck and equipment`}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
+      <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: "8px", height: "100%" }}>
+        <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden" }}>
+          <img src={secondary} alt={`${name} - water truck and equipment`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
-        <div style={{ overflow: "hidden", borderRadius: "12px" }}>
-          <img
-            src={tertiary}
-            alt={`${name} - service area and operations`}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
+        <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden" }}>
+          <img src={tertiary} alt={`${name} - service area and operations`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       </div>
     </div>
@@ -200,94 +169,40 @@ function GalleryPlaceholder({ name, city, state, slug }: { name: string; city: s
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = { params: Promise<{ slug: string }>; searchParams: Promise<{ ref?: string }> };
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  try {
-    const data = await strapiGet<StrapiResponse>({
-      path: "/haulers",
-      params: {
-        "filters[slug][$eq]": slug,
-        "populate[services][fields][0]": "type",
-        "pagination[pageSize]": "1",
-      },
-      cache: "force-cache",
-      tags: [`hauler-${slug}`],
-    });
-    const hauler = data.data?.[0];
-    if (!hauler) return {};
-    const a = hauler.attributes;
-    const title = `${a.name} — Bulk Water Hauling in ${a.city}, ${a.state} | Haulagua`;
-    const description = a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`;
-    return {
+  const hauler = allHaulers.find((h) => h.attributes.slug === slug) ?? null;
+  if (!hauler) return {};
+  const a = hauler.attributes;
+  const title = `${a.name} — Bulk Water Hauling in ${a.city}, ${a.state} | Haulagua`;
+  const description = a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`;
+  return {
+    title,
+    description,
+    openGraph: {
       title,
       description,
-      openGraph: {
-        title,
-        description,
-        url: `https://haulagua.com/haulers/${slug}`,
-        siteName: "Haulagua",
-        type: "profile",
-      },
-    };
-  } catch {
-    return {};
-  }
+      url: `https://haulagua.com/haulers/${slug}`,
+      siteName: "Haulagua",
+      type: "profile",
+    },
+  };
 }
 
-export default async function HaulerProfilePage({ params }: PageProps) {
+export default async function HaulerProfilePage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const { ref } = await searchParams;
 
-  let hauler: StrapiHauler | null = null;
-
-  try {
-    const data = await strapiGet<StrapiResponse>({
-      path: "/haulers",
-      params: {
-        "filters[slug][$eq]": slug,
-        "populate[services][fields][0]": "type",
-        "populate[services][fields][1]": "waterSource",
-        "populate[services][fields][2]": "truckCapacity",
-        "populate[services][fields][3]": "hoseLength",
-        "populate[caseStudies][fields][0]": "title",
-        "populate[caseStudies][fields][1]": "description",
-        "pagination[pageSize]": "1",
-      },
-      cache: "no-store",
-    });
-    hauler = data.data?.[0] ?? null;
-  } catch {
-    notFound();
-  }
-
+  const hauler = allHaulers.find((h) => h.attributes.slug === slug) ?? null;
   if (!hauler) notFound();
 
   const a = hauler.attributes;
   const services = a.services?.data ?? [];
   const caseStudies = a.caseStudies?.data ?? [];
-
-  let approvedReviews: StrapiReview[] = [];
-  try {
-    const reviewData = await strapiGet<ReviewsResponse>({
-      path: "/reviews",
-      params: {
-        "filters[haulerSlug][$eq]": slug,
-        "filters[isApproved][$eq]": "true",
-        "sort[0]": "createdAt:desc",
-        "pagination[pageSize]": "20",
-      },
-      cache: "no-store",
-    });
-    approvedReviews = reviewData.data ?? [];
-  } catch {
-    // Non-critical — show page without reviews if Strapi call fails
-  }
-
-  const avgRating =
-    approvedReviews.length > 0
-      ? approvedReviews.reduce((sum, r) => sum + r.attributes.rating, 0) / approvedReviews.length
-      : null;
+  const approvedReviews: never[] = []; // Reviews not yet in static data
+  const avgRating = null;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -299,7 +214,11 @@ export default async function HaulerProfilePage({ params }: PageProps) {
             <nav className="flex items-center gap-2 text-sm text-muted-foreground">
               <Link href="/" className="hover:text-foreground">Home</Link>
               <span>/</span>
-              <Link href="/search" className="hover:text-foreground">Find Haulers</Link>
+              <Link href="/water-haulers" className="hover:text-foreground">Water Haulers</Link>
+              <span>/</span>
+              <Link href={`/water-haulers/${a.state.toLowerCase()}`} className="hover:text-foreground">{a.state}</Link>
+              <span>/</span>
+              <Link href={`/water-haulers/${a.state.toLowerCase()}/${toCitySlug(a.city)}`} className="hover:text-foreground">{a.city}</Link>
               <span>/</span>
               <span className="text-foreground font-medium truncate">{a.name}</span>
             </nav>
@@ -307,16 +226,27 @@ export default async function HaulerProfilePage({ params }: PageProps) {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Back link */}
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 group"
-          >
-            <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to results
-          </Link>
+          {(() => {
+            let backHref = "/search";
+            let backLabel = "Back to results";
+            if (ref && ref.startsWith("/water-haulers/")) {
+              backHref = ref;
+              const parts = ref.split("/").filter(Boolean);
+              if (parts.length === 2) {
+                const stateName = STATE_NAMES[parts[1]] ?? parts[1].toUpperCase();
+                backLabel = `All ${stateName} Haulers`;
+              } else if (parts.length >= 3) {
+                backLabel = `Back to ${fromCitySlug(parts[2])}`;
+              }
+            }
+            return (
+              <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 group">
+                <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+                {backLabel}
+              </Link>
+            );
+          })()}
 
-          {/* Two-column layout */}
           <div className="flex flex-col lg:flex-row gap-8">
             {/* ── LEFT (70%) ── */}
             <div className="flex-[7] min-w-0 space-y-8">
@@ -325,10 +255,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 <div className="flex flex-wrap items-center gap-3 mb-1">
                   <h1 className="font-serif text-3xl font-bold text-foreground">{a.name}</h1>
                   {a.isVerifiedPro && (
-                    <span
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1 rounded-full"
-                      style={{ backgroundColor: "#F2A900", color: "#fff" }}
-                    >
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1 rounded-full" style={{ backgroundColor: "#F2A900", color: "#fff" }}>
                       <CheckCircle2 className="h-4 w-4" />
                       Verified Pro
                     </span>
@@ -339,38 +266,17 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                       Unclaimed
                     </span>
                   )}
-                  {a.ada && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
-                      ♿ ADA Accessible
-                    </span>
-                  )}
-                  {a.lgbtqFriendly && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">
-                      🏳️‍🌈 LGBTQ+ Friendly
-                    </span>
-                  )}
-                  {a.veteranOwned && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700">
-                      🎖️ Veteran Owned
-                    </span>
-                  )}
-                  {a.womenOwned && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-pink-100 text-pink-700">
-                      ⚡ Women Owned
-                    </span>
-                  )}
+                  {a.ada && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">♿ ADA Accessible</span>}
+                  {a.lgbtqFriendly && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">🏳️‍🌈 LGBTQ+ Friendly</span>}
+                  {a.veteranOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700">🎖️ Veteran Owned</span>}
+                  {a.womenOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-pink-100 text-pink-700">⚡ Women Owned</span>}
                 </div>
                 <p className="flex items-center gap-1.5 text-muted-foreground mt-1">
                   <MapPin className="h-4 w-4" />
                   {a.address ? `${a.address}, ` : ""}{a.city}, {a.state} {a.zip}
                 </p>
                 {a.plusCode && (
-                  <a
-                    href={`https://plus.codes/${a.plusCode}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#005A9C] mt-1"
-                  >
+                  <a href={`https://plus.codes/${a.plusCode}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#005A9C] mt-1">
                     <MapPin className="h-3.5 w-3.5" />
                     {a.plusCode} (Open in Maps)
                   </a>
@@ -378,10 +284,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 {a.industries && a.industries.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {a.industries.map((ind) => (
-                      <span
-                        key={ind}
-                        className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${INDUSTRY_COLOR[ind] ?? "bg-gray-100 text-gray-700"}`}
-                      >
+                      <span key={ind} className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${INDUSTRY_COLOR[ind] ?? "bg-gray-100 text-gray-700"}`}>
                         {INDUSTRY_LABEL[ind] ?? ind}
                       </span>
                     ))}
@@ -390,8 +293,8 @@ export default async function HaulerProfilePage({ params }: PageProps) {
               </div>
 
               {/* Photo Gallery */}
-              <section>
-                  <GalleryPlaceholder name={a.name} city={a.city} state={a.state} slug={a.slug} />
+              <section className="mb-6">
+                <GalleryPlaceholder name={a.name} city={a.city} state={a.state} slug={a.slug} />
               </section>
 
               {/* About */}
@@ -401,8 +304,7 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   <p className="text-foreground/80 leading-relaxed">{a.description}</p>
                   {a.serviceArea && (
                     <p className="mt-3 text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">Service area:</span>{" "}
-                      {a.serviceArea}
+                      <span className="font-medium text-foreground">Service area:</span> {a.serviceArea}
                     </p>
                   )}
                 </section>
@@ -414,35 +316,15 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   <h2 className="font-serif text-xl font-bold mb-4">Services Offered</h2>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {services.map((s) => (
-                      <div
-                        key={s.id}
-                        className="bg-white border border-border rounded-xl p-4 hover:border-primary/30 transition-colors"
-                      >
+                      <div key={s.id} className="bg-white border border-border rounded-xl p-4 hover:border-primary/30 transition-colors">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-xl">{SERVICE_ICON[s.attributes.type] ?? "💧"}</span>
-                          <h3 className="font-semibold">
-                            {SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}
-                          </h3>
+                          <h3 className="font-semibold">{SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}</h3>
                         </div>
                         <div className="space-y-1 text-sm text-muted-foreground">
-                          {s.attributes.waterSource && (
-                            <p>
-                              <span className="text-foreground font-medium">Source:</span>{" "}
-                              {s.attributes.waterSource}
-                            </p>
-                          )}
-                          {s.attributes.truckCapacity && (
-                            <p>
-                              <span className="text-foreground font-medium">Capacity:</span>{" "}
-                              {s.attributes.truckCapacity.toLocaleString()} gal
-                            </p>
-                          )}
-                          {s.attributes.hoseLength && (
-                            <p>
-                              <span className="text-foreground font-medium">Hose:</span>{" "}
-                              {s.attributes.hoseLength} ft
-                            </p>
-                          )}
+                          {s.attributes.waterSource && <p><span className="text-foreground font-medium">Source:</span> {s.attributes.waterSource}</p>}
+                          {s.attributes.truckCapacity && <p><span className="text-foreground font-medium">Capacity:</span> {s.attributes.truckCapacity.toLocaleString()} gal</p>}
+                          {s.attributes.hoseLength && <p><span className="text-foreground font-medium">Hose:</span> {s.attributes.hoseLength} ft</p>}
                         </div>
                       </div>
                     ))}
@@ -456,18 +338,9 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                   <h2 className="font-serif text-xl font-bold mb-4">Case Studies</h2>
                   <div className="space-y-4">
                     {caseStudies.map((cs) => (
-                      <div
-                        key={cs.id}
-                        className="bg-white border border-border rounded-xl p-5 border-l-4 border-l-primary"
-                      >
-                        <h3 className="font-serif font-semibold text-base mb-2">
-                          {cs.attributes.title}
-                        </h3>
-                        {cs.attributes.description && (
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {cs.attributes.description}
-                          </p>
-                        )}
+                      <div key={cs.id} className="bg-white border border-border rounded-xl p-5 border-l-4 border-l-primary">
+                        <h3 className="font-serif font-semibold text-base mb-2">{cs.attributes.title}</h3>
+                        {cs.attributes.description && <p className="text-sm text-muted-foreground leading-relaxed">{cs.attributes.description}</p>}
                       </div>
                     ))}
                   </div>
@@ -476,130 +349,58 @@ export default async function HaulerProfilePage({ params }: PageProps) {
 
               {/* Reviews */}
               <section>
-                {approvedReviews.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <h2 className="font-serif text-xl font-bold">Reviews</h2>
-                      <div className="flex items-center gap-2">
-                        <StarRating rating={Math.round(avgRating!)} />
-                        <span className="font-bold text-lg" style={{ color: "#005A9C" }}>
-                          {avgRating!.toFixed(1)}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          ({approvedReviews.length} review{approvedReviews.length !== 1 ? "s" : ""})
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      {approvedReviews.map((review) => (
-                        <div
-                          key={review.id}
-                          className="bg-white border border-border rounded-xl p-5"
-                        >
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <div>
-                              <p className="font-semibold text-sm">{review.attributes.reviewerName}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {new Date(review.attributes.createdAt).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                })}
-                              </p>
-                            </div>
-                            <StarRating rating={review.attributes.rating} size={14} />
-                          </div>
-                          <p className="text-sm text-foreground/80 leading-relaxed">
-                            {review.attributes.comment}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <ReviewForm haulerSlug={slug} />
               </section>
             </div>
 
             {/* ── RIGHT (30%) ── */}
             <div className="flex-[3] min-w-0 lg:max-w-xs space-y-5 lg:sticky lg:top-6 lg:self-start">
-              {/* Contact Card */}
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">Contact</h2>
-                <ContactPanel
-                  phone={a.phone}
-                  website={a.website}
-                  email={a.email ?? null}
-                  name={a.name}
-                  slug={a.slug}
-                  isClaimed={a.isClaimed}
-                />
+                <ContactPanel phone={a.phone} website={a.website} email={a.email ?? null} name={a.name} slug={a.slug} isClaimed={a.isClaimed} />
                 {a.email && (
                   <p className="text-xs text-muted-foreground text-center mt-3">
-                    or email{" "}
-                    <a href={`mailto:${a.email}`} className="underline hover:text-foreground">
-                      {a.email}
-                    </a>
+                    or email <a href={`mailto:${a.email}`} className="underline hover:text-foreground">{a.email}</a>
                   </p>
                 )}
               </div>
 
-              {/* At-a-Glance Specs */}
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">At a Glance</h2>
                 <dl className="space-y-3">
                   {a.yearFounded != null && (
                     <div className="flex items-center justify-between">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        Year founded
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />Year founded</dt>
                       <dd className="font-semibold">{a.yearFounded}</dd>
                     </div>
                   )}
                   {a.serviceArea && (
                     <div className="flex items-start justify-between gap-2">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                        <MapPin className="h-4 w-4" />
-                        Service area
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground shrink-0"><MapPin className="h-4 w-4" />Service area</dt>
                       <dd className="font-semibold text-sm text-right">{a.serviceArea}</dd>
                     </div>
                   )}
                   {a.minFee != null && (
                     <div className="flex items-center justify-between">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <DollarSign className="h-4 w-4" />
-                        Starting fee
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground"><DollarSign className="h-4 w-4" />Starting fee</dt>
                       <dd className="font-semibold text-primary">${a.minFee}</dd>
                     </div>
                   )}
                   {a.truckCapacity != null && (
                     <div className="flex items-center justify-between">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Truck className="h-4 w-4" />
-                        Truck capacity
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Truck className="h-4 w-4" />Truck capacity</dt>
                       <dd className="font-semibold">{a.truckCapacity.toLocaleString()} gal</dd>
                     </div>
                   )}
                   {a.hoseLength != null && (
                     <div className="flex items-center justify-between">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Ruler className="h-4 w-4" />
-                        Hose length
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Ruler className="h-4 w-4" />Hose length</dt>
                       <dd className="font-semibold">{a.hoseLength} ft</dd>
                     </div>
                   )}
                   {a.certification && (
                     <div className="flex items-center justify-between">
-                      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Shield className="h-4 w-4" />
-                        Certification
-                      </dt>
+                      <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Shield className="h-4 w-4" />Certification</dt>
                       <dd className="font-semibold text-sm text-right">{a.certification}</dd>
                     </div>
                   )}
@@ -614,27 +415,14 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Droplets className="h-4 w-4" />
-                      Water type
-                    </dt>
+                    <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Droplets className="h-4 w-4" />Water type</dt>
                     <dd className="font-semibold text-sm">{WATER_TYPE_LABEL[a.waterType] ?? a.waterType}</dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4" />
-                      Insurance
-                    </dt>
+                    <dt className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4" />Insurance</dt>
                     <dd className="font-semibold text-sm">
                       {a.insuranceCertificate ? (
-                        <a
-                          href={a.insuranceCertificate}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-600 hover:underline"
-                        >
-                          Verified
-                        </a>
+                        <a href={a.insuranceCertificate} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Verified</a>
                       ) : (
                         <span className="text-muted-foreground">Unverified</span>
                       )}
@@ -643,20 +431,14 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 </dl>
               </div>
 
-              {/* Claim This Listing CTA */}
               {!a.isClaimed && (
                 <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
                   <div className="flex items-start gap-3">
                     <ShieldAlert className="h-5 w-5 mt-0.5 shrink-0 text-gray-400" />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-[#333333]">Is this your business?</p>
-                      <p className="text-xs text-gray-500 mt-0.5 mb-3">
-                        Claim this listing to update your info, add photos, and manage your profile.
-                      </p>
-                      <Link
-                        href={`/haulers/${a.slug}/claim`}
-                        className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[#005A9C] text-[#005A9C] text-sm font-semibold py-2 px-4 hover:bg-[#005A9C] hover:text-white transition-colors"
-                      >
+                      <p className="text-xs text-gray-500 mt-0.5 mb-3">Claim this listing to update your info, add photos, and manage your profile.</p>
+                      <Link href={`/haulers/${a.slug}/claim`} className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[#005A9C] text-[#005A9C] text-sm font-semibold py-2 px-4 hover:bg-[#005A9C] hover:text-white transition-colors">
                         Claim This Listing
                       </Link>
                     </div>
@@ -664,18 +446,12 @@ export default async function HaulerProfilePage({ params }: PageProps) {
                 </div>
               )}
 
-              {/* Verified Pro Badge Card */}
               {a.isVerifiedPro && (
-                <div
-                  className="rounded-xl p-4 flex items-start gap-3"
-                  style={{ backgroundColor: "#F2A90015", border: "1px solid #F2A90050" }}
-                >
+                <div className="rounded-xl p-4 flex items-start gap-3" style={{ backgroundColor: "#F2A90015", border: "1px solid #F2A90050" }}>
                   <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "#F2A900" }} />
                   <div>
                     <p className="font-semibold text-sm" style={{ color: "#9a6b00" }}>Verified Pro</p>
-                    <p className="text-xs mt-0.5" style={{ color: "#a37300" }}>
-                      This hauler has been verified by the Haulagua team for licensing, insurance, and quality standards.
-                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: "#a37300" }}>This hauler has been verified by the Haulagua team for licensing, insurance, and quality standards.</p>
                   </div>
                 </div>
               )}
