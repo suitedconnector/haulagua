@@ -49,6 +49,8 @@ type StrapiHauler = {
 
 type Filters = {
   zip: string;
+  state: string;
+  city: string;
   services: string[];
   feeRange: string | null;
   verifiedOnly: boolean;
@@ -59,6 +61,27 @@ type Filters = {
 const PAGE_SIZE = 20;
 
 const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
+
+const STATE_NAMES: Record<string, string> = {
+  tx: "Texas", az: "Arizona", ca: "California", fl: "Florida",
+  co: "Colorado", nm: "New Mexico", ok: "Oklahoma", nv: "Nevada",
+  ut: "Utah", id: "Idaho", mt: "Montana", wy: "Wyoming",
+  nd: "North Dakota", sd: "South Dakota", ne: "Nebraska", ks: "Kansas",
+  mo: "Missouri", ia: "Iowa", mn: "Minnesota", wi: "Wisconsin",
+  il: "Illinois", mi: "Michigan", in: "Indiana", oh: "Ohio",
+  ky: "Kentucky", tn: "Tennessee", al: "Alabama", ms: "Mississippi",
+  ar: "Arkansas", la: "Louisiana", ga: "Georgia", sc: "South Carolina",
+  nc: "North Carolina", va: "Virginia", wv: "West Virginia", pa: "Pennsylvania",
+  ny: "New York", nj: "New Jersey", de: "Delaware", md: "Maryland",
+  ct: "Connecticut", ri: "Rhode Island", ma: "Massachusetts", nh: "New Hampshire",
+  vt: "Vermont", me: "Maine", wa: "Washington", or: "Oregon", ak: "Alaska", hi: "Hawaii",
+};
+
+const AVAILABLE_STATES: { abbr: string; name: string }[] = Array.from(
+  new Set(allHaulers.map((h) => h.attributes.state).filter(Boolean))
+)
+  .sort()
+  .map((abbr) => ({ abbr, name: STATE_NAMES[abbr.toLowerCase()] ?? abbr }));
 
 const SERVICE_TYPES: { value: string; label: string }[] = [
   { value: "pool", label: "Swimming Pool" },
@@ -110,6 +133,19 @@ const SERVICE_TYPE_LABEL: Record<string, string> = {
   events: "Events",
 };
 
+// ─── Location helpers ─────────────────────────────────────────────────────────
+
+function getCitiesByState(stateAbbr: string): string[] {
+  if (!stateAbbr) return [];
+  const cities = new Set<string>();
+  allHaulers.forEach((h) => {
+    if (h.attributes.state === stateAbbr && h.attributes.city) {
+      cities.add(h.attributes.city);
+    }
+  });
+  return Array.from(cities).sort();
+}
+
 // ─── Client-side filter ───────────────────────────────────────────────────────
 
 function applyFilters(filters: Filters): StrapiHauler[] {
@@ -118,6 +154,9 @@ function applyFilters(filters: Filters): StrapiHauler[] {
 
   return allHaulers.filter((h) => {
     const a = h.attributes;
+
+    if (filters.state && a.state !== filters.state) return false;
+    if (filters.city && a.city !== filters.city) return false;
 
     if (q) {
       const fields = [a.city, a.state, a.zip, a.serviceArea];
@@ -233,6 +272,11 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
 // ─── Filter Sidebar ───────────────────────────────────────────────────────────
 
 function FilterSidebar({
+  selectedState,
+  setSelectedState,
+  selectedCity,
+  setSelectedCity,
+  availableCities,
   selectedServices,
   setSelectedServices,
   selectedFeeRange,
@@ -240,6 +284,11 @@ function FilterSidebar({
   verifiedOnly,
   setVerifiedOnly,
 }: {
+  selectedState: string;
+  setSelectedState: (v: string) => void;
+  selectedCity: string;
+  setSelectedCity: (v: string) => void;
+  availableCities: string[];
   selectedServices: string[];
   setSelectedServices: (v: string[]) => void;
   selectedFeeRange: string | null;
@@ -254,8 +303,50 @@ function FilterSidebar({
         : [...selectedServices, val]
     );
 
+  const selectClass =
+    "w-full border border-gray-200 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#005A9C]/20 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed";
+
   return (
     <aside className="space-y-6">
+      {/* ── Location ── */}
+      <div>
+        <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
+          Location
+        </h3>
+        <div className="space-y-2">
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1 block">State</Label>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className={selectClass}
+            >
+              <option value="">All States</option>
+              {AVAILABLE_STATES.map(({ abbr, name }) => (
+                <option key={abbr} value={abbr}>{name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1 block">City</Label>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={!selectedState}
+              className={selectClass}
+            >
+              <option value="">All Cities</option>
+              {availableCities.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <hr className="border-border" />
+
+      {/* ── Service Type ── */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Service Type
@@ -278,6 +369,7 @@ function FilterSidebar({
 
       <hr className="border-border" />
 
+      {/* ── Fee Range ── */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Min Starting Fee
@@ -308,6 +400,7 @@ function FilterSidebar({
 
       <hr className="border-border" />
 
+      {/* ── Verified Pro ── */}
       <div>
         <h3 className="font-semibold text-sm uppercase tracking-wide text-foreground mb-3">
           Verified Pro
@@ -414,6 +507,12 @@ export function SearchClient({
   // ── Filter state (initialised from URL) ───────────────────────────────────
   const [zip, setZip] = useState(initialZip);
   const [inputValue, setInputValue] = useState(initialZip);
+  const [selectedState, setSelectedStateRaw] = useState<string>(
+    () => searchParams.get("state") ?? ""
+  );
+  const [selectedCity, setSelectedCity] = useState<string>(
+    () => searchParams.get("city") ?? ""
+  );
   const [selectedServices, setSelectedServices] = useState<string[]>(() => {
     const urlServices = searchParams.get("services");
     if (urlServices) return urlServices.split(",").filter(Boolean);
@@ -425,6 +524,14 @@ export function SearchClient({
   const [verifiedOnly, setVerifiedOnly] = useState(
     () => searchParams.get("verified") === "1"
   );
+
+  // Cascade: changing state clears city
+  const setSelectedState = useCallback((state: string) => {
+    setSelectedStateRaw(state);
+    setSelectedCity("");
+  }, []);
+
+  const availableCities = getCitiesByState(selectedState);
 
   // ── Results state ─────────────────────────────────────────────────────────
   const [haulers, setHaulers] = useState<StrapiHauler[]>([]);
@@ -448,41 +555,64 @@ export function SearchClient({
   // ── Effect: refilter from page 1 whenever filters change ─────────────────
 
   useEffect(() => {
-    const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
+    const filters: Filters = {
+      zip,
+      state: selectedState,
+      city: selectedCity,
+      services: selectedServices,
+      feeRange: selectedFeeRange,
+      verifiedOnly,
+    };
     setLoading(true);
     setError(null);
     fetchPage(filters, 1);
     setLoading(false);
-  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
+  }, [zip, selectedState, selectedCity, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
 
   // ── Load More ─────────────────────────────────────────────────────────────
 
   const handleLoadMore = useCallback(() => {
     const nextPage = page + 1;
-    const filters: Filters = { zip, services: selectedServices, feeRange: selectedFeeRange, verifiedOnly };
+    const filters: Filters = {
+      zip,
+      state: selectedState,
+      city: selectedCity,
+      services: selectedServices,
+      feeRange: selectedFeeRange,
+      verifiedOnly,
+    };
     setLoadingMore(true);
     fetchPage(filters, nextPage);
     setLoadingMore(false);
-  }, [page, zip, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
+  }, [page, zip, selectedState, selectedCity, selectedServices, selectedFeeRange, verifiedOnly, fetchPage]);
 
   // ── URL sync ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const p = new URLSearchParams();
     if (zip) p.set("zip", zip);
+    if (selectedState) p.set("state", selectedState);
+    if (selectedCity) p.set("city", selectedCity);
     if (selectedServices.length > 0) p.set("services", selectedServices.join(","));
     if (selectedFeeRange) p.set("fee", selectedFeeRange);
     if (verifiedOnly) p.set("verified", "1");
     router.replace(`/search?${p.toString()}`, { scroll: false });
-  }, [zip, selectedServices, selectedFeeRange, verifiedOnly, router]);
+  }, [zip, selectedState, selectedCity, selectedServices, selectedFeeRange, verifiedOnly, router]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
   const hasFilters =
-    selectedServices.length > 0 || selectedFeeRange !== null || verifiedOnly;
+    selectedState !== "" ||
+    selectedServices.length > 0 ||
+    selectedFeeRange !== null ||
+    verifiedOnly;
 
   const activeFilterCount =
-    selectedServices.length + (selectedFeeRange ? 1 : 0) + (verifiedOnly ? 1 : 0);
+    (selectedState ? 1 : 0) +
+    (selectedCity ? 1 : 0) +
+    selectedServices.length +
+    (selectedFeeRange ? 1 : 0) +
+    (verifiedOnly ? 1 : 0);
 
   const hasMore = haulers.length < total;
 
@@ -492,10 +622,14 @@ export function SearchClient({
   };
 
   const clearFilters = () => {
+    setSelectedState("");
+    setSelectedCity("");
     setSelectedServices([]);
     setSelectedFeeRange(null);
     setVerifiedOnly(false);
   };
+
+  const stateName = AVAILABLE_STATES.find((s) => s.abbr === selectedState)?.name;
 
   const serviceLabel = SERVICE_TYPE_LABEL[initialServiceType] ?? initialServiceType;
   const heading =
@@ -584,6 +718,11 @@ export function SearchClient({
                 )}
               </div>
               <FilterSidebar
+                selectedState={selectedState}
+                setSelectedState={setSelectedState}
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+                availableCities={availableCities}
                 selectedServices={selectedServices}
                 setSelectedServices={setSelectedServices}
                 selectedFeeRange={selectedFeeRange}
@@ -604,6 +743,22 @@ export function SearchClient({
               {/* Active filter badges */}
               {hasFilters && (
                 <div className="flex flex-wrap gap-1.5">
+                  {selectedCity && (
+                    <Badge variant="secondary" className="gap-1 text-xs">
+                      {selectedCity}
+                      <button onClick={() => setSelectedCity("")}>
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedState && !selectedCity && (
+                    <Badge variant="secondary" className="gap-1 text-xs">
+                      {stateName}
+                      <button onClick={() => setSelectedState("")}>
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  )}
                   {selectedServices.map((s) => (
                     <Badge key={s} variant="secondary" className="gap-1 text-xs">
                       {SERVICE_LABEL[s] ?? s}
