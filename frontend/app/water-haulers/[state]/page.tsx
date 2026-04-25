@@ -147,10 +147,17 @@ export async function generateMetadata({
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://www.haulagua.com/water-haulers/${state}`,
+    },
     openGraph: {
       title,
       description,
-      url: `https://haulagua.com/water-haulers/${state}`,
+      url: `https://www.haulagua.com/water-haulers/${state}`,
       siteName: "HaulAgua",
       type: "website",
     },

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, ShieldAlert, Ruler, Droplets } from "lucide-react";
+import { Shield, Medal } from "lucide-react";
 import { getPlaceholderImage } from "@/src/lib/placeholders";
 import { CityWave } from "@/components/city-wave";
 
@@ -12,6 +12,11 @@ export type StrapiHauler = {
     city: string | null;
     state: string;
     zip?: string | null;
+    phone?: string | null;
+    website?: string | null;
+    description?: string | null;
+    certification?: string | null;
+    veteranOwned?: boolean | null;
     serviceArea?: string | null;
     minFee?: number | null;
     truckCapacity?: number | null;
@@ -20,128 +25,78 @@ export type StrapiHauler = {
     isVerifiedPro: boolean;
     isClaimed: boolean;
     isActive?: boolean;
-    description?: string | null;
     services?: {
       data: { id: number; attributes: { type: string } }[];
     };
   };
 };
 
-const SERVICE_COLOR: Record<string, string> = {
-  pool: "bg-white/20 text-white",
-  construction: "bg-white/20 text-white",
-  potable: "bg-white/20 text-white",
-  agricultural: "bg-white/20 text-white",
-  emergency: "bg-white/20 text-white",
-  events: "bg-white/20 text-white",
-};
-
-const SERVICE_LABEL: Record<string, string> = {
-  pool: "Pool",
-  construction: "Construction",
-  potable: "Potable",
-  agricultural: "Agricultural",
-  emergency: "Emergency",
-  events: "Events",
-};
-
 export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?: string }) {
   const a = hauler.attributes;
-  const services = a.services?.data ?? [];
   const href = refPath ? `/haulers/${a.slug}?ref=${encodeURIComponent(refPath)}` : `/haulers/${a.slug}`;
 
-  return (
-    <Link
-      href={href}
-      className="block rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group overflow-hidden" style={{ backgroundColor: "#0461AA" }}
-    >
-      <div className="relative h-36 w-full bg-gray-100">
-        <Image
-          src={getPlaceholderImage(a.slug)}
-          alt={`${a.name} - bulk water hauling`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-        <CityWave className="absolute bottom-0 left-0 pointer-events-none" />
-      </div>
-      <div className="p-5" style={{ backgroundColor: "#0461AA" }}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-lg text-white truncate">
-                {a.name}
-              </h3>
-              {a.isVerifiedPro && (
-                <span
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap text-white"
-                  style={{ backgroundColor: "#F2A900" }}
-                >
-                  <CheckCircle2 className="h-3 w-3" />
-                  Verified Pro
-                </span>
-              )}
-              {!a.isClaimed && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-white/20 text-white">
-                  <ShieldAlert className="h-3 w-3" />
-                  Unclaimed
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-white/70 mt-0.5">
-              {a.city && `${a.city}, `}{a.state}
-            </p>
-          </div>
-          {a.minFee != null && (
-            <div className="text-right shrink-0">
-              <p className="text-xs text-white/70">Starting at</p>
-              <p className="text-xl font-bold text-white">
-                ${a.minFee}
-              </p>
-            </div>
-          )}
-        </div>
+  const trustBadge = a.certification
+    ? { icon: Shield, label: a.certification }
+    : a.veteranOwned
+    ? { icon: Medal, label: "Veteran-Owned" }
+    : null;
 
-        {services.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {services.map((s) => (
-              <span
-                key={s.id}
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  SERVICE_COLOR[s.attributes.type] ?? "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}
-              </span>
-            ))}
-          </div>
+  return (
+    <div
+      className="rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all overflow-hidden flex flex-col"
+      style={{ backgroundColor: "#0461AA" }}
+    >
+      <Link href={href} className="block">
+        <div className="relative h-36 w-full bg-gray-100">
+          <Image
+            src={getPlaceholderImage(a.slug)}
+            alt={`${a.name} - bulk water hauling`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+          <CityWave className="absolute bottom-0 left-0 pointer-events-none" />
+        </div>
+      </Link>
+
+      <div className="p-5 flex flex-col flex-1" style={{ backgroundColor: "#0461AA" }}>
+        <h3 className="font-semibold text-lg text-white leading-snug">
+          {a.name}
+        </h3>
+        <p className="text-sm text-white/70 mt-0.5">
+          {a.city && `${a.city}, `}{a.state}
+        </p>
+
+        {trustBadge && (
+          <span className="inline-flex items-center gap-1 mt-2 text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-white self-start">
+            <trustBadge.icon className="h-3 w-3 shrink-0" />
+            {trustBadge.label}
+          </span>
         )}
 
-        <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-white/70">
-          {a.truckCapacity != null && (
-            <span className="flex items-center gap-1">
-              <i className="fa-solid fa-truck-droplet" style={{ fontSize: "13px" }} />
-              {a.truckCapacity.toLocaleString()} gal
-            </span>
-          )}
-          {a.hoseLength != null && (
-            <span className="flex items-center gap-1">
-              <Ruler className="h-3.5 w-3.5" />
-              {a.hoseLength} ft hose
-            </span>
-          )}
-          {a.waterType && (
-            <span className="flex items-center gap-1">
-              <Droplets className="h-3.5 w-3.5" />
-              {a.waterType === "both"
-                ? "Potable & Non-Potable"
-                : a.waterType === "potable"
-                ? "Potable"
-                : "Non-Potable"}
-            </span>
-          )}
+        {a.truckCapacity != null && (
+          <p className="mt-2 text-sm text-white/70 flex items-center gap-1">
+            <i className="fa-solid fa-truck-droplet" style={{ fontSize: "13px" }} />
+            {a.truckCapacity.toLocaleString()} gal capacity
+          </p>
+        )}
+
+        {a.description && (
+          <p className="mt-2 text-sm text-white/75 line-clamp-1 leading-relaxed">
+            {a.description}
+          </p>
+        )}
+
+        <div className="mt-auto pt-4">
+          <Link
+            href={href}
+            className="block w-full text-center py-2 px-4 rounded-lg text-sm font-semibold transition-colors hover:opacity-90"
+            style={{ backgroundColor: "#F2A900", color: "#1a1a1a" }}
+          >
+            View Profile →
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

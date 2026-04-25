@@ -4,10 +4,17 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "List Your Business Free — Haulagua for Haulers",
   description: "Join Haulagua and connect with customers who need bulk water delivery. Free basic listing, verified Pro badge available, full equipment specs profile.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://www.haulagua.com/for-haulers',
+  },
   openGraph: {
     title: "List Your Business Free — Haulagua for Haulers",
     description: "Stop chasing unqualified leads. List your bulk water hauling business free on Haulagua.",
-    url: "https://haulagua.com/for-haulers",
+    url: "https://www.haulagua.com/for-haulers",
     siteName: "Haulagua",
     type: "website",
   },

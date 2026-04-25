@@ -20,12 +20,11 @@ import {
   CITY_INTRO_DEFAULT,
   fromStateSlug,
   fromCitySlug,
-  getHaulersByState,
   getHaulersByCity,
   getLocationByCity,
-  groupHaulersByCity,
-  getAllStatesWithCounts,
+  toCitySlug,
 } from "@/lib/location";
+import haulersFlatData from "@/data/haulers-flat.json";
 
 type PageProps = { params: Promise<{ state: string; city: string }> };
 
@@ -46,13 +45,13 @@ const INNER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 // ─── Static Params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const states = await getAllStatesWithCounts();
+  const seen = new Set<string>();
   const result: { state: string; city: string }[] = [];
-  for (const { abbr } of states) {
-    const haulers = await getHaulersByState(abbr.toUpperCase());
-    const cities = groupHaulersByCity(haulers);
-    for (const { slug } of cities) {
-      result.push({ state: abbr.toLowerCase(), city: slug });
+  for (const h of haulersFlatData as { state: string; city: string }[]) {
+    const key = `${h.state.toLowerCase()}/${toCitySlug(h.city)}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push({ state: h.state.toLowerCase(), city: toCitySlug(h.city) });
     }
   }
   return result;
@@ -77,10 +76,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://www.haulagua.com/water-haulers/${state}/${city}`,
+    },
     openGraph: {
       title,
       description,
-      url: `https://haulagua.com/water-haulers/${state}/${city}`,
+      url: `https://www.haulagua.com/water-haulers/${state}/${city}`,
       siteName: "HaulAgua",
       type: "website",
     },
@@ -142,6 +148,27 @@ export default async function CityPage({ params }: PageProps) {
         }
       : null;
 
+  const localBusinessSchemas = haulers.map((h) => {
+    const a = h.attributes;
+    const schema: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: a.name,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: cityName,
+        addressRegion: abbr,
+        ...(a.zip ? { postalCode: a.zip } : {}),
+        addressCountry: "US",
+      },
+      url: `https://haulagua.com/haulers/${a.slug}`,
+    };
+    if (a.phone) schema.telephone = a.phone;
+    if (a.website) schema.sameAs = a.website;
+    if (a.description) schema.description = a.description;
+    return schema;
+  });
+
   return (
     <div className="min-h-screen flex flex-col suppressHydrationWarning">
       <Navbar />
@@ -158,6 +185,13 @@ export default async function CityPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
         />
       )}
+      {localBusinessSchemas.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
 
       <main className="flex-1">
 

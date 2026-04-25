@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: "Find Bulk Water Haulers in Your State | Haulagua",
   description:
     "Haulagua is the only directory built specifically for bulk water hauling. Browse verified haulers by state for pool fills, construction water, potable delivery, agricultural use, and more.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://www.haulagua.com/water-haulers',
+  },
 };
 
 // ─── State data ──────────────────────────────────────────────────────────────

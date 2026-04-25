@@ -497,9 +497,11 @@ function SkeletonCards({ count = 3 }: { count?: number }) {
 export function SearchClient({
   initialZip,
   initialServiceType,
+  initialHaulers = [],
 }: {
   initialZip: string;
   initialServiceType: string;
+  initialHaulers?: StrapiHauler[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -534,10 +536,10 @@ export function SearchClient({
   const availableCities = getCitiesByState(selectedState);
 
   // ── Results state ─────────────────────────────────────────────────────────
-  const [haulers, setHaulers] = useState<StrapiHauler[]>([]);
-  const [total, setTotal] = useState(0);
+  const [haulers, setHaulers] = useState<StrapiHauler[]>(() => initialHaulers.slice(0, PAGE_SIZE));
+  const [total, setTotal] = useState(initialHaulers.length);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

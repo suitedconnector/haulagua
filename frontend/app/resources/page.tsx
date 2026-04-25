@@ -10,10 +10,17 @@ import { BookOpen } from "lucide-react";
 export const metadata: Metadata = {
   title: "Resource Center — Haulagua",
   description: "Guides, tips, and articles about bulk water hauling, pool fills, construction water, and more.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://www.haulagua.com/resources',
+  },
   openGraph: {
     title: "Resource Center — Haulagua",
     description: "Guides, tips, and articles about bulk water hauling, pool fills, construction water, and more.",
-    url: "https://haulagua.com/resources",
+    url: "https://www.haulagua.com/resources",
     siteName: "Haulagua",
     type: "website",
   },

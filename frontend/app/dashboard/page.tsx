@@ -10,6 +10,13 @@ import { Eye, MessageSquare, Users, PenLine, CheckCircle, AlertCircle } from "lu
 export const metadata: Metadata = {
   title: "Dashboard — Haulagua",
   description: "Manage your Haulagua listing, view stats, and update your profile.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: 'https://www.haulagua.com/dashboard',
+  },
 };
 
 const stats = [

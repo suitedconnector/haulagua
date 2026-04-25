@@ -440,7 +440,7 @@
         "lgbtqFriendly": null,
         "veteranOwned": null,
         "womenOwned": null,
-        "hours": "Monday: 9 AM–5 PM  Tuesday: 9 AM–5 PM   Wednesday: 9 AM–5 PM   Thursday: 9 AM–5 PM   Friday: 9 AM–5 PM   Saturday:  Closed   Sunday:  Closed",
+        "hours": "Monday: 9\u202fAM\u20135\u202fPM  Tuesday: 9\u202fAM\u20135\u202fPM   Wednesday: 9\u202fAM\u20135\u202fPM   Thursday: 9\u202fAM\u20135\u202fPM   Friday: 9\u202fAM\u20135\u202fPM   Saturday:  Closed   Sunday:  Closed",
         "plusCode": "7796+X2 Austin, Texas"
       }
     },
@@ -560,7 +560,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday\n(Easter)\nOpen 24 hours\nHours might differ\n\nMonday\nOpen 24 hours\n\nTuesday\nOpen 24 hours\n\nWednesday\nOpen 24 hours\n\nThursday\nOpen 24 hours\n\nFriday\nOpen 24 hours\n\nSaturday\nOpen 24 hours",
+        "hours": "Sunday\n(Easter)\nOpen 24 hours\nHours might differ\n\ue14d\nMonday\nOpen 24 hours\n\ue14d\nTuesday\nOpen 24 hours\n\ue14d\nWednesday\nOpen 24 hours\n\ue14d\nThursday\nOpen 24 hours\n\ue14d\nFriday\nOpen 24 hours\n\ue14d\nSaturday\nOpen 24 hours",
         "plusCode": ""
       }
     },
@@ -600,7 +600,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed Monday: 8 AM–5 PM Tuesday: 8 AM–5 PM Wednesday: 8 AM–5 PM Thursday: 8:30 AM–5 PM Friday: 8 AM–7 PM Saturday: 8 AM–4 PM",
+        "hours": "Sunday: Closed Monday: 8\u202fAM\u20135\u202fPM Tuesday: 8\u202fAM\u20135\u202fPM Wednesday: 8\u202fAM\u20135\u202fPM Thursday: 8:30\u202fAM\u20135\u202fPM Friday: 8\u202fAM\u20137\u202fPM Saturday: 8\u202fAM\u20134\u202fPM",
         "plusCode": ""
       }
     },
@@ -640,7 +640,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday\nClosed\n\nMonday\n8 AM–5 PM\n\nTuesday\n8 AM–5 PM\n\nWednesday\n8 AM–5 PM\n\nThursday\n8 AM–5 PM\n\nFriday\n8 AM–5 PM\n\nSaturday\n8 AM–12 PM",
+        "hours": "Sunday\nClosed\n\ue14d\nMonday\n8\u202fAM\u20135\u202fPM\n\ue14d\nTuesday\n8\u202fAM\u20135\u202fPM\n\ue14d\nWednesday\n8\u202fAM\u20135\u202fPM\n\ue14d\nThursday\n8\u202fAM\u20135\u202fPM\n\ue14d\nFriday\n8\u202fAM\u20135\u202fPM\n\ue14d\nSaturday\n8\u202fAM\u201312\u202fPM",
         "plusCode": ""
       }
     },
@@ -680,7 +680,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed Monday: 8 AM–5 PM Tuesday: 8 AM–5 PM Wednesday: 8 AM–5 PM Thursday: 8 AM–5 PM Friday: 8 AM–5 PM Saturday: Closed",
+        "hours": "Sunday: Closed Monday: 8\u202fAM\u20135\u202fPM Tuesday: 8\u202fAM\u20135\u202fPM Wednesday: 8\u202fAM\u20135\u202fPM Thursday: 8\u202fAM\u20135\u202fPM Friday: 8\u202fAM\u20135\u202fPM Saturday: Closed",
         "plusCode": "3287+XV Lakeland, Florida"
       }
     },
@@ -720,7 +720,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed Monday: 6 AM–6 PM Tuesday: 6 AM–6 PM Wednesday: 6 AM–6 PM Thursday: 6 AM–6 PM Friday: 6 AM–6 PM Saturday: 6 AM–6 PM",
+        "hours": "Sunday: Closed Monday: 6\u202fAM\u20136\u202fPM Tuesday: 6\u202fAM\u20136\u202fPM Wednesday: 6\u202fAM\u20136\u202fPM Thursday: 6\u202fAM\u20136\u202fPM Friday: 6\u202fAM\u20136\u202fPM Saturday: 6\u202fAM\u20136\u202fPM",
         "plusCode": ""
       }
     },
@@ -734,7 +734,7 @@
         "email": null,
         "website": "",
         "address": "",
-        "city": "",
+        "city": "Austin",
         "state": "TX",
         "zip": "",
         "serviceArea": null,
@@ -800,7 +800,7 @@
         "lgbtqFriendly": null,
         "veteranOwned": null,
         "womenOwned": null,
-        "hours": "Monday:  \t9 AM–5 PM  Tuesday:  \t9 AM–5 PM   Wednesday:  \t9 AM–5 PM   Thursday:  \t9 AM–5 PM   Friday:  \t9 AM–5 PM   Saturday:  \tClosed   Sunday:  \tClosed",
+        "hours": "Monday:  \t9\u202fAM\u20135\u202fPM  Tuesday:  \t9\u202fAM\u20135\u202fPM   Wednesday:  \t9\u202fAM\u20135\u202fPM   Thursday:  \t9\u202fAM\u20135\u202fPM   Friday:  \t9\u202fAM\u20135\u202fPM   Saturday:  \tClosed   Sunday:  \tClosed",
         "plusCode": "63R6+V9 Austin, Texas"
       }
     },
@@ -880,7 +880,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed  Monday: 8 AM–5 PM   Tuesday: 8 AM–5 PM   Wednesday: 8 AM–5 PM   Thursday: 8 AM–5 PM   Friday: 8 AM–5 PM   Saturday: 8 AM–5 PM",
+        "hours": "Sunday: Closed  Monday: 8\u202fAM\u20135\u202fPM   Tuesday: 8\u202fAM\u20135\u202fPM   Wednesday: 8\u202fAM\u20135\u202fPM   Thursday: 8\u202fAM\u20135\u202fPM   Friday: 8\u202fAM\u20135\u202fPM   Saturday: 8\u202fAM\u20135\u202fPM",
         "plusCode": "39HW+JJ Topanga, California"
       }
     },
@@ -920,7 +920,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: 6 AM–10 PM Monday: 6 AM–10 PM Tuesday: 6 AM–10 PM Wednesday: 6 AM–10 PM Thursday: 6 AM–10 PM Friday: 6 AM–10 PM Saturday: 6 AM–10 PM",
+        "hours": "Sunday: 6\u202fAM\u201310\u202fPM Monday: 6\u202fAM\u201310\u202fPM Tuesday: 6\u202fAM\u201310\u202fPM Wednesday: 6\u202fAM\u201310\u202fPM Thursday: 6\u202fAM\u201310\u202fPM Friday: 6\u202fAM\u201310\u202fPM Saturday: 6\u202fAM\u201310\u202fPM",
         "plusCode": ""
       }
     },
@@ -960,7 +960,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed Monday: 7 AM–5 PM Tuesday: 7 AM–5 PM Wednesday: 7 AM–5 PM Thursday: 7 AM–5 PM Friday: 7 AM–5 PM Saturday: 7 AM–5 PM",
+        "hours": "Sunday: Closed Monday: 7\u202fAM\u20135\u202fPM Tuesday: 7\u202fAM\u20135\u202fPM Wednesday: 7\u202fAM\u20135\u202fPM Thursday: 7\u202fAM\u20135\u202fPM Friday: 7\u202fAM\u20135\u202fPM Saturday: 7\u202fAM\u20135\u202fPM",
         "plusCode": "FR44+VJ Acton, California"
       }
     },
@@ -1209,7 +1209,7 @@
       "attributes": {
         "name": "Frontier Bulk Water Delivery",
         "slug": "frontier-bulk-water-delivery",
-        "description": "[](https://frontierbulkwater.com/ \"Frontier Bulk Water \")",
+        "description": "Frontier Bulk Water delivers bulk water to Marble Falls and the surrounding Texas Hill Country.",
         "phone": "(830) 262-8355",
         "email": null,
         "website": "http://frontierbulkwater.com/",
@@ -1297,7 +1297,7 @@
         "city": "Spicewood",
         "state": "TX",
         "zip": "78669",
-        "serviceArea": " ✓ Friendly, reliable service Serving our neighbors across the Texas Hill Country for years.\nWater for every need\nSwimming pools, stock tanks, cisterns, rainwater collection & more.",
+        "serviceArea": " \u2713 Friendly, reliable service Serving our neighbors across the Texas Hill Country for years.\nWater for every need\nSwimming pools, stock tanks, cisterns, rainwater collection & more.",
         "minFee": null,
         "truckCapacity": null,
         "hoseLength": null,
@@ -1400,7 +1400,7 @@
         "lgbtqFriendly": null,
         "veteranOwned": null,
         "womenOwned": null,
-        "hours": "Sunday: 8 AM–4 PM  Monday: 7 AM–5 PM  Tuesday: 7 AM–5 PM  Wednesday: 7 AM–5 PM  Thursday: 7 AM–5 PM  Friday: 7 AM–5 PM  Saturday: 7 AM–5 PM",
+        "hours": "Sunday: 8\u202fAM\u20134\u202fPM  Monday: 7\u202fAM\u20135\u202fPM  Tuesday: 7\u202fAM\u20135\u202fPM  Wednesday: 7\u202fAM\u20135\u202fPM  Thursday: 7\u202fAM\u20135\u202fPM  Friday: 7\u202fAM\u20135\u202fPM  Saturday: 7\u202fAM\u20135\u202fPM",
         "plusCode": "977W+9C Concho, Arizona"
       }
     },
@@ -1494,7 +1494,7 @@
         "email": "info@hamiltonpoolbulkwater.net",
         "website": "https://hamiltonpoolbulkwater.net/",
         "address": null,
-        "city": null,
+        "city": "Dripping Springs",
         "state": "TX",
         "zip": null,
         "serviceArea": null,
@@ -1520,7 +1520,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: Closed Monday: 7:30 AM–6 PM  Tuesday: 7:30 AM–6 PM   Wednesday: 7:30 AM–6 PM   Thursday: 7:30 AM–6 PM   Friday: 7:30 AM–6 PM   Saturday: Closed",
+        "hours": "Sunday: Closed Monday: 7:30\u202fAM\u20136\u202fPM  Tuesday: 7:30\u202fAM\u20136\u202fPM   Wednesday: 7:30\u202fAM\u20136\u202fPM   Thursday: 7:30\u202fAM\u20136\u202fPM   Friday: 7:30\u202fAM\u20136\u202fPM   Saturday: Closed",
         "plusCode": "7WW7+J9 Dripping Springs, Texas"
       }
     },
@@ -1769,7 +1769,7 @@
       "attributes": {
         "name": "Bulkwater911",
         "slug": "bulkwater911",
-        "description": "www.bulkwater911.com www.bulkwater911.comwww.bulkwater911.comwww.bulkwater911.com",
+        "description": "Bulk water delivery serving Johnson City and the Texas Hill Country. Available 7 days a week.",
         "phone": "(830) 225-8028",
         "email": null,
         "website": "https://www.bulkwater911.com/",
@@ -1840,7 +1840,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Sunday: 8 AM–5 PM Monday: 8 AM–5 PM Tuesday: 8 AM–5 PM Wednesday: 8 AM–5 PM Thursday: 8 AM–5 PM Friday: 8 AM–5 PM Saturday: 8 AM–5 PM",
+        "hours": "Sunday: 8\u202fAM\u20135\u202fPM Monday: 8\u202fAM\u20135\u202fPM Tuesday: 8\u202fAM\u20135\u202fPM Wednesday: 8\u202fAM\u20135\u202fPM Thursday: 8\u202fAM\u20135\u202fPM Friday: 8\u202fAM\u20135\u202fPM Saturday: 8\u202fAM\u20135\u202fPM",
         "plusCode": "PM5Q+M2 Floral City, Florida"
       }
     },
@@ -1889,7 +1889,7 @@
       "attributes": {
         "name": "Bubba's Water Truck Service, Inc",
         "slug": "bubbas-water-truck-service",
-        "description": "At Bubba’s, we are committed to providing top-quality potable water delivery, dust control, and aggregate hauling services to our customers across the Central Valley.\n\nResidential Delivery\nCommercial Delivery\nDust Control\nAggregate Hauling",
+        "description": "At Bubba\u2019s, we are committed to providing top-quality potable water delivery, dust control, and aggregate hauling services to our customers across the Central Valley.\n\nResidential Delivery\nCommercial Delivery\nDust Control\nAggregate Hauling",
         "phone": "+15592420100",
         "email": "info@bubbaswts.com",
         "website": "https://bubbaswts.com/",
@@ -1927,7 +1927,7 @@
     {
       "id": 265,
       "attributes": {
-        "name": "Mack’s (Potable) Water Trucks",
+        "name": "Mack\u2019s (Potable) Water Trucks",
         "slug": "Macks-Potable-Water-Trucks",
         "description": "Water Tank Fills\n\nOur specialized dust control services help keep construction sites, unpaved roads, and events dust-free. We contribute to a cleaner and safer environment.\n\n\nDust Control\n\nCount on us to deliver clean and crystal-clear water for your swimming pools, adhering to the highest water quality standards. Dive into a refreshing pool experience.\n\nPool FIlls\n\nIn times of crisis, you can rely on us for prompt and dependable emergency water services. We're ready to respond to your urgent water needs.",
         "phone": "+19513020748",
@@ -2000,7 +2000,7 @@
         "lgbtqFriendly": false,
         "veteranOwned": false,
         "womenOwned": false,
-        "hours": "Monday: 8:30 am – 5:00 pm Tuesday: 8:30 am – 5:00 pm Wednesday: 8:30 am – 5:00 pm Thursday: 8:30 am – 5:00 pm Friday: 8:30 am – 5:00 pm Saturday: Closed Sunday: Closed",
+        "hours": "Monday: 8:30 am \u2013 5:00 pm Tuesday: 8:30 am \u2013 5:00 pm Wednesday: 8:30 am \u2013 5:00 pm Thursday: 8:30 am \u2013 5:00 pm Friday: 8:30 am \u2013 5:00 pm Saturday: Closed Sunday: Closed",
         "plusCode": null
       }
     },
@@ -2089,7 +2089,7 @@
       "attributes": {
         "name": "Aqua Wheels",
         "slug": "aqua-wheels",
-        "description": "Texas Hill Country’s source for bulk water delivery, rain water collection and water storage tank refilling.",
+        "description": "Texas Hill Country\u2019s source for bulk water delivery, rain water collection and water storage tank refilling.",
         "phone": "(512) 800-5256",
         "email": "aquaonwheels@gmail.com",
         "website": "http://aquawheels.com/",
@@ -2097,7 +2097,7 @@
         "city": "Canyon Lake",
         "state": "TX",
         "zip": "78133",
-        "serviceArea": "Bulverde Boerne San Marcos Bergheim Blanco Buda Canyon Lake Central Texas Comfort Cordillera Ranch Dominion Dripping Springs Encino Park Fair Oaks Ranch Fischer Fredericksburg Garden Ridge Gruene Guadalupe River Helotes Hidden Oaks Estates Hollywood Park Johnson City Kendalia Kerrville Kyle Leon Valley Live Oak Lost Maples Mystic Shores New Braunfels Northcliff Ramble Ridge Ranch River Chase River Mountain River Road River Rock Ranch San Antonio San Marcos Scenic Oaks Selma Sisterdale Smithson Valley Spring Branch Stone Oak Summerglen Timberwood Park Universal City Wimberley Water Stone\nBulk Water Delivery · Serving Central Texas · Austin, San Antonio, Dripping Springs, Wimberley, Blanco, and beyond.",
+        "serviceArea": "Bulverde Boerne San Marcos Bergheim Blanco Buda Canyon Lake Central Texas Comfort Cordillera Ranch Dominion Dripping Springs Encino Park Fair Oaks Ranch Fischer Fredericksburg Garden Ridge Gruene Guadalupe River Helotes Hidden Oaks Estates Hollywood Park Johnson City Kendalia Kerrville Kyle Leon Valley Live Oak Lost Maples Mystic Shores New Braunfels Northcliff Ramble Ridge Ranch River Chase River Mountain River Road River Rock Ranch San Antonio San Marcos Scenic Oaks Selma Sisterdale Smithson Valley Spring Branch Stone Oak Summerglen Timberwood Park Universal City Wimberley Water Stone\nBulk Water Delivery \u00b7 Serving Central Texas \u00b7 Austin, San Antonio, Dripping Springs, Wimberley, Blanco, and beyond.",
         "minFee": null,
         "truckCapacity": null,
         "hoseLength": null,
@@ -2489,7 +2489,7 @@
       "attributes": {
         "name": "Dynamite Water, LLC",
         "slug": "dynamite-water-llc",
-        "description": "Flexible Delivery Times – We offer anywhere from 1 day to automated systems that notify of need for water with standard deliveries. Service available 7 days a week​.",
+        "description": "Flexible Delivery Times \u2013 We offer anywhere from 1 day to automated systems that notify of need for water with standard deliveries. Service available 7 days a week\u200b.",
         "phone": "(602) 620-9667",
         "email": null,
         "website": "https://www.dynamitewater.com/",
@@ -2649,7 +2649,7 @@
       "attributes": {
         "name": "Arizona Premium Water",
         "slug": "arizona-premium-water",
-        "description": "Get a quick, no—obligation price check in just 30 seconds and",
+        "description": "Get a quick, no\u2014obligation price check in just 30 seconds and",
         "phone": "(866) 480-0609",
         "email": null,
         "website": "https://arizonawaterdelivery.com/",
@@ -3487,7 +3487,7 @@
     {
       "id": 227,
       "attributes": {
-        "name": "Andy’s Water 'n Ice",
+        "name": "Andy\u2019s Water 'n Ice",
         "slug": "andys-water-n-ice",
         "description": "{\"name\":\"top link to water card block\",\"action\\type\":\"4\",\"optin\\action\\type\":\"5\",\"form\\redirect\\type\":\"4\",\"form\\redirect\\funnel\\url\":\"65de2e092010f\",\"form\\redirect\\custom\\url\":\"\",\"order\\form\\settings\":{\"containers\":\\[{\"id\":\"personal-info-wrapper\",\"visible\":true,\"label\":{\"id\":\"of-personal-title\",\"visible\":true},\"fields\":\\[{\"id\":\"of-full-name\",\"setting\":false,\"placeholder\":\"Full Name\"},{\"id\":\"of-field-email\",\"setting\":false,\"placeholder\":\"Email Address\"},{\"id\":\"of-phone-number\",\"setting\":true,\"visible\":false,\"require\":true,\"placeholder\":\"Enter Your Mobile Phone\",\"additional\":{\"sms\\permission\":0}},{\"id\":\"of-gdpr-optin-approval\",\"label\":\"I Accept To Receive Additional Info\",\"placeholder\":\"\",\"icon\":\"fa-mobile\",\"required\":0,\"visible\":0,\"system\":1,\"additional\":{\"gdpr\\optin\\approval\":\"1\"}}\\]},{\"id\":\"shipping-information-wrapper\",\"visible\":false,\"label\":{\"id\":\"of-shipping-title\",\"visible\":true},\"fields\":\\[{\"id\":\"of-shipping-address\",\"setting\":false,\"placeholder\":\"Address\"},{\"id\":\"of-shipping-city\",\"setting\":false,\"placeholder\":\"City\"},{\"id\":\"of-shipping-state\",\"setting\":false,\"placeholder\":\"State\"},{\"id\":\"of-shipping-zipcode\",\"setting\":false,\"placeholder\":\"Postal Code\"}\\]},{\"id\":\"profit-bump-wrapper\",\"visible\":true,\"otoBgColor\":\"rgba(219,229,239,1)\",\"otoBorderColor\":\"rgba(38,71,102,1)\",\"otoTitleBgColor\":\"rgba(45,78,108,1)\",\"otoArrowsColor\":\"rgba(255,177,58,1)\",\"fields\":\\[\\]},{\"id\":\"order-summary-wrapper\",\"visible\":true,\"orderDynamicBgColor\":\"rgba(242,242,242,1)\",\"orderDynamicTexColor\":\"rgba(51,51,51,1)\",\"fields\":\\[\\]}\\]},\"optin\\type\":{\"showLabels\":0,\"fields\":\\[{\"name\":\"first\\name\",\"label\":\"Full Name\",\"placeholder\":\"Enter Your Full Name\",\"icon\":\"fa-user\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"last\\name\",\"label\":\"Full Name\",\"placeholder\":\"Enter Your Full Name\",\"icon\":\"fa-user\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"email\",\"label\":\"Email\",\"placeholder\":\"Enter Your Email\",\"icon\":\"fa-envelope\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"mobile\\phone\",\"label\":\"Mobile Phone\",\"placeholder\":\"Enter Your Mobile Phone\",\"icon\":\"fa-mobile\",\"required\":0,\"visible\":0,\"system\":1,\"additional\":{\"sms\\permission\":0}},{\"name\":\"fields\\labels\",\"label\":\"\",\"placeholder\":\"\",\"icon\":\"\",\"required\":0,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"captcha\",\"label\":\"Captcha\",\"placeholder\":\"\",\"icon\":\"\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"gdpr\\optin\\approval\",\"label\":\"SSBBY2NlcHQgVG8gUmVjZWl2ZSBBZGRpdGlvbmFsIEluZm8=\",\"placeholder\":\"\",\"icon\":\"fa-mobile\",\"required\":0,\"visible\":1,\"system\":1,\"additional\":{\"gdpr\\optin\\approval\":\"1\",\"sms\\permission\":0}}\\],\"customFields\":\\[\\],\"sortedFields\":\\[{\"name\":\"first\\name\",\"label\":\"Full Name\",\"placeholder\":\"Enter Your Full Name\",\"icon\":\"fa-user\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"first\\name\",\"label\":\"Full Name\",\"placeholder\":\"Enter Your Full Name\",\"icon\":\"fa-user\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"last\\name\",\"label\":\"Full Name\",\"placeholder\":\"Enter Your Full Name\",\"icon\":\"fa-user\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"email\",\"label\":\"Email\",\"placeholder\":\"Enter Your Email\",\"icon\":\"fa-envelope\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}},{\"name\":\"mobile\\phone\",\"label\":\"Mobile Phone\",\"placeholder\":\"Enter Your Mobile Phone\",\"icon\":\"fa-mobile\",\"required\":0,\"visible\":0,\"system\":1,\"additional\":{\"sms\\permission\":0}},{\"name\":\"captcha\",\"label\":\"Captcha\",\"placeholder\":\"\",\"icon\":\"\",\"required\":1,\"visible\":1,\"system\":1,\"additional\":{}}\\],\"design\":{\"form\\background\\color\":\"rgb(245, 245, 245)\",\"field\\stroke\":{\"size\":\"1\",\"color\":\"rgb(220, 220, 220)\"},\"field\\icons\":1,\"button\\color\":\"rgb(255, 158, 0)\",\"button\\stroke\":{\"size\":\"0\",\"color\":\"rgba(255, 255, 255, 0.2)\"},\"button\\box\\shadow\\color\":\"none\",\"field\\size\":\"small\",\"label\\size\":\"16\",\"label\\color\":\"rgb(0, 0, 0)\",\"input\\color\":\"rgb(52, 152, 219)\",\"control\\text\\color\":\"rgb(0, 0, 0)\",\"control\\text\\size\":\"15\"},\"mappedFields\":\\[\\]},\"redirect\\type\":{\"url\":\"\",\"target\":0},\"next\\step\":{\"value\":\"65de2e092010f\"},\"click\\to\\email\":{\"value\":\"\"},\"click\\to\\call\":{\"value\":\"\"},\"jump\\to\\block\":{\"value\":\"5321489\"},\"content\":{\"header\\text\":\"PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToyNHB4OyBmb250LWZhbWlseTonb3BlbiBzYW5zJzsiPjxzcGFuIHN0eWxlPSJsaW5lLWhlaWdodDoxLjRlbTsiPldlIEFyZSBFeGNpdGVkITwvc3Bhbj48L3NwYW4+\",\"content\\text\":\"PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTo0OHB4OyBmb250LWZhbWlseTonb3BlbiBzYW5zJzsiPjxzcGFuIHN0eWxlPSJsaW5lLWhlaWdodDowLjllbTsiPjxzdHJvbmc+UExFQVNFIEZJTEwgT1VUIFlPVVIgSU5GTyAgQkVMT1cgVE8gU1VCU0NSSUJFPC9zdHJvbmc+PC9zcGFuPjwvc3Bhbj4=\",\"button\\text\":\"dW5kZWZpbmVk\",\"spam\\text\":\"PHNwYW4gc3R5bGU9ImxpbmUtaGVpZ2h0OjEuMmVtOyI+V2UgaGF0ZSBTUEFNIGFuZCBwcm9taXNlIHRvIGtlZXAgeW91ciBlbWFpbCBhZGRyZXNzIHNhZmU8L3NwYW4+\",\"sms\\text\":\"UmVjZWl2ZSBTTVMgVGV4dCBVcGRhdGVzIC0gPHNwYW4+b3B0aW9uYWw8L3NwYW4+\",\"sms\\text2\":\"SSBBY2NlcHQgVG8gUmVjZWl2ZSBBZGRpdGlvbmFsIEluZm8=\"},\"email\\confirmation\":{\"enable\":1,\"subject\":\"V2UgQXJlIEV4Y2l0ZWQhIFlvdXIgSW4h\",\"message\":\"\"},\"integrations\":\\[\\],\"automation\\enable\":0,\"thank\\you\":{\"type\":\"popup\",\"redirect\\url\":\"\",\"popup\\options\":{\"background\\color\":\"#ffffff\",\"headline\\visible\":1,\"icon\\visible\":1,\"icon\\url\":\"//my.funnelpages.com/assets-pb/images/thankyou-popup-icon.png\",\"subheadline\\visible\":1,\"button\\visible\":1,\"button\\color\":\"#ffa800\",\"headline\\text\":\"PHNwYW4gc3R5bGU9ImxpbmUtaGVpZ2h0OjEuNGVtOyI+VGhhbmsgWW91IEZvciBDb250YWN0aW5nIFVzPC9zcGFuPg==\",\"subeadline\\text\":\"PHNwYW4gc3R5bGU9ImxpbmUtaGVpZ2h0OjEuNGVtOyI+UGxlYXNlIENoZWNrIFlvdXIgRW1haWw8YnIgLz5XZSBXaWxsIEJlIEZvbGxvd2luZyBVcCBTaG9ydGx5PC9zcGFuPg==\",\"button\\text\":\"Q2xvc2U=\"}}}",
         "phone": "(480) 820-9169",
@@ -3647,7 +3647,7 @@
     {
       "id": 208,
       "attributes": {
-        "name": "Raul’s Hauling & Junk Removal",
+        "name": "Raul\u2019s Hauling & Junk Removal",
         "slug": "rauls-hauling-junk-removal",
         "description": "Dumpster Rentals: We offer dumpster rentals in Phoenix/Glendale & surrounding cities. 13yd, 15yd, & 20yd dumpsters available for rent. We drop it off, you load it, & we haul it away when you're done. Click here for pricing. Junk Removal:We will load & remove furniture, appliances, mattresses, boxes, TVs, carpet, couches, dressers, wood, yard waste, pianos, hot tubs, pool tables, exercise equipment, playground sets, BBQ grills, trampolines, tires, metal, fences, sheds, bicycles, mirrors, doors, turf, cabinets, etc.",
         "phone": "(480) 931-0310",
@@ -4009,7 +4009,7 @@
       "attributes": {
         "name": "Samantha Springs",
         "slug": "samantha-springs",
-        "description": "Samantha Springs is Texas’ leading provider of bulk spring water, sourced from our historic underground spring in Keller, TX. Originally rediscovered in 1984, the spring was fully developed and began delivering water in 1996. Whether you need bulk water for industrial use, pool filling, breweries, co-packers, or private-label bottling, we deliver 6,250 gallons per tanker directly to your site—fast, fresh, and hassle-free.\n100% Pure Spring Water – Naturally filtered and sourced from protected springs\nHigh-Capacity Bulk Delivery – Tanker trucks deliver large volumes across Texas and beyond\nBottling & Co-Packing Solutions – Supplying manufacturers and beverage brands with premium water\nCertified & Compliant – Exceeds Texas Commission for Environmental Quality (TCEQ) & FDA standards",
+        "description": "Samantha Springs is Texas\u2019 leading provider of bulk spring water, sourced from our historic underground spring in Keller, TX. Originally rediscovered in 1984, the spring was fully developed and began delivering water in 1996. Whether you need bulk water for industrial use, pool filling, breweries, co-packers, or private-label bottling, we deliver 6,250 gallons per tanker directly to your site\u2014fast, fresh, and hassle-free.\n100% Pure Spring Water \u2013 Naturally filtered and sourced from protected springs\nHigh-Capacity Bulk Delivery \u2013 Tanker trucks deliver large volumes across Texas and beyond\nBottling & Co-Packing Solutions \u2013 Supplying manufacturers and beverage brands with premium water\nCertified & Compliant \u2013 Exceeds Texas Commission for Environmental Quality (TCEQ) & FDA standards",
         "phone": "(817) 554-8800",
         "email": null,
         "website": "https://www.samanthasprings.com/?utm_source=google&utm_medium=organic&utm_campaign=gmb",
@@ -4040,7 +4040,7 @@
         "lgbtqFriendly": null,
         "veteranOwned": null,
         "womenOwned": null,
-        "hours": "Sunday: Closed  Monday: 8 AM–5 PM  Tuesday: 8 AM–5 PM  Wednesday: 8 AM–5 PM   Thursday: 8 AM–5 PM   Friday: 8 AM–5 PM  Saturday: Closed",
+        "hours": "Sunday: Closed  Monday: 8\u202fAM\u20135\u202fPM  Tuesday: 8\u202fAM\u20135\u202fPM  Wednesday: 8\u202fAM\u20135\u202fPM   Thursday: 8\u202fAM\u20135\u202fPM   Friday: 8\u202fAM\u20135\u202fPM  Saturday: Closed",
         "plusCode": "WPVW+JQ Keller, Texas"
       }
     },
@@ -4169,7 +4169,7 @@
       "attributes": {
         "name": "H2O Hydration Spot, LLC",
         "slug": "h2o-hydration-spot-llc",
-        "description": "At H2O Hydration Co., hydration goes far beyond simply quenching thirst; it represents a deep commitment to enhancing both personal health and environmental sustainability. Drawing inspiration from the resilient and vibrant spirit of Tucson, AZ, the brand delivers a premium alkaline water experience thoughtfully designed to meet the needs of today’s health-conscious and eco-aware consumers. Their cold-filled, ultra-purified alkaline water is carefully formulated to help neutralize body acidity, support optimal hydration, assist in natural detoxification processes, and promote sustained energy levels throughout the day. Packaged in sturdy, reusable aluminum bottles, it perfectly combines sleek, modern design with a strong focus on sustainability. Each bottle is a symbol of their unwavering dedication to providing quality hydration that benefits not only the body but also respects and protects the planet, encouraging a meaningful and lasting shift toward responsible consumption—one thoughtfully crafted bottle at a time.",
+        "description": "At H2O Hydration Co., hydration goes far beyond simply quenching thirst; it represents a deep commitment to enhancing both personal health and environmental sustainability. Drawing inspiration from the resilient and vibrant spirit of Tucson, AZ, the brand delivers a premium alkaline water experience thoughtfully designed to meet the needs of today\u2019s health-conscious and eco-aware consumers. Their cold-filled, ultra-purified alkaline water is carefully formulated to help neutralize body acidity, support optimal hydration, assist in natural detoxification processes, and promote sustained energy levels throughout the day. Packaged in sturdy, reusable aluminum bottles, it perfectly combines sleek, modern design with a strong focus on sustainability. Each bottle is a symbol of their unwavering dedication to providing quality hydration that benefits not only the body but also respects and protects the planet, encouraging a meaningful and lasting shift toward responsible consumption\u2014one thoughtfully crafted bottle at a time.",
         "phone": "(520) 222-6172",
         "email": null,
         "website": "https://www.h2ohydrationspot.com/",
@@ -4177,7 +4177,7 @@
         "city": "Tucson",
         "state": "AZ",
         "zip": "85743",
-        "serviceArea": "Every bottle we produce reflects our dedication to health, the environment, and the people we serve — because we don’t just do business here, we live here too.",
+        "serviceArea": "Every bottle we produce reflects our dedication to health, the environment, and the people we serve \u2014 because we don\u2019t just do business here, we live here too.",
         "minFee": null,
         "truckCapacity": null,
         "hoseLength": null,

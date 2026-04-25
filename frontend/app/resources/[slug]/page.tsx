@@ -59,10 +59,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://www.haulagua.com/resources/${slug}`,
+    },
     openGraph: {
       title,
       description,
-      url: `https://haulagua.com/resources/${slug}`,
+      url: `https://www.haulagua.com/resources/${slug}`,
       siteName: "Haulagua",
       type: "article",
     },

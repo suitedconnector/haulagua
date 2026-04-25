@@ -181,10 +181,17 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://www.haulagua.com/haulers/${slug}`,
+    },
     openGraph: {
       title,
       description,
-      url: `https://haulagua.com/haulers/${slug}`,
+      url: `https://www.haulagua.com/haulers/${slug}`,
       siteName: "Haulagua",
       type: "profile",
     },

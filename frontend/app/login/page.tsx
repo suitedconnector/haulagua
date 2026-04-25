@@ -6,10 +6,17 @@ import { LoginForm } from "./LoginForm";
 export const metadata: Metadata = {
   title: "Sign In — Haulagua",
   description: "Sign in to your Haulagua account to manage your listing or saved haulers.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: 'https://www.haulagua.com/login',
+  },
   openGraph: {
     title: "Sign In — Haulagua",
     description: "Sign in to your Haulagua account.",
-    url: "https://haulagua.com/login",
+    url: "https://www.haulagua.com/login",
     siteName: "Haulagua",
     type: "website",
   },
