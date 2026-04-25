@@ -46,8 +46,7 @@ export async function GET() {
     { url: `${BASE_URL}/water-haulers`, lastmod: now, changefreq: 'weekly', priority: '0.9' },
     { url: `${BASE_URL}/resources`, lastmod: now, changefreq: 'weekly', priority: '0.7' },
     { url: `${BASE_URL}/for-haulers`, lastmod: now, changefreq: 'monthly', priority: '0.7' },
-    { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' },
-    { url: `${BASE_URL}/login`, lastmod: now, changefreq: 'monthly', priority: '0.3' }
+    { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' }
   );
 
   // Location pages
