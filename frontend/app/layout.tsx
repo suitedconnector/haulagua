@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Montserrat, Lato } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 import './globals.css'
 
 const montserrat = Montserrat({ 
@@ -50,6 +51,13 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-8W9S9729JY" strategy="afterInteractive" />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8W9S9729JY');`}
+        </Script>
       </head>
       <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 100px, white 100px)" }}>
         {children}

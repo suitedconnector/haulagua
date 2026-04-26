@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Badge } from "@/components/ui/badge";
-import { strapiGet } from "@/src/lib/strapi";
 import { ArrowLeft, BookOpen } from "lucide-react";
 
 type BlogPost = {
@@ -18,35 +17,12 @@ type BlogPost = {
   };
 };
 
-type StrapiResponse = {
-  data: BlogPost[];
-};
-
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 async function getPost(slug: string): Promise<BlogPost | null> {
-  try {
-    const data = await strapiGet<StrapiResponse>({
-      path: "/blog-posts",
-      params: {
-        "filters[slug][$eq]": slug,
-        "fields[0]": "title",
-        "fields[1]": "excerpt",
-        "fields[2]": "category",
-        "fields[3]": "slug",
-        "fields[4]": "body",
-        "fields[5]": "publishedAt",
-        "pagination[pageSize]": "1",
-      },
-      cache: "force-cache",
-      tags: [`blog-post-${slug}`],
-    });
-    return data.data?.[0] ?? null;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
