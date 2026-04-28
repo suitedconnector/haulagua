@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -25,11 +27,17 @@ const stats = [
   { label: "Inquiries", value: "—", icon: MessageSquare },
 ];
 
-export default function DashboardPage() {
-  // Placeholder — auth + real data to be wired up
-  const haulerName = "Your Business";
-  const haulerSlug = "your-listing";
-  const isClaimed = false;
+export default async function DashboardPage() {
+  const session = await auth();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  const user = session.user;
+  const haulerName = user?.name || "Your Business";
+  const haulerSlug = "your-listing"; // TODO: Get from user data
+  const isClaimed = false; // TODO: Get from user data
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -37,11 +45,22 @@ export default function DashboardPage() {
       <main className="flex-1 bg-gray-50">
         {/* Header */}
         <section className="bg-white border-b border-border py-8 px-4">
-          <div className="mx-auto max-w-5xl">
-            <p className="text-sm text-muted-foreground mb-1">Welcome back</p>
-            <h1 className="font-serif text-2xl md:text-3xl font-bold" style={{ color: "#005A9C" }}>
-              {haulerName}
-            </h1>
+          <div className="mx-auto max-w-5xl flex justify-between items-start">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Welcome back</p>
+              <h1 className="font-serif text-2xl md:text-3xl font-bold" style={{ color: "#005A9C" }}>
+                {haulerName}
+              </h1>
+            </div>
+            <form action="/api/auth/signout" method="post">
+              <Button
+                type="submit"
+                variant="outline"
+                className="text-sm"
+              >
+                Sign Out
+              </Button>
+            </form>
           </div>
         </section>
 

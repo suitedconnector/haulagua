@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | HaulAgua",
@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
                   address. Google may transfer this data to servers in the
                   United States or other countries. You can opt out by installing
                   the{" "}
-                  
+                  <a
                     href="https://tools.google.com/dlpage/gaoptout"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -212,7 +212,7 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p className="mt-3">
                 To exercise any of these rights, contact us at{" "}
-                
+                <a
                   href="mailto:privacy@haulagua.com"
                   className="underline"
                   style={{ color: "#005A9C" }}
@@ -271,7 +271,7 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <p>
                   Email:{" "}
-                  
+                  <a
                     href="mailto:privacy@haulagua.com"
                     className="underline"
                     style={{ color: "#005A9C" }}

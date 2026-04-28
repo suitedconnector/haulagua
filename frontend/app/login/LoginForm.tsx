@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,16 +12,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
-    // Simulate brief loading — auth to be wired up
-    setTimeout(() => {
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setMessage("Invalid email or password");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again.");
+    } finally {
       setLoading(false);
-      setMessage("Auth coming soon. Your account system is not connected yet.");
-    }, 800);
+    }
   }
 
   return (
