@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Montserrat, Lato } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
-import { SessionProvider } from 'next-auth/react'
+import { SessionProviderWrapper } from '@/components/providers/session-provider'
 import './globals.css'
 
 const montserrat = Montserrat({ 
@@ -61,9 +61,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 100px, white 100px)" }}>
-        <SessionProvider>
+        <SessionProviderWrapper>
           {children}
-        </SessionProvider>
+        </SessionProviderWrapper>
         <Analytics />
       </body>
     </html>
