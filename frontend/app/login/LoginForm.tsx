@@ -28,6 +28,7 @@ export function LoginForm() {
         email,
         password,
         redirect: false,
+        callbackUrl: "/dashboard",
       });
 
       if (result?.error) {
@@ -64,6 +65,7 @@ export function LoginForm() {
             <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
@@ -83,6 +85,7 @@ export function LoginForm() {
             </div>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
