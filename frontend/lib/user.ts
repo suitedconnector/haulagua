@@ -1,4 +1,4 @@
-import { sql } from './db'
+import { getDb } from './db'
 import bcrypt from 'bcryptjs'
 
 export interface User {
@@ -10,7 +10,8 @@ export interface User {
 }
 
 export async function getUserByEmail(email: string): Promise<(User & { password_hash: string }) | null> {
-  const rows = await sql`
+  const db = getDb()
+  const rows = await db`
     SELECT id, email, name, hauler_slug, role, password_hash
     FROM users
     WHERE email = ${email}
@@ -31,7 +32,8 @@ export async function createUser({
   haulerSlug?: string
 }): Promise<User> {
   const password_hash = await bcrypt.hash(password, 12)
-  const rows = await sql`
+  const db = getDb()
+  const rows = await db`
     INSERT INTO users (email, password_hash, name, hauler_slug)
     VALUES (${email}, ${password_hash}, ${name ?? null}, ${haulerSlug ?? null})
     RETURNING id, email, name, hauler_slug, role
