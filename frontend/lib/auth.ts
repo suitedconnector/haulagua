@@ -41,7 +41,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: false, // Set to true in production
+        secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60, // 24 hours
       },
     },
@@ -50,5 +50,3 @@ export const authOptions = {
 
 export const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
-
-export default NextAuth(authOptions)
