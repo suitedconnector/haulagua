@@ -143,9 +143,9 @@
 
 @layer components {
   .logo-haul {
-    @apply font-montserrat text-2xl font-bold tracking-tight text-brand-blue;
+    @apply font-montserrat text-2xl font-bold text-brand-blue;
   }
   .logo-agua {
-    @apply font-montserrat text-2xl font-normal tracking-tight text-brand-lightblue;
+    @apply font-montserrat text-2xl font-normal text-brand-lightblue;
   }
 }

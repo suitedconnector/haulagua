@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
@@ -9,15 +10,24 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 relative" style={{ height: "100px", overflow: "visible" }}>      <div style={{ position: "absolute", inset: 0, zIndex: 0, lineHeight: 0 }}>
+    <header className="sticky top-0 z-50 relative" style={{ height: "140px", overflow: "visible" }}>      <div style={{ position: "absolute", inset: 0, zIndex: 0, lineHeight: 0 }}>
         <svg width="100%" height="100%" viewBox="0 0 390 100" preserveAspectRatio="none" style={{ filter: "drop-shadow(0 25px 12px rgba(0, 90, 156, 0.4))" }}>
           <path d="M0,0 L390,0 L390,75 Q293,100 195,75 Q98,50 0,75 Z" fill="white" />
         </svg>
       </div>
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 pt-4">
         <div className="flex h-16 items-center justify-between">
-            <Link href="/">
-              <span className="logo-haul">Haul</span><span className="logo-agua">agua</span>
+            <Link href="/" className="flex items-center gap-3">
+              <Image 
+                src="/images/haulagualogo.svg" 
+                alt="HaulAgua" 
+                width={87} 
+                height={22} 
+                priority
+              />
+              <span className="font-montserrat text-2xl" style={{ fontFamily: 'Montserrat', fontSize: '1.5rem', fontWeight: 'normal' }}>
+              <span style={{ fontWeight: 'bold', color: '#0461AA' }}>Haul</span><span style={{ fontWeight: 'normal', color: '#2AA0DC' }}>agua</span>
+            </span>
             </Link>
           <div className="hidden md:flex md:items-center md:gap-8">
             <Link href="/search" className="text-sm font-medium text-foreground hover:text-primary transition-colors">Find a Hauler</Link>

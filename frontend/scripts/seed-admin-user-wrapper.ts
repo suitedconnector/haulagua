@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '.env.local' })
-
+import 'dotenv/config'
 import { createUser } from '../lib/user'
 
 async function main() {

@@ -60,7 +60,7 @@ export default function RootLayout({
   gtag('config', 'G-8W9S9729JY');`}
         </Script>
       </head>
-      <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 100px, white 100px)" }}>
+      <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 140px, white 140px)" }}>
         <SessionProviderWrapper>
           {children}
         </SessionProviderWrapper>
