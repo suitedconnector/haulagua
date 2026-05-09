@@ -24,7 +24,7 @@ export function Navbar() {
                 width={448}
                 height={100}
                 priority
-                className="h-10 w-auto"
+                className="h-[53px] w-auto"
               />
             </Link>
           <div className="hidden md:flex md:items-center md:gap-8">
