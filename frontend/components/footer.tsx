@@ -51,16 +51,14 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Logo and tagline */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-3">
-              <Image 
-                src="/images/haulagualogo.svg" 
-                alt="HaulAgua" 
-                width={87} 
-                height={22}
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/images/haulagualogo-2.svg"
+                alt="HaulAgua - Bulk Water Haulers Directory Logo"
+                width={403}
+                height={90}
+                className="h-9 w-auto"
               />
-              <span className="font-montserrat text-2xl" style={{ fontFamily: 'Montserrat', fontSize: '1.5rem', fontWeight: 'normal' }}>
-              <span style={{ fontWeight: 'bold', color: '#0461AA' }}>Haul</span><span style={{ fontWeight: 'normal', color: '#2AA0DC' }}>agua</span>
-            </span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
               The Bulk Water Haulers Directory
