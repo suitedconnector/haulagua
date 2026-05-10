@@ -16,7 +16,7 @@ export function Navbar() {
         </svg>
       </div>
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 pt-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-12 items-center justify-between">
             <Link href="/" className="flex items-center">
               <Image
                 src="/images/haulagualogo-2.svg"
@@ -24,7 +24,7 @@ export function Navbar() {
                 width={448}
                 height={100}
                 priority
-                className="h-[53px] w-auto"
+                className="h-[47px] w-auto"
               />
             </Link>
           <div className="hidden md:flex md:items-center md:gap-8">

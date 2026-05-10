@@ -34,7 +34,7 @@ export default function HomePage() {
       <Navbar />
       <main className="flex-1">
         <HeroSection />
-        <TrustBanner />
+        {/* <TrustBanner /> */}
         <HowItWorks />
         <FeaturedArticle />
         <HaulerCta />
