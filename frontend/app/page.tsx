@@ -20,12 +20,13 @@ export const metadata: Metadata = {
   },
 };
 import { HeroSection } from "@/components/hero-section";
-import WaterCalculatorQuiz from "@/components/WaterCalculatorQuiz";
 import { TrustBanner } from "@/components/trust-banner";
 import { HowItWorks } from "@/components/how-it-works";
 import { FeaturedArticle } from "@/components/featured-article";
 import { HaulerCta } from "@/components/hauler-cta";
+import { FaqSection } from "@/components/faq-section";
 import { Footer } from "@/components/footer";
+import { homepageFAQs } from "@/lib/faqs/data";
 
 export default function HomePage() {
   return (
@@ -33,15 +34,11 @@ export default function HomePage() {
       <Navbar />
       <main className="flex-1">
         <HeroSection />
-        <section className="py-16 px-4 bg-white">
-          <div className="max-w-2xl mx-auto">
-            <WaterCalculatorQuiz />
-          </div>
-        </section>
         <TrustBanner />
         <HowItWorks />
         <FeaturedArticle />
         <HaulerCta />
+        <FaqSection faqs={homepageFAQs} />
       </main>
       <Footer />
     </div>

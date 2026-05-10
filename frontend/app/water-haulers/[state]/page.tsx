@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HaulerCard } from "@/components/hauler-card";
+import { FaqSection } from "@/components/faq-section";
+import { texasFAQs, arizonaFAQs } from "@/lib/faqs/data";
 import { WaveDivider } from "@/components/WaveDivider";
 import {
   MapPin,
@@ -80,36 +82,6 @@ const TX_REGIONS = [
   },
 ];
 
-const TX_FAQS = [
-  {
-    q: "How much does bulk water delivery cost in Texas?",
-    a: "Bulk water delivery in Texas typically costs between $150 and $500 per load, depending on the hauler, distance, water type, and volume. Potable water generally costs more than non-potable water. Most haulers have a minimum fee ranging from $150 to $300. Request quotes from multiple haulers in your area for the best rate.",
-  },
-  {
-    q: "How many gallons does a water hauler truck hold in Texas?",
-    a: "Most water hauler trucks in Texas carry between 2,000 and 6,000 gallons per load. Smaller medium-duty trucks typically hold 2,000–3,000 gallons, while full-size tanker trucks carry 4,000–6,000 gallons or more. For large jobs like filling a pool or topping off a cistern, haulers may make multiple trips.",
-  },
-  {
-    q: "How long does it take to fill a pool with a water truck in Texas?",
-    a: "A standard residential pool (10,000–20,000 gallons) typically requires 2–4 truckloads and can be filled in a few hours to one day, depending on truck size and travel time. Most Texas haulers can complete a pool fill in a single day with proper scheduling.",
-  },
-  {
-    q: "Do Texas water haulers need a license for potable water delivery?",
-    a: "Yes. Haulers delivering potable (drinking) water in Texas are required to be licensed by the Texas Commission on Environmental Quality (TCEQ). Always confirm your hauler holds a valid TCEQ potable water carrier license before accepting drinking water delivery.",
-  },
-  {
-    q: "What areas of Texas have the most water haulers?",
-    a: "The highest concentration of bulk water haulers in Texas is found in Central Texas (Austin metro, Hill Country), West Texas (Permian Basin), and the DFW metroplex. Rural counties in East, South, and Far West Texas tend to have fewer haulers, so lead times may be longer in those areas.",
-  },
-  {
-    q: "Can I get emergency water delivery in Texas?",
-    a: "Yes. Many Texas water haulers offer emergency or same-day delivery for well failures, drought conditions, fire suppression needs, and disaster response. Search for haulers in your city and call directly — most can advise on availability within minutes.",
-  },
-  {
-    q: "What is the difference between potable and non-potable water delivery?",
-    a: "Potable water is safe for human consumption — drinking, cooking, and bathing. Non-potable water is not safe to drink and is used for pool fills (chlorinated separately), dust control, irrigation, and construction. Potable delivery requires a licensed carrier and a food-grade tanker. Always specify which type you need when requesting a quote.",
-  },
-];
 
 // ─── Per-state short intros ────────────────────────────────────────────────────
 
@@ -213,17 +185,7 @@ export default async function StatePage({ params, searchParams }: PageProps) {
     STATE_INTRO_LONG[state] ??
     `${stateName} has a growing market for bulk water delivery across residential, agricultural, and commercial sectors. Whether you need potable water, pool fills, construction water, or emergency delivery, local haulers are ready to help.`;
 
-  const faqSchema = isTX
-    ? {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: TX_FAQS.map(({ q, a }) => ({
-          "@type": "Question",
-          name: q,
-          acceptedAnswer: { "@type": "Answer", text: a },
-        })),
-      }
-    : null;
+  const stateFaqs = state === "tx" ? texasFAQs : state === "az" ? arizonaFAQs : null;
 
   const itemListSchema =
     haulers.length > 0
@@ -244,12 +206,6 @@ export default async function StatePage({ params, searchParams }: PageProps) {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
       {itemListSchema && (
         <script
           type="application/ld+json"
@@ -533,36 +489,12 @@ export default async function StatePage({ params, searchParams }: PageProps) {
           </>
         )}
 
-        {/* ── FAQ — TX only ── */}
-        {isTX && (
-          <section
-            className="py-8 md:py-10"
-            style={{
-              background: "linear-gradient(to bottom, #C8DCF0, #F0F6FC)",
-            }}
-          >
-            <div className={INNER}>
-              <h2
-                className="font-serif text-2xl font-semibold mb-6"
-                style={{ color: "#333333" }}
-              >
-                Frequently Asked Questions About Bulk Water Delivery in Texas
-              </h2>
-              <div className="space-y-4">
-                {TX_FAQS.map(({ q, a }) => (
-                  <div key={q} className="rounded-xl bg-white p-6 shadow-sm">
-                    <h3
-                      className="font-semibold text-base mb-2"
-                      style={{ color: "#333333" }}
-                    >
-                      {q}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+        {/* ── FAQ — TX and AZ ── */}
+        {stateFaqs && (
+          <FaqSection
+            faqs={stateFaqs}
+            title={`Frequently Asked Questions About Bulk Water Delivery in ${stateName}`}
+          />
         )}
 
       </main>
