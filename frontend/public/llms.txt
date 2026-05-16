@@ -1,0 +1,53 @@
+# HaulAgua
+
+> HaulAgua is a directory of bulk water hauling services across the United
+> States. Visitors can search verified haulers by city and state for pool
+> fills, construction and dust control, potable and drinking water,
+> agricultural and livestock water, emergency response, oil and gas, and
+> event water delivery. The directory currently covers Texas and Arizona
+> with additional states in development.
+
+Use this file to discover all city directory pages and core service
+category pages. Each city page lists local bulk water haulers with
+phone, website, service categories, and certifications. The directory
+is free to search.
+
+## State Directories
+
+- [Texas Bulk Water Haulers](https://www.haulagua.com/water-haulers/tx): Directory of bulk water haulers across Texas cities.
+- [Arizona Bulk Water Haulers](https://www.haulagua.com/water-haulers/az): Directory of bulk water haulers across Arizona cities.
+
+## Texas Cities
+
+- [Bulk Water Delivery in Austin, TX](https://www.haulagua.com/water-haulers/tx/austin): Bulk water haulers serving Austin and surrounding areas.
+- [Bulk Water Delivery in Blanco, TX](https://www.haulagua.com/water-haulers/tx/blanco): Bulk water haulers serving Blanco and surrounding areas.
+- [Bulk Water Delivery in Driftwood, TX](https://www.haulagua.com/water-haulers/tx/driftwood): Bulk water haulers serving Driftwood and surrounding areas.
+- [Bulk Water Delivery in Johnson City, TX](https://www.haulagua.com/water-haulers/tx/johnson-city): Bulk water haulers serving Johnson City and surrounding areas.
+- [Bulk Water Delivery in Keller, TX](https://www.haulagua.com/water-haulers/tx/keller): Bulk water haulers serving Keller and surrounding areas.
+- [Bulk Water Delivery in Lakehills, TX](https://www.haulagua.com/water-haulers/tx/lakehills): Bulk water haulers serving Lakehills and surrounding areas.
+- [Bulk Water Delivery in Midland, TX](https://www.haulagua.com/water-haulers/tx/midland): Bulk water haulers serving Midland and surrounding areas.
+- [Bulk Water Delivery in Spicewood, TX](https://www.haulagua.com/water-haulers/tx/spicewood): Bulk water haulers serving Spicewood and surrounding areas.
+
+## Arizona Cities
+
+- [Bulk Water Delivery in Apache Junction, AZ](https://www.haulagua.com/water-haulers/az/apache-junction): Bulk water haulers serving Apache Junction and surrounding areas.
+- [Bulk Water Delivery in Ash Fork, AZ](https://www.haulagua.com/water-haulers/az/ash-fork): Bulk water haulers serving Ash Fork and surrounding areas.
+- [Bulk Water Delivery in Concho, AZ](https://www.haulagua.com/water-haulers/az/concho): Bulk water haulers serving Concho and surrounding areas.
+- [Bulk Water Delivery in Dewey-Humboldt, AZ](https://www.haulagua.com/water-haulers/az/dewey-humboldt): Bulk water haulers serving Dewey-Humboldt and surrounding areas.
+- [Bulk Water Delivery in Flagstaff, AZ](https://www.haulagua.com/water-haulers/az/flagstaff): Bulk water haulers serving Flagstaff and surrounding areas.
+- [Bulk Water Delivery in Golden Valley, AZ](https://www.haulagua.com/water-haulers/az/golden-valley): Bulk water haulers serving Golden Valley and surrounding areas.
+- [Bulk Water Delivery in Marana, AZ](https://www.haulagua.com/water-haulers/az/marana): Bulk water haulers serving Marana and surrounding areas.
+- [Bulk Water Delivery in Mesa, AZ](https://www.haulagua.com/water-haulers/az/mesa): Bulk water haulers serving Mesa and surrounding areas.
+- [Bulk Water Delivery in New River, AZ](https://www.haulagua.com/water-haulers/az/new-river): Bulk water haulers serving New River and surrounding areas.
+- [Bulk Water Delivery in Overgaard, AZ](https://www.haulagua.com/water-haulers/az/overgaard): Bulk water haulers serving Overgaard and surrounding areas.
+- [Bulk Water Delivery in Peoria, AZ](https://www.haulagua.com/water-haulers/az/peoria): Bulk water haulers serving Peoria and surrounding areas.
+- [Bulk Water Delivery in Phoenix, AZ](https://www.haulagua.com/water-haulers/az/phoenix): Bulk water haulers serving Phoenix and surrounding areas.
+- [Bulk Water Delivery in Prescott Valley, AZ](https://www.haulagua.com/water-haulers/az/prescott-valley): Bulk water haulers serving Prescott Valley and surrounding areas.
+- [Bulk Water Delivery in Rainmaker Rentals, AZ](https://www.haulagua.com/water-haulers/az/rainmaker-rentals): Bulk water haulers serving Rainmaker Rentals and surrounding areas.
+- [Bulk Water Delivery in Scottsdale, AZ](https://www.haulagua.com/water-haulers/az/scottsdale): Bulk water haulers serving Scottsdale and surrounding areas.
+- [Bulk Water Delivery in Seligman, AZ](https://www.haulagua.com/water-haulers/az/seligman): Bulk water haulers serving Seligman and surrounding areas.
+- [Bulk Water Delivery in Surprise, AZ](https://www.haulagua.com/water-haulers/az/surprise): Bulk water haulers serving Surprise and surrounding areas.
+- [Bulk Water Delivery in Tempe, AZ](https://www.haulagua.com/water-haulers/az/tempe): Bulk water haulers serving Tempe and surrounding areas.
+- [Bulk Water Delivery in Tucson, AZ](https://www.haulagua.com/water-haulers/az/tucson): Bulk water haulers serving Tucson and surrounding areas.
+- [Bulk Water Delivery in Williams, AZ](https://www.haulagua.com/water-haulers/az/williams): Bulk water haulers serving Williams and surrounding areas.
+- [Bulk Water Delivery in Yavapai, AZ](https://www.haulagua.com/water-haulers/az/yavapai): Bulk water haulers serving Yavapai and surrounding areas.

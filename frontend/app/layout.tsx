@@ -51,6 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="llms-txt" href="https://www.haulagua.com/llms.txt" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-8W9S9729JY" strategy="afterInteractive" />
         <Script id="ga-init" strategy="afterInteractive">
