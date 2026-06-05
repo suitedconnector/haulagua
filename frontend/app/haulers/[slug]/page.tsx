@@ -176,7 +176,7 @@ export async function generateMetadata({ params }: PageProps) {
   const hauler = allHaulers.find((h) => h.attributes.slug === slug) ?? null;
   if (!hauler) return {};
   const a = hauler.attributes;
-  const title = `${a.name} — Bulk Water Hauling in ${a.city}, ${a.state} | Haulagua`;
+  const title = `${a.name} in ${a.city}, ${a.state}`;
   const description = a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`;
   return {
     title,
