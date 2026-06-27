@@ -69,24 +69,24 @@ const allLocations = (locationsData as { data: StrapiLocation[] }).data;
 
 export async function getHaulersByState(stateAbbr: string): Promise<StrapiHauler[]> {
   return allHaulers.filter(
-    (h) => h.attributes.state?.toUpperCase() === stateAbbr.toUpperCase() &&
-           h.attributes.isActive !== false
-  ).sort((a, b) => (b.attributes.isVerifiedPro ? 1 : 0) - (a.attributes.isVerifiedPro ? 1 : 0));
+    (h) => h.state?.toUpperCase() === stateAbbr.toUpperCase() &&
+           h.isActive !== false
+  ).sort((a, b) => (b.isVerifiedPro ? 1 : 0) - (a.isVerifiedPro ? 1 : 0));
 }
 
 export async function getHaulersByCity(stateAbbr: string, city: string): Promise<StrapiHauler[]> {
   return allHaulers.filter(
-    (h) => h.attributes.state?.toUpperCase() === stateAbbr.toUpperCase() &&
-           h.attributes.city?.toLowerCase().includes(city.toLowerCase()) &&
-           h.attributes.isActive !== false
-  ).sort((a, b) => (b.attributes.isVerifiedPro ? 1 : 0) - (a.attributes.isVerifiedPro ? 1 : 0));
+    (h) => h.state?.toUpperCase() === stateAbbr.toUpperCase() &&
+           h.city?.toLowerCase().includes(city.toLowerCase()) &&
+           h.isActive !== false
+  ).sort((a, b) => (b.isVerifiedPro ? 1 : 0) - (a.isVerifiedPro ? 1 : 0));
 }
 
 export async function getAllStatesWithCounts(): Promise<{ abbr: string; name: string; count: number }[]> {
   const counts: Record<string, number> = {};
   for (const h of allHaulers) {
-    if (h.attributes.isActive === false) continue;
-    const abbr = h.attributes.state?.toLowerCase();
+    if (h.isActive === false) continue;
+    const abbr = h.state?.toLowerCase();
     if (abbr) counts[abbr] = (counts[abbr] ?? 0) + 1;
   }
   return Object.entries(counts)
@@ -97,7 +97,7 @@ export async function getAllStatesWithCounts(): Promise<{ abbr: string; name: st
 export function groupHaulersByCity(haulers: StrapiHauler[]): { city: string; slug: string; count: number }[] {
   const counts: Record<string, number> = {};
   for (const h of haulers) {
-    const city = h.attributes.city;
+    const city = h.city;
     if (city) counts[city] = (counts[city] ?? 0) + 1;
   }
   return Object.entries(counts)
