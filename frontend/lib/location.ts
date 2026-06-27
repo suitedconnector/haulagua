@@ -1,5 +1,5 @@
 import type { StrapiHauler } from "@/components/hauler-card";
-import haulersData from "@/data/haulers.json";
+import haulersData from "@/data/haulers-flat.json";
 import locationsData from "@/data/locations.json";
 
 export const STATE_NAMES: Record<string, string> = {
@@ -64,7 +64,7 @@ export type StrapiLocation = {
 
 // ─── Data accessors (replaces strapiGet calls) ────────────────────────────────
 
-const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
+const allHaulers = haulersData as StrapiHauler[];
 const allLocations = (locationsData as { data: StrapiLocation[] }).data;
 
 export async function getHaulersByState(stateAbbr: string): Promise<StrapiHauler[]> {
