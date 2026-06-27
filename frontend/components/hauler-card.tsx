@@ -5,25 +5,28 @@ import { getPlaceholderImage } from "@/src/lib/placeholders";
 import { CityWave } from "@/components/city-wave";
 
 export type StrapiHauler = {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    city: string | null;
-    state: string;
-    zip?: string | null;
-    serviceArea?: string | null;
-    minFee?: number | null;
-    truckCapacity?: number | null;
-    hoseLength?: number | null;
-    waterType?: "potable" | "non-potable" | "both" | null;
-    isVerifiedPro: boolean;
-    isClaimed: boolean;
-    isActive?: boolean;
-    description?: string | null;
-    services?: {
-      data: { id: number; attributes: { type: string } }[];
-    };
+  id?: number;
+  name: string;
+  slug: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  address?: string;
+  city: string | null;
+  state: string;
+  zip?: string | null;
+  serviceArea?: string | null;
+  minFee?: number | null;
+  truckCapacity?: number | null | string;
+  hoseLength?: number | null;
+  waterType?: "potable" | "non-potable" | "both" | null;
+  isVerifiedPro: boolean;
+  isClaimed: boolean;
+  isActive?: boolean;
+  description?: string | null;
+  certification?: string;
+  services?: {
+    data: { id: number; attributes: { type: string } }[];
   };
 };
 
@@ -46,9 +49,8 @@ const SERVICE_LABEL: Record<string, string> = {
 };
 
 export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?: string }) {
-  const a = hauler.attributes;
-  const services = a.services?.data ?? [];
-  const href = refPath ? `/haulers/${a.slug}?ref=${encodeURIComponent(refPath)}` : `/haulers/${a.slug}`;
+  const services = hauler.services?.data ?? [];
+  const href = refPath ? `/haulers/${hauler.slug}?ref=${encodeURIComponent(refPath)}` : `/haulers/${hauler.slug}`;
 
   return (
     <Link
@@ -57,8 +59,8 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
     >
       <div className="relative h-36 w-full bg-gray-100">
         <Image
-          src={getPlaceholderImage(a.slug)}
-          alt={`${a.name} - bulk water hauling`}
+          src={getPlaceholderImage(hauler.slug)}
+          alt={`${hauler.name} - bulk water hauling`}
           fill
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -70,9 +72,9 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-lg text-white truncate">
-                {a.name}
+                {hauler.name}
               </h3>
-              {a.isVerifiedPro && (
+              {hauler.isVerifiedPro && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap text-white"
                   style={{ backgroundColor: "#F2A900" }}
@@ -81,7 +83,7 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
                   Verified Pro
                 </span>
               )}
-              {!a.isClaimed && (
+              {!hauler.isClaimed && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-white/20 text-white">
                   <ShieldAlert className="h-3 w-3" />
                   Unclaimed
@@ -89,14 +91,14 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
               )}
             </div>
             <p className="text-sm text-white/70 mt-0.5">
-              {a.city && `${a.city}, `}{a.state}
+              {hauler.city && `${hauler.city}, `}{hauler.state}
             </p>
           </div>
-          {a.minFee != null && (
+          {hauler.minFee != null && (
             <div className="text-right shrink-0">
               <p className="text-xs text-white/70">Starting at</p>
               <p className="text-xl font-bold text-white">
-                ${a.minFee}
+                ${hauler.minFee}
               </p>
             </div>
           )}
@@ -118,24 +120,24 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
         )}
 
         <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-white/70">
-          {a.truckCapacity != null && (
+          {hauler.truckCapacity != null && (
             <span className="flex items-center gap-1">
               <i className="fa-solid fa-truck-droplet" style={{ fontSize: "13px" }} />
-              {a.truckCapacity.toLocaleString()} gal
+              {typeof hauler.truckCapacity === "string" ? hauler.truckCapacity : hauler.truckCapacity.toLocaleString()} gal
             </span>
           )}
-          {a.hoseLength != null && (
+          {hauler.hoseLength != null && (
             <span className="flex items-center gap-1">
               <Ruler className="h-3.5 w-3.5" />
-              {a.hoseLength} ft hose
+              {hauler.hoseLength} ft hose
             </span>
           )}
-          {a.waterType && (
+          {hauler.waterType && (
             <span className="flex items-center gap-1">
               <Droplets className="h-3.5 w-3.5" />
-              {a.waterType === "both"
+              {hauler.waterType === "both"
                 ? "Potable & Non-Potable"
-                : a.waterType === "potable"
+                : hauler.waterType === "potable"
                 ? "Potable"
                 : "Non-Potable"}
             </span>

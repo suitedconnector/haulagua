@@ -142,30 +142,29 @@ export default async function CityPage({ params }: PageProps) {
           itemListElement: haulers.map((h, i) => ({
             "@type": "ListItem",
             position: i + 1,
-            name: h.attributes.name,
-            url: `https://haulagua.com/haulers/${h.attributes.slug}`,
+            name: h.name,
+            url: `https://haulagua.com/haulers/${h.slug}`,
           })),
         }
       : null;
 
   const localBusinessSchemas = haulers.map((h) => {
-    const a = h.attributes;
     const schema: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      name: a.name,
+      name: h.name,
       address: {
         "@type": "PostalAddress",
         addressLocality: cityName,
         addressRegion: abbr,
-        ...(a.zip ? { postalCode: a.zip } : {}),
+        ...(h.zip ? { postalCode: h.zip } : {}),
         addressCountry: "US",
       },
-      url: `https://haulagua.com/haulers/${a.slug}`,
+      url: `https://haulagua.com/haulers/${h.slug}`,
     };
-    if (a.phone) schema.telephone = a.phone;
-    if (a.website) schema.sameAs = a.website;
-    if (a.description) schema.description = a.description;
+    if (h.phone) schema.telephone = h.phone;
+    if (h.website) schema.sameAs = h.website;
+    if (h.description) schema.description = h.description;
     return schema;
   });
 
