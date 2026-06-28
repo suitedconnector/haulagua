@@ -158,10 +158,9 @@ export default async function StatePage({ params, searchParams }: PageProps) {
   const activeServiceType = SERVICE_TYPES.find((st) => st.slug === service) ?? null;
   const displayedHaulers = activeServiceType
     ? haulers.filter((h) => {
-        const a = h.attributes;
         return (
-          a.services?.data?.some((s) => s.attributes.type === activeServiceType.slug) ||
-          (a.industries?.includes(activeServiceType.slug) ?? false)
+          h.services?.some((s) => s.type === activeServiceType.slug) ||
+          (h.industries?.includes(activeServiceType.slug) ?? false)
         );
       })
     : haulers;
@@ -196,8 +195,8 @@ export default async function StatePage({ params, searchParams }: PageProps) {
           itemListElement: haulers.map((h, i) => ({
             "@type": "ListItem",
             position: i + 1,
-            name: h.attributes.name,
-            url: `https://haulagua.com/haulers/${h.attributes.slug}`,
+            name: h.name,
+            url: `https://haulagua.com/haulers/${h.slug}`,
           })),
         }
       : null;
