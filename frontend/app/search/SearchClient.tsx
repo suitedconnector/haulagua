@@ -78,7 +78,7 @@ const STATE_NAMES: Record<string, string> = {
 };
 
 const AVAILABLE_STATES: { abbr: string; name: string }[] = Array.from(
-  new Set(allHaulers.map((h) => h.attributes.state).filter(Boolean))
+  new Set(allHaulers.map((h) => h.state).filter(Boolean))
 )
   .sort()
   .map((abbr) => ({ abbr, name: STATE_NAMES[abbr.toLowerCase()] ?? abbr }));
@@ -139,8 +139,8 @@ function getCitiesByState(stateAbbr: string): string[] {
   if (!stateAbbr) return [];
   const cities = new Set<string>();
   allHaulers.forEach((h) => {
-    if (h.attributes.state === stateAbbr && h.attributes.city) {
-      cities.add(h.attributes.city);
+    if (h.state === stateAbbr && h.city) {
+      cities.add(h.city);
     }
   });
   return Array.from(cities).sort();
@@ -164,7 +164,7 @@ function applyFilters(filters: Filters): StrapiHauler[] {
     }
 
     if (filters.services.length > 0) {
-      const types = a.services?.data.map((s) => s.attributes.type) ?? [];
+      const types = a.services?.data.map((s) => s.type) ?? [];
       if (!filters.services.some((svc) => types.includes(svc))) return false;
     }
 
@@ -237,10 +237,10 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
               <span
                 key={s.id}
                 className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  SERVICE_COLOR[s.attributes.type] ?? "bg-gray-100 text-gray-800"
+                  SERVICE_COLOR[s.type] ?? "bg-gray-100 text-gray-800"
                 }`}
               >
-                {SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}
+                {SERVICE_LABEL[s.type] ?? s.type}
               </span>
             ))}
           </div>

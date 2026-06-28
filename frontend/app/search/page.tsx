@@ -49,7 +49,7 @@ function getInitialHaulers(params: {
       if (!fields.some((f) => f?.toLowerCase().includes(q))) return false;
     }
     if (serviceType) {
-      const types = a.services?.data?.map((s) => s.attributes.type) ?? [];
+      const types = a.services?.data?.map((s) => s.type) ?? [];
       if (!types.includes(serviceType)) return false;
     }
     return true;

@@ -173,7 +173,7 @@ type PageProps = { params: Promise<{ slug: string }>; searchParams: Promise<{ re
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const hauler = allHaulers.find((h) => h.attributes.slug === slug) ?? null;
+  const hauler = allHaulers.find((h) => h.slug === slug) ?? null;
   if (!hauler) return {};
   const a = hauler.attributes;
   const title = `${a.name} in ${a.city}, ${a.state}`;
@@ -202,7 +202,7 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
   const { slug } = await params;
   const { ref } = await searchParams;
 
-  const hauler = allHaulers.find((h) => h.attributes.slug === slug) ?? null;
+  const hauler = allHaulers.find((h) => h.slug === slug) ?? null;
   if (!hauler) notFound();
 
   const a = hauler.attributes;
@@ -325,13 +325,13 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                     {services.map((s) => (
                       <div key={s.id} className="bg-white border border-border rounded-xl p-4 hover:border-primary/30 transition-colors">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl">{SERVICE_ICON[s.attributes.type] ?? "💧"}</span>
-                          <h3 className="font-semibold">{SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}</h3>
+                          <span className="text-xl">{SERVICE_ICON[s.type] ?? "💧"}</span>
+                          <h3 className="font-semibold">{SERVICE_LABEL[s.type] ?? s.type}</h3>
                         </div>
                         <div className="space-y-1 text-sm text-muted-foreground">
-                          {s.attributes.waterSource && <p><span className="text-foreground font-medium">Source:</span> {s.attributes.waterSource}</p>}
-                          {s.attributes.truckCapacity && <p><span className="text-foreground font-medium">Capacity:</span> {s.attributes.truckCapacity.toLocaleString()} gal</p>}
-                          {s.attributes.hoseLength && <p><span className="text-foreground font-medium">Hose:</span> {s.attributes.hoseLength} ft</p>}
+                          {s.waterSource && <p><span className="text-foreground font-medium">Source:</span> {s.waterSource}</p>}
+                          {s.truckCapacity && <p><span className="text-foreground font-medium">Capacity:</span> {s.truckCapacity.toLocaleString()} gal</p>}
+                          {s.hoseLength && <p><span className="text-foreground font-medium">Hose:</span> {s.hoseLength} ft</p>}
                         </div>
                       </div>
                     ))}
@@ -346,8 +346,8 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                   <div className="space-y-4">
                     {caseStudies.map((cs) => (
                       <div key={cs.id} className="bg-white border border-border rounded-xl p-5 border-l-4 border-l-primary">
-                        <h3 className="font-serif font-semibold text-base mb-2">{cs.attributes.title}</h3>
-                        {cs.attributes.description && <p className="text-sm text-muted-foreground leading-relaxed">{cs.attributes.description}</p>}
+                        <h3 className="font-serif font-semibold text-base mb-2">{cs.title}</h3>
+                        {cs.description && <p className="text-sm text-muted-foreground leading-relaxed">{cs.description}</p>}
                       </div>
                     ))}
                   </div>
