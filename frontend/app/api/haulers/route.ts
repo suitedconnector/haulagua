@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import haulersData from '@/data/haulers.json';
+import haulersData from '@/data/haulers-flat.json';
 
-const allHaulers = (haulersData as { data: Array<{ attributes: { name: string; email: string | null } }> }).data;
+const allHaulers = haulersData as Array<{ name: string; email?: string | null }>;
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'tal@trezian.com';
 
@@ -102,8 +102,8 @@ export async function POST(req: NextRequest) {
 
   const isDuplicate = allHaulers.some(
     (h) =>
-      h.attributes.name.toLowerCase() === haulerName.toLowerCase() ||
-      (h.attributes.email && h.attributes.email.toLowerCase() === haulerEmail)
+      h.name.toLowerCase() === haulerName.toLowerCase() ||
+      (h.email && h.email.toLowerCase() === haulerEmail)
   );
   if (isDuplicate) {
     return NextResponse.json(
