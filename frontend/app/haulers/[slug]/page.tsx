@@ -175,9 +175,8 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const hauler = allHaulers.find((h) => h.slug === slug) ?? null;
   if (!hauler) return {};
-  const a = hauler.attributes;
-  const title = `${a.name} in ${a.city}, ${a.state}`;
-  const description = a.description?.slice(0, 160) ?? `${a.name} provides bulk water hauling services in ${a.city}, ${a.state}.`;
+  const title = `${hauler.name} in ${hauler.city}, ${hauler.state}`;
+  const description = hauler.description?.slice(0, 160) ?? `${hauler.name} provides bulk water hauling services in ${hauler.city}, ${hauler.state}.`;
   return {
     title,
     description,
@@ -186,12 +185,12 @@ export async function generateMetadata({ params }: PageProps) {
       follow: true,
     },
     alternates: {
-      canonical: `https://www.haulagua.com/haulers/${slug}`,
+      canonical: `https://www.haulaguhauler.com/haulers/${slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.haulagua.com/haulers/${slug}`,
+      url: `https://www.haulaguhauler.com/haulers/${slug}`,
       siteName: "Haulagua",
       type: "profile",
     },
@@ -205,9 +204,8 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
   const hauler = allHaulers.find((h) => h.slug === slug) ?? null;
   if (!hauler) notFound();
 
-  const a = hauler.attributes;
-  const services = a.services?.data ?? [];
-  const caseStudies = a.caseStudies?.data ?? [];
+  const services = hauler.services?.data ?? [];
+  const caseStudies = hauler.caseStudies?.data ?? [];
   const approvedReviews: never[] = []; // Reviews not yet in static data
   const avgRating = null;
 
@@ -223,11 +221,11 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
               <span>/</span>
               <Link href="/water-haulers" className="hover:text-foreground">Water Haulers</Link>
               <span>/</span>
-              <Link href={`/water-haulers/${a.state.toLowerCase()}`} className="hover:text-foreground">{a.state}</Link>
+              <Link href={`/water-haulers/${hauler.state.toLowerCase()}`} className="hover:text-foreground">{hauler.state}</Link>
               <span>/</span>
-              <Link href={`/water-haulers/${a.state.toLowerCase()}/${toCitySlug(a.city)}`} className="hover:text-foreground">{a.city}</Link>
+              <Link href={`/water-haulers/${hauler.state.toLowerCase()}/${toCitySlug(hauler.city)}`} className="hover:text-foreground">{hauler.city}</Link>
               <span>/</span>
-              <span className="text-foreground font-medium truncate">{a.name}</span>
+              <span className="text-foreground font-medium truncate">{hauler.name}</span>
             </nav>
           </div>
         </div>
@@ -260,37 +258,37 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
               {/* Header */}
               <div>
                 <div className="flex flex-wrap items-center gap-3 mb-1">
-                  <h1 className="font-serif text-3xl font-bold text-foreground">{a.name}</h1>
-                  {a.isVerifiedPro && (
+                  <h1 className="font-serif text-3xl font-bold text-foreground">{hauler.name}</h1>
+                  {hauler.isVerifiedPro && (
                     <span className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1 rounded-full" style={{ backgroundColor: "#F2A900", color: "#fff" }}>
                       <CheckCircle2 className="h-4 w-4" />
                       Verified Pro
                     </span>
                   )}
-                  {!a.isClaimed && (
+                  {!hauler.isClaimed && (
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
                       <ShieldAlert className="h-3.5 w-3.5" />
                       Unclaimed
                     </span>
                   )}
-                  {a.ada && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">♿ ADA Accessible</span>}
-                  {a.lgbtqFriendly && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">🏳️‍🌈 LGBTQ+ Friendly</span>}
-                  {a.veteranOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700">🎖️ Veteran Owned</span>}
-                  {a.womenOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-pink-100 text-pink-700">⚡ Women Owned</span>}
+                  {hauler.ada && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">♿ ADA Accessible</span>}
+                  {hauler.lgbtqFriendly && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">🏳️‍🌈 LGBTQ+ Friendly</span>}
+                  {hauler.veteranOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700">🎖️ Veteran Owned</span>}
+                  {hauler.womenOwned && <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-pink-100 text-pink-700">⚡ Women Owned</span>}
                 </div>
                 <p className="flex items-center gap-1.5 text-muted-foreground mt-1">
                   <MapPin className="h-4 w-4" />
-                  {a.address ? `${a.address}, ` : ""}{a.city}, {a.state} {a.zip}
+                  {hauler.address ? `${hauler.address}, ` : ""}{hauler.city}, {hauler.state} {hauler.zip}
                 </p>
-                {a.plusCode && (
-                  <a href={`https://plus.codes/${a.plusCode}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#005A9C] mt-1">
+                {hauler.plusCode && (
+                  <a href={`https://plus.codes/${hauler.plusCode}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#005A9C] mt-1">
                     <MapPin className="h-3.5 w-3.5" />
-                    {a.plusCode} (Open in Maps)
+                    {hauler.plusCode} (Open in Maps)
                   </a>
                 )}
-                {a.industries && a.industries.length > 0 && (
+                {hauler.industries && hauler.industries.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
-                    {a.industries.map((ind) => (
+                    {hauler.industries.map((ind) => (
                       <span key={ind} className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${INDUSTRY_COLOR[ind] ?? "bg-gray-100 text-gray-700"}`}>
                         {INDUSTRY_LABEL[ind] ?? ind}
                       </span>
@@ -301,17 +299,17 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
 
               {/* Photo Gallery */}
               <section className="mb-6">
-                <GalleryPlaceholder name={a.name} city={a.city} state={a.state} slug={a.slug} />
+                <GalleryPlaceholder name={hauler.name} city={hauler.city} state={hauler.state} slug={hauler.slug} />
               </section>
 
               {/* About */}
-              {a.description && (
+              {hauler.description && (
                 <section>
                   <h2 className="font-serif text-xl font-bold mb-3">About</h2>
-                  <p className="text-foreground/80 leading-relaxed">{a.description}</p>
-                  {a.serviceArea && (
+                  <p className="text-foreground/80 leading-relaxed">{hauler.description}</p>
+                  {hauler.serviceArea && (
                     <p className="mt-3 text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">Service area:</span> {a.serviceArea}
+                      <span className="font-medium text-foreground">Service area:</span> {hauler.serviceArea}
                     </p>
                   )}
                 </section>
@@ -364,10 +362,10 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
             <div className="flex-[3] min-w-0 lg:max-w-xs space-y-5 lg:sticky lg:top-6 lg:self-start">
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">Contact</h2>
-                <ContactPanel phone={a.phone} website={a.website} email={a.email ?? null} name={a.name} slug={a.slug} isClaimed={a.isClaimed} />
-                {a.email && (
+                <ContactPanel phone={hauler.phone} website={hauler.website} email={hauler.email ?? null} name={hauler.name} slug={hauler.slug} isClaimed={hauler.isClaimed} />
+                {hauler.email && (
                   <p className="text-xs text-muted-foreground text-center mt-3">
-                    or email <a href={`mailto:${a.email}`} className="underline hover:text-foreground">{a.email}</a>
+                    or email <a href={`mailto:${hauler.email}`} className="underline hover:text-foreground">{hauler.email}</a>
                   </p>
                 )}
               </div>
@@ -375,47 +373,47 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
               <div className="bg-white rounded-xl border border-border shadow-sm p-5">
                 <h2 className="font-serif font-bold text-base mb-4">At a Glance</h2>
                 <dl className="space-y-3">
-                  {a.yearFounded != null && (
+                  {hauler.yearFounded != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />Year founded</dt>
-                      <dd className="font-semibold">{a.yearFounded}</dd>
+                      <dd className="font-semibold">{hauler.yearFounded}</dd>
                     </div>
                   )}
-                  {a.serviceArea && (
+                  {hauler.serviceArea && (
                     <div className="flex items-start justify-between gap-2">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground shrink-0"><MapPin className="h-4 w-4" />Service area</dt>
-                      <dd className="font-semibold text-sm text-right">{a.serviceArea}</dd>
+                      <dd className="font-semibold text-sm text-right">{hauler.serviceArea}</dd>
                     </div>
                   )}
-                  {a.minFee != null && (
+                  {hauler.minFee != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><DollarSign className="h-4 w-4" />Starting fee</dt>
-                      <dd className="font-semibold text-primary">${a.minFee}</dd>
+                      <dd className="font-semibold text-primary">${hauler.minFee}</dd>
                     </div>
                   )}
-                  {a.truckCapacity != null && (
+                  {hauler.truckCapacity != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Truck className="h-4 w-4" />Truck capacity</dt>
-                      <dd className="font-semibold">{a.truckCapacity.toLocaleString()} gal</dd>
+                      <dd className="font-semibold">{hauler.truckCapacity.toLocaleString()} gal</dd>
                     </div>
                   )}
-                  {a.hoseLength != null && (
+                  {hauler.hoseLength != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Ruler className="h-4 w-4" />Hose length</dt>
-                      <dd className="font-semibold">{a.hoseLength} ft</dd>
+                      <dd className="font-semibold">{hauler.hoseLength} ft</dd>
                     </div>
                   )}
-                  {a.certification && (
+                  {hauler.certification && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Shield className="h-4 w-4" />Certification</dt>
-                      <dd className="font-semibold text-sm text-right">{a.certification}</dd>
+                      <dd className="font-semibold text-sm text-right">{hauler.certification}</dd>
                     </div>
                   )}
-                  {a.hours && (
+                  {hauler.hours && (
                     <div className="flex items-start justify-between gap-2">
                       <dt className="text-sm text-muted-foreground shrink-0">🕐 Hours</dt>
                       <dd className="text-sm text-right">
-                        {a.hours.split(/(?=Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)/).map((line, i) => (
+                        {hauler.hours.split(/(?=Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)/).map((line, i) => (
                           <div key={i}>{line.trim()}</div>
                         ))}
                       </dd>
@@ -423,13 +421,13 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                   )}
                   <div className="flex items-center justify-between">
                     <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Droplets className="h-4 w-4" />Water type</dt>
-                    <dd className="font-semibold text-sm">{WATER_TYPE_LABEL[a.waterType] ?? a.waterType}</dd>
+                    <dd className="font-semibold text-sm">{WATER_TYPE_LABEL[hauler.waterType] ?? hauler.waterType}</dd>
                   </div>
                   <div className="flex items-center justify-between">
                     <dt className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4" />Insurance</dt>
                     <dd className="font-semibold text-sm">
-                      {a.insuranceCertificate ? (
-                        <a href={a.insuranceCertificate} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Verified</a>
+                      {hauler.insuranceCertificate ? (
+                        <a href={hauler.insuranceCertificate} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Verified</a>
                       ) : (
                         <span className="text-muted-foreground">Unverified</span>
                       )}
@@ -438,14 +436,14 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                 </dl>
               </div>
 
-              {!a.isClaimed && (
+              {!hauler.isClaimed && (
                 <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
                   <div className="flex items-start gap-3">
                     <ShieldAlert className="h-5 w-5 mt-0.5 shrink-0 text-gray-400" />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-[#333333]">Is this your business?</p>
                       <p className="text-xs text-gray-500 mt-0.5 mb-3">Claim this listing to update your info, add photos, and manage your profile.</p>
-                      <Link href={`/haulers/${a.slug}/claim`} className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[#005A9C] text-[#005A9C] text-sm font-semibold py-2 px-4 hover:bg-[#005A9C] hover:text-white transition-colors">
+                      <Link href={`/haulers/${hauler.slug}/claim`} className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[#005A9C] text-[#005A9C] text-sm font-semibold py-2 px-4 hover:bg-[#005A9C] hover:text-white transition-colors">
                         Claim This Listing
                       </Link>
                     </div>
@@ -453,7 +451,7 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                 </div>
               )}
 
-              {a.isVerifiedPro && (
+              {hauler.isVerifiedPro && (
                 <div className="rounded-xl p-4 flex items-start gap-3" style={{ backgroundColor: "#F2A90015", border: "1px solid #F2A90050" }}>
                   <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "#F2A900" }} />
                   <div>
