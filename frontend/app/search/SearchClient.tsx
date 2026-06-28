@@ -25,25 +25,28 @@ import haulersData from "@/data/haulers-flat.json";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type StrapiHauler = {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    city: string;
-    state: string;
-    zip: string;
-    serviceArea: string;
-    minFee: number;
-    truckCapacity: number;
-    hoseLength: number;
-    waterType: "potable" | "non-potable" | "both";
-    isVerifiedPro: boolean;
-    isClaimed: boolean;
-    description: string;
-    industries: string[] | null;
-    services?: {
-      data: { id: number; attributes: { type: string } }[];
-    };
+  id?: number;
+  name: string;
+  slug: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  address?: string;
+  city: string;
+  state: string;
+  zip?: string;
+  serviceArea?: string;
+  minFee?: number;
+  truckCapacity?: number | string;
+  hoseLength?: number;
+  waterType?: "potable" | "non-potable" | "both";
+  isVerifiedPro: boolean;
+  isClaimed: boolean;
+  description?: string;
+  certification?: string;
+  industries?: string[] | null;
+  services?: {
+    data: { id: number; attributes: { type: string } }[];
   };
 };
 
