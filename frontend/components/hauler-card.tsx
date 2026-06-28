@@ -106,14 +106,14 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
 
         {services.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {services.map((s) => (
+            {services.map((s: any) => (
               <span
                 key={s.id}
                 className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  SERVICE_COLOR[s.attributes.type] ?? "bg-gray-100 text-gray-800"
+                  SERVICE_COLOR[s.type ?? s.attributes?.type] ?? "bg-gray-100 text-gray-800"
                 }`}
               >
-                {SERVICE_LABEL[s.attributes.type] ?? s.attributes.type}
+                {SERVICE_LABEL[s.type ?? s.attributes?.type] ?? s.type ?? s.attributes?.type}
               </span>
             ))}
           </div>
