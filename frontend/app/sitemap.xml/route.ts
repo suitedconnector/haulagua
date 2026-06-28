@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import haulersData from '@/data/haulers.json';
+import haulersData from '@/data/haulers-flat.json';
 import {
   getAllStatesWithCounts,
   getHaulersByState,
@@ -10,10 +10,10 @@ import {
 const BASE_URL = 'https://www.haulagua.com';
 
 function getHaulerSlugs(): string[] {
-  const haulers = (haulersData as { data: { attributes: { slug: string; isActive: boolean } }[] }).data;
+  const haulers = haulersData as { slug: string; isActive: boolean }[];
   return haulers
-    .filter((h) => h.attributes.isActive !== false)
-    .map((h) => h.attributes.slug)
+    .filter((h) => h.isActive !== false)
+    .map((h) => h.slug)
     .filter(Boolean);
 }
 

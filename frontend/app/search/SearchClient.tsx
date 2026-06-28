@@ -20,7 +20,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import haulersData from "@/data/haulers.json";
+import haulersData from "@/data/haulers-flat.json";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ type Filters = {
 
 const PAGE_SIZE = 20;
 
-const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
+const allHaulers = haulersData as StrapiHauler[];
 
 const STATE_NAMES: Record<string, string> = {
   tx: "Texas", az: "Arizona", ca: "California", fl: "Florida",

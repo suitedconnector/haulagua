@@ -6,7 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactPanel } from "./ContactPanel";
 import { ReviewForm } from "./ReviewForm";
-import haulersData from "@/data/haulers.json";
+import haulersData from "@/data/haulers-flat.json";
 import {
   CheckCircle2,
   Truck,
@@ -78,7 +78,7 @@ type StrapiHauler = {
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
-const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
+const allHaulers = haulersData as StrapiHauler[];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

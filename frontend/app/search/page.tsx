@@ -4,7 +4,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { SearchClient } from "./SearchClient";
 import type { StrapiHauler } from "@/components/hauler-card";
-import haulersData from "@/data/haulers.json";
+import haulersData from "@/data/haulers-flat.json";
 
 export const metadata: Metadata = {
   title: "Find Bulk Water Haulers | Search by Location & Service | Haulagua",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-const allHaulers = (haulersData as { data: StrapiHauler[] }).data;
+const allHaulers = haulersData as StrapiHauler[];
 
 function getInitialHaulers(params: {
   zip?: string;
