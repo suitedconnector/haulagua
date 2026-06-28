@@ -328,7 +328,7 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                         </div>
                         <div className="space-y-1 text-sm text-muted-foreground">
                           {s.waterSource && <p><span className="text-foreground font-medium">Source:</span> {s.waterSource}</p>}
-                          {s.truckCapacity && <p><span className="text-foreground font-medium">Capacity:</span> {s.truckCapacity.toLocaleString()} gal</p>}
+                          {s.truckCapacity && <p><span className="text-foreground font-medium">Capacity:</span> {typeof s.truckCapacity === "string" ? s.truckCapacity : s.truckCapacity.toLocaleString()} gal</p>}
                           {s.hoseLength && <p><span className="text-foreground font-medium">Hose:</span> {s.hoseLength} ft</p>}
                         </div>
                       </div>
@@ -394,7 +394,7 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
                   {hauler.truckCapacity != null && (
                     <div className="flex items-center justify-between">
                       <dt className="flex items-center gap-2 text-sm text-muted-foreground"><Truck className="h-4 w-4" />Truck capacity</dt>
-                      <dd className="font-semibold">{hauler.truckCapacity.toLocaleString()} gal</dd>
+                      <dd className="font-semibold">{typeof hauler.truckCapacity === "string" ? hauler.truckCapacity : hauler.truckCapacity.toLocaleString()} gal</dd>
                     </div>
                   )}
                   {hauler.hoseLength != null && (
