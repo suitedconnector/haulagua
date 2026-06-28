@@ -156,31 +156,29 @@ function applyFilters(filters: Filters): StrapiHauler[] {
   const feeObj = FEE_RANGES.find((r) => r.value === filters.feeRange);
 
   return allHaulers.filter((h) => {
-    const a = h.attributes;
-
-    if (filters.state && a.state !== filters.state) return false;
-    if (filters.city && a.city !== filters.city) return false;
+    if (filters.state && h.state !== filters.state) return false;
+    if (filters.city && h.city !== filters.city) return false;
 
     if (q) {
-      const fields = [a.city, a.state, a.zip, a.serviceArea];
+      const fields = [h.city, h.state, h.zip, h.serviceArea];
       if (!fields.some((f) => f?.toLowerCase().includes(q))) return false;
     }
 
     if (filters.services.length > 0) {
-      const types = a.services?.data.map((s) => s.type) ?? [];
+      const types = h.services?.data?.map((s) => s.type) ?? [];
       if (!filters.services.some((svc) => types.includes(svc))) return false;
     }
 
-    if (feeObj && a.minFee != null) {
-      if (feeObj.op === "lt" && feeObj.max !== undefined && a.minFee >= feeObj.max) return false;
+    if (feeObj && h.minFee != null) {
+      if (feeObj.op === "lt" && feeObj.max !== undefined && h.minFee >= feeObj.max) return false;
       if (feeObj.op === "between") {
-        if (feeObj.min !== undefined && a.minFee < feeObj.min) return false;
-        if (feeObj.max !== undefined && a.minFee > feeObj.max) return false;
+        if (feeObj.min !== undefined && h.minFee < feeObj.min) return false;
+        if (feeObj.max !== undefined && h.minFee > feeObj.max) return false;
       }
-      if (feeObj.op === "gte" && feeObj.min !== undefined && a.minFee < feeObj.min) return false;
+      if (feeObj.op === "gte" && feeObj.min !== undefined && h.minFee < feeObj.min) return false;
     }
 
-    if (filters.verifiedOnly && !a.isVerifiedPro) return false;
+    if (filters.verifiedOnly && !h.isVerifiedPro) return false;
 
     return true;
   });
@@ -189,12 +187,11 @@ function applyFilters(filters: Filters): StrapiHauler[] {
 // ─── Hauler Card ──────────────────────────────────────────────────────────────
 
 function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
-  const a = hauler.attributes;
-  const services = a.services?.data ?? [];
+  const services = hauler.services?.data ?? [];
 
   return (
     <Link
-      href={`/haulers/${a.slug}`}
+      href={`/haulers/${hauler.slug}`}
       className="block bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-[#005A9C]/30 transition-all group"
     >
       <div className="p-5">
@@ -202,9 +199,9 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-lg text-foreground group-hover:text-[#005A9C] transition-colors truncate">
-                {a.name}
+                {hauler.name}
               </h3>
-              {a.isVerifiedPro && (
+              {hauler.isVerifiedPro && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
                   style={{ backgroundColor: "#F2A900", color: "#fff" }}
@@ -213,7 +210,7 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
                   Verified Pro
                 </span>
               )}
-              {!a.isClaimed && (
+              {!hauler.isClaimed && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap bg-gray-100 text-gray-500 border border-gray-200">
                   <ShieldAlert className="h-3 w-3" />
                   Unclaimed
@@ -221,14 +218,14 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
               )}
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {a.city}, {a.state}
+              {hauler.city}, {hauler.state}
             </p>
           </div>
-          {a.minFee != null && (
+          {hauler.minFee != null && (
             <div className="text-right shrink-0">
               <p className="text-xs text-muted-foreground">Starting at</p>
               <p className="text-xl font-bold" style={{ color: "#005A9C" }}>
-                ${a.minFee}
+                ${hauler.minFee}
               </p>
             </div>
           )}
@@ -252,17 +249,17 @@ function HaulerCard({ hauler }: { hauler: StrapiHauler }) {
         <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Truck className="h-3.5 w-3.5" />
-            {a.truckCapacity?.toLocaleString() ?? "—"} gal
+            {typeof hauler.truckCapacity === "string" ? hauler.truckCapacity : hauler.truckCapacity?.toLocaleString()} gal
           </span>
           <span className="flex items-center gap-1">
             <Ruler className="h-3.5 w-3.5" />
-            {a.hoseLength ?? "—"} ft hose
+            {hauler.hoseLength ?? "—"} ft hose
           </span>
           <span className="flex items-center gap-1">
             <Droplets className="h-3.5 w-3.5" />
-            {a.waterType === "both"
+            {hauler.waterType === "both"
               ? "Potable & Non-Potable"
-              : a.waterType === "potable"
+              : hauler.waterType === "potable"
               ? "Potable"
               : "Non-Potable"}
           </span>
