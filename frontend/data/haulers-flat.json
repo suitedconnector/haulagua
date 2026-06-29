@@ -1895,36 +1895,5 @@
     "isClaimed": false,
     "description": "",
     "certification": ""
-  },
-  {
-    "name": "water",
-    "slug": "water",
-    "phone": "1111111111",
-    "website": "water.com",
-    "email": "water@water.com",
-    "city": "Los Angeles",
-    "state": "CA",
-    "zip": "90028",
-    "address": null,
-    "serviceArea": "water water water",
-    "waterType": "both",
-    "truckCapacity": 1234,
-    "hoseLength": 123,
-    "isActive": true,
-    "isVerifiedPro": false,
-    "isClaimed": false,
-    "description": "water water water water water water water water water water water water water water water water water",
-    "certification": null,
-    "minFee": 456,
-    "industries": {
-      "ownerName": "water",
-      "yearFounded": 2000,
-      "serviceTypes": [
-        "potable"
-      ],
-      "waterSource": "Both",
-      "potableCertified": true,
-      "overflowPrevention": false
-    }
   }
 ]
