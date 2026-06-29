@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
   }
 
   const {
-    name, email, phone, website, city, state, zip, description, serviceArea,
+    name, email, phone, website, city, state, zip, address, description, serviceArea,
     minFee, truckCapacity, hoseLength, waterType, industries, insuranceCertificate,
   } = body as Record<string, unknown>;
 
@@ -151,6 +151,7 @@ export async function POST(req: NextRequest) {
         email: haulerEmail,
         phone: phone ?? null,
         website: website ?? null,
+        address: typeof address === 'string' ? address.trim() || null : null,
         city: haulerCity,
         state: haulerState,
         zip: zip ?? null,
