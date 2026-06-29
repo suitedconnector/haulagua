@@ -120,7 +120,7 @@ export function HaulerCard({ hauler, refPath }: { hauler: StrapiHauler; refPath?
         )}
 
         <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-white/70">
-          {hauler.truckCapacity != null && (
+          {hauler.truckCapacity != null && hauler.truckCapacity !== "" && (
             <span className="flex items-center gap-1">
               <i className="fa-solid fa-truck-droplet" style={{ fontSize: "13px" }} />
               {typeof hauler.truckCapacity === "string" ? hauler.truckCapacity : hauler.truckCapacity.toLocaleString()} gal
