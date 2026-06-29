@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     certUrl,
   });
 
-  const webhookUrl = "https://script.google.com/macros/s/AKfycbzN-xdQvN5Q3YQhqUqhXNrXLLfa44NfQ5J7j3qdVwYQMepLfk_42fUuM84nJv45lwcj/exec";
+  const webhookUrl = "https://script.google.com/macros/s/AKfycbxxnSMwp1G47QPpuRD9feEtkoHvFvzw8zuAOp-GvKz0Cw6_EMJoRKJ3WF5FqK9mYUle/exec";
   try {
     await fetch(webhookUrl, {
       method: 'POST',
