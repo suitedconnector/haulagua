@@ -141,5 +141,33 @@ export async function POST(req: NextRequest) {
     certUrl,
   });
 
+  const webhookUrl = "https://script.google.com/macros/s/AKfycbzN-xdQvN5Q3YQhqUqhXNrXLLfa44NfQ5J7j3qdVwYQMepLfk_42fUuM84nJv45lwcj/exec";
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: haulerName,
+        email: haulerEmail,
+        phone: phone ?? null,
+        website: website ?? null,
+        city: haulerCity,
+        state: haulerState,
+        zip: zip ?? null,
+        description: description ?? null,
+        serviceArea: serviceArea ?? null,
+        minFee: minFee ? Number(minFee) : null,
+        truckCapacity: truckCapacity ? Number(truckCapacity) : null,
+        hoseLength: hoseLength ? Number(hoseLength) : null,
+        waterType: waterType ?? null,
+        industries: industries ?? null,
+        insuranceCertificate: certUrl,
+      }),
+    });
+    console.log('[haulers] Google Sheets webhook sent');
+  } catch (err) {
+    console.error('[haulers] Webhook error:', err);
+  }
+
   return NextResponse.json({ success: true }, { status: 201 });
 }
