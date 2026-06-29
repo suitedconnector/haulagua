@@ -15,37 +15,35 @@ function toSlug(name: string): string {
     .replace(/-+/g, '-');
 }
 
-async function sendSignupNotification({
-  haulerName,
-  email,
-  city,
-  state,
-  phone,
-  certUrl,
-}: {
-  haulerName: string;
-  email: string;
-  city: string | null;
-  state: string | null;
-  phone: unknown;
-  certUrl: string | null;
-}) {
+async function sendSignupNotification(payload: Record<string, unknown>) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('[haulers] RESEND_API_KEY missing — skipping notification');
     return;
   }
 
-  const subject = certUrl
-    ? `New Hauler Signup + Certificate — ${haulerName} — Haulagua`
-    : `New Hauler Signup — ${haulerName} — Haulagua`;
-
   const lines = [
-    `Hauler:   ${haulerName}`,
-    `Email:    ${email}`,
-    `Phone:    ${typeof phone === 'string' ? phone : '—'}`,
-    `Location: ${[city, state].filter(Boolean).join(', ') || '—'}`,
+    `Business Name: ${payload.name || '—'}`,
+    `Owner Name: ${payload.industries?.ownerName || '—'}`,
+    `Email: ${payload.email || '—'}`,
+    `Phone: ${payload.phone || '—'}`,
+    `Street Address: ${payload.address || '—'}`,
+    `City: ${payload.city || '—'}`,
+    `State: ${payload.state || '—'}`,
+    `ZIP: ${payload.zip || '—'}`,
+    `Website: ${payload.website || '—'}`,
+    `Year Founded: ${payload.industries?.yearFounded || '—'}`,
+    `Services: ${payload.industries?.serviceTypes?.join(', ') || '—'}`,
+    `Truck Capacity: ${payload.truckCapacity || '—'} gal`,
+    `Hose Length: ${payload.hoseLength || '—'} ft`,
+    `Min Fee: $${payload.minFee || '—'}`,
+    `Water Source: ${payload.industries?.waterSource || '—'}`,
+    `Water Type: ${payload.waterType || '—'}`,
+    `Potable Certified: ${payload.industries?.potableCertified ? 'Yes' : 'No'}`,
+    `Overflow Prevention: ${payload.industries?.overflowPrevention ? 'Yes' : 'No'}`,
+    `Description: ${payload.description || '—'}`,
+    `Service Area: ${payload.serviceArea || '—'}`,
+    `Insurance Certificate: ${payload.insuranceCertificate || '—'}`,
   ];
-  if (certUrl) lines.push(`Certificate: ${certUrl}`);
 
   try {
     console.log('[haulers] Sending Resend notification...');
@@ -53,7 +51,7 @@ async function sendSignupNotification({
     const { error } = await resend.emails.send({
       from: 'Haulagua <notifications@haulagua.com>',
       to: ADMIN_EMAIL,
-      subject,
+      subject: `New Hauler Signup — ${payload.name} — Haulagua`,
       text: lines.join('\n'),
     });
     if (error) {
@@ -132,14 +130,7 @@ export async function POST(req: NextRequest) {
     insuranceCertificate: certUrl,
   }));
 
-  await sendSignupNotification({
-    haulerName,
-    email: haulerEmail,
-    city: haulerCity,
-    state: haulerState,
-    phone,
-    certUrl,
-  });
+  await sendSignupNotification(body);
 
   const webhookUrl = "https://script.google.com/macros/s/AKfycbyjtx2HW0uWh-7FabAZHXxRxKHpdpuuwsxRAcxppJysZYYWLGKY6hQampCbIUJXEOwJ/exec";
   try {
