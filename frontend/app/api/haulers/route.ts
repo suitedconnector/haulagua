@@ -143,31 +143,36 @@ export async function POST(req: NextRequest) {
 
   const webhookUrl = "https://script.google.com/macros/s/AKfycbxxnSMwp1G47QPpuRD9feEtkoHvFvzw8zuAOp-GvKz0Cw6_EMJoRKJ3WF5FqK9mYUle/exec";
   try {
-    await fetch(webhookUrl, {
+    const payload = {
+      name: haulerName,
+      email: haulerEmail,
+      phone: phone ?? null,
+      website: website ?? null,
+      address: typeof address === 'string' ? address.trim() || null : null,
+      city: haulerCity,
+      state: haulerState,
+      zip: zip ?? null,
+      description: description ?? null,
+      serviceArea: serviceArea ?? null,
+      minFee: minFee ? Number(minFee) : null,
+      truckCapacity: truckCapacity ? Number(truckCapacity) : null,
+      hoseLength: hoseLength ? Number(hoseLength) : null,
+      waterType: waterType ?? null,
+      industries: industries ?? null,
+      insuranceCertificate: certUrl,
+    };
+    console.log('[haulers] Sending webhook payload:', JSON.stringify(payload));
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: haulerName,
-        email: haulerEmail,
-        phone: phone ?? null,
-        website: website ?? null,
-        address: typeof address === 'string' ? address.trim() || null : null,
-        city: haulerCity,
-        state: haulerState,
-        zip: zip ?? null,
-        description: description ?? null,
-        serviceArea: serviceArea ?? null,
-        minFee: minFee ? Number(minFee) : null,
-        truckCapacity: truckCapacity ? Number(truckCapacity) : null,
-        hoseLength: hoseLength ? Number(hoseLength) : null,
-        waterType: waterType ?? null,
-        industries: industries ?? null,
-        insuranceCertificate: certUrl,
-      }),
+      body: JSON.stringify(payload),
     });
-    console.log('[haulers] Google Sheets webhook sent');
+    console.log('[haulers] Webhook response status:', response.status);
+    const responseText = await response.text();
+    console.log('[haulers] Webhook response:', responseText);
   } catch (err) {
-    console.error('[haulers] Webhook error:', err);
+    const error = err instanceof Error ? err.message : String(err);
+    console.error('[haulers] Webhook error:', error);
   }
 
   return NextResponse.json({ success: true }, { status: 201 });
