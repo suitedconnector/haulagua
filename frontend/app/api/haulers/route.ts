@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     certUrl,
   });
 
-  const webhookUrl = "https://script.google.com/macros/s/AKfycbxxnSMwp1G47QPpuRD9feEtkoHvFvzw8zuAOp-GvKz0Cw6_EMJoRKJ3WF5FqK9mYUle/exec";
+  const webhookUrl = "https://script.google.com/macros/s/AKfycbyjtx2HW0uWh-7FabAZHXxRxKHpdpuuwsxRAcxppJysZYYWLGKY6hQampCbIUJXEOwJ/exec";
   try {
     const payload = {
       name: haulerName,
