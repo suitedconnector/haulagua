@@ -333,6 +333,81 @@ export default async function CityPage({ params }: PageProps) {
           </div>
         </section>
 
+        {/* ── Services Overview ── */}
+        {haulers.length > 0 && (
+          <>
+            <div style={{ backgroundColor: "#F0F6FC" }}>
+              <WaveDivider topColor="white" />
+            </div>
+            <section
+              className="py-8 md:py-8"
+              style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
+            >
+              <div className={INNER}>
+                <h2 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#333333" }}>
+                  Water Hauling Services in {cityName}, {stateName}
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Potable Water Delivery</h3>
+                    <p className="text-sm text-muted-foreground">Cisterns, wells, restaurants, events. TCEQ-compliant, sanitized tanks, food-grade quality.</p>
+                  </div>
+
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Pool Fills</h3>
+                    <p className="text-sm text-muted-foreground">Residential & commercial. Potable or non-potable options. 24–48 hour lead time typical.</p>
+                  </div>
+
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Emergency 24/7</h3>
+                    <p className="text-sm text-muted-foreground">Boil notices, well failures, construction emergencies. Rapid response, premium pricing.</p>
+                  </div>
+
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Dust Control</h3>
+                    <p className="text-sm text-muted-foreground">Construction sites, industrial. Non-potable bulk water with professional application.</p>
+                  </div>
+
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Agricultural</h3>
+                    <p className="text-sm text-muted-foreground">Livestock, irrigation, drought relief. Large volumes, flexible scheduling.</p>
+                  </div>
+
+                  <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
+                    <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Special Uses</h3>
+                    <p className="text-sm text-muted-foreground">Hydrostatic testing, cooling towers, process water. Custom source options.</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-white p-8 shadow-sm border border-[#005A9C]/10 mb-8">
+                  <h3 className="font-semibold text-lg mb-4" style={{ color: "#333333" }}>
+                    What to Expect When Ordering
+                  </h3>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="font-semibold" style={{ color: "#005A9C" }}>1.</span>
+                      <span><strong>Load volume & cost:</strong> Pricing varies by gallon, distance, water source, and emergency status. Typical range: $200–$800 per load.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold" style={{ color: "#005A9C" }}>2.</span>
+                      <span><strong>Lead time:</strong> Same-day emergency available (higher rates). Standard: 24–48 hours. Plan ahead for large projects.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold" style={{ color: "#005A9C" }}>3.</span>
+                      <span><strong>Access & logistics:</strong> Tell hauler about site access, hose-run distances, and any constraints. Clarify tank type (cistern, pool, container).</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold" style={{ color: "#005A9C" }}>4.</span>
+                      <span><strong>Verification:</strong> Confirm potable certification if needed. Ask for TCEQ compliance or equivalent in your state.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
         {/* ── Expanded body copy ── */}
         {(introLong || localContext) && (
           <>
