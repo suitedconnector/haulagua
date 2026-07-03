@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbList } from "schema-dts";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HaulerCard } from "@/components/hauler-card";
+import { ArrowLeft, MapPin } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
-import { ArrowLeft, MapPin, CheckCircle2 } from "lucide-react";
 import haulersFlatData from "@/data/haulers-flat.json";
 
-const INNER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
+const INNER = "mx-auto max-w-4xl px-4 sm:px-6 lg:px-8";
 
 export const metadata: Metadata = {
   title: "Find Verified Water Haulers in Austin, Texas — Potable, Pool Fill, Emergency 24/7",
@@ -40,17 +41,6 @@ export default function AustinWaterHaulerPage() {
     ],
   };
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Find Verified Water Haulers in Austin, Texas — Potable, Pool Fill, Emergency 24/7",
-    description: "Comprehensive guide to bulk water delivery in Austin: TCEQ compliance, pricing, service types, and verified hauler directory.",
-    image: "https://www.haulagua.com/og-image.png",
-    datePublished: new Date().toISOString(),
-    author: { "@type": "Organization", name: "HaulAgua" },
-    publisher: { "@type": "Organization", name: "HaulAgua" },
-  };
-
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -60,7 +50,7 @@ export default function AustinWaterHaulerPage() {
         name: "How much does bulk water delivery cost in Austin?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Pricing varies: $200–$400 for standard potable delivery (3,000–6,000 gallons), $150–$300 for non-potable pool fills, and $400–$800+ for emergency/after-hours service. Mileage, water source, and access constraints add to the total.",
+          text: "Pricing varies: $250–$400 for standard potable delivery (3,000–6,000 gallons), $150–$300 for non-potable pool fills. Mileage, water source, and access constraints add to the total. Emergency/after-hours service costs 50–100% more.",
         },
       },
       {
@@ -73,26 +63,18 @@ export default function AustinWaterHaulerPage() {
       },
       {
         "@type": "Question",
-        name: "How long does it take to fill a 20,000-gallon pool in Austin?",
+        name: "How long does it take to fill a pool in Austin?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Plan 2–4 hours for a standard residential pool. A 20,000-gallon pool requires 3–4 tanker loads (6,000-gallon capacity each). Lead time: 24–48 hours standard; same-day emergency available at premium rates.",
+          text: "A 20,000-gallon pool requires 3–4 tanker loads (6,000-gallon capacity each) and typically takes 2–4 hours. Standard lead time is 24–48 hours; same-day emergency service available at premium rates.",
         },
       },
       {
         "@type": "Question",
-        name: "Can I get emergency water delivery at night or on weekends?",
+        name: "Can I get emergency water delivery at night or weekends?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. Many Austin haulers offer 24/7 emergency service for boil-water notices, well failures, and construction emergencies. Expect 1.5–2× standard pricing for after-hours/weekend calls. Call ahead for fastest response.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What's the difference between potable and non-potable bulk water?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Potable water is safe to drink: TCEQ-certified, sanitized tanks, food-grade quality. Non-potable is for pools, dust control, construction: lower cost, not safe for drinking. Confirm which type you need before ordering.",
+          text: "Yes. Many Austin haulers offer 24/7 emergency service for boil-water notices, well failures, and construction emergencies. Expect 1.5–2× standard pricing for after-hours service. Call ahead for fastest response.",
         },
       },
     ],
@@ -108,16 +90,15 @@ export default function AustinWaterHaulerPage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="py-6 md:py-8" style={{ background: "linear-gradient(to bottom, #005A9C, #2A7FC1)" }}>
+        <section
+          className="py-6 md:py-8"
+          style={{ background: "linear-gradient(to bottom, #005A9C, #2A7FC1)" }}
+        >
           <div className={INNER}>
             <Link
               href="/water-haulers/tx"
@@ -127,221 +108,117 @@ export default function AustinWaterHaulerPage() {
               All Texas Haulers
             </Link>
 
-            <div className="max-w-3xl">
-              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                Find Verified Water Haulers in Austin, Texas
-              </h1>
-              <p className="mt-4 text-lg text-white/85 max-w-2xl">
-                Connect with TCEQ-compliant bulk water haulers for potable delivery, pool fills, construction, and emergency service. Verified listings, transparent pricing, same-day availability.
+            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+              Find Verified Water Haulers in Austin, Texas
+            </h1>
+            <p className="mt-4 text-lg text-white/85 max-w-2xl">
+              Connect with TCEQ-compliant bulk water haulers for potable delivery, pool fills, construction, and emergency service. Verified listings, transparent pricing, same-day availability.
+            </p>
+            <p className="mt-3 text-sm text-white/60">
+              {haulers.length} verified hauler{haulers.length !== 1 ? "s" : ""} serving Austin, Travis, Hays, and Williamson Counties
+            </p>
+          </div>
+        </section>
+
+        {/* wave */}
+        <div style={{ backgroundColor: "#F8F9FA" }}>
+          <WaveDivider topColor="#2A7FC1" />
+        </div>
+
+        {/* ── Content ── */}
+        <section
+          className="py-8 md:py-12"
+          style={{ background: "linear-gradient(to bottom, #F8F9FA, #ffffff)" }}
+        >
+          <div className={INNER}>
+            <div className="prose prose-sm max-w-none mb-12">
+              <h2 className="font-serif text-2xl font-semibold mb-4" style={{ color: "#333333" }}>
+                Quick Answer: Who Delivers Bulk Water in Austin Right Now?
+              </h2>
+              <p className="text-base text-muted-foreground mb-6">
+                These verified haulers serve Austin and surrounding areas. Listings show service type, capacity, and last verification date.
               </p>
-              <p className="mt-3 text-sm text-white/60">
-                {haulers.length} verified hauler{haulers.length !== 1 ? "s" : ""} serving Austin, Travis, Hays, and Williamson Counties
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                Potable Water Delivery
+              </h3>
+              <p className="text-base text-muted-foreground mb-4">
+                Safe drinking water for cisterns, wells, restaurants, healthcare, and special events. TCEQ-compliant sources, sanitized food-grade tanks. Ask about tank sanitization history and backflow prevention.
               </p>
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                Pool Fills & Non-Potable
+              </h3>
+              <p className="text-base text-muted-foreground mb-4">
+                Residential and commercial pools, landscaping, dust control. Potable or non-potable options. Standard lead time: 24–48 hours. A 20,000-gallon pool requires 3–4 tanker loads and 2–4 hours to fill.
+              </p>
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                Emergency 24/7 Service
+              </h3>
+              <p className="text-base text-muted-foreground mb-6">
+                Boil-water notices, well failures, construction emergencies. Rapid response available. Expect 1.5–2× standard pricing. Call ahead for fastest turnaround.
+              </p>
+
+              <h2 className="font-serif text-2xl font-semibold mb-4 mt-8" style={{ color: "#333333" }}>
+                Water Hauling Services in Austin
+              </h2>
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                Service Types
+              </h3>
+              <ul className="list-disc list-inside space-y-2 text-base text-muted-foreground mb-6">
+                <li><strong>Potable water:</strong> Safe drinking water for cisterns, wells, restaurants, events. Tank size: 3,000–6,500 gal. Lead time: 24–48 hrs.</li>
+                <li><strong>Pool fills:</strong> Residential and commercial. Potable or non-potable. Typical: 3–4 tanker trips per 20K-gal pool. Time: 2–4 hrs.</li>
+                <li><strong>Construction/Dust:</strong> Job sites, industrial uses. Large volumes, flexible schedule. Non-potable acceptable.</li>
+                <li><strong>Agricultural:</strong> Livestock, irrigation, drought relief. High volume. Flexible timing for season/need.</li>
+                <li><strong>Emergency 24/7:</strong> Boil-water, well failure, urgent need. Rate: 1.5–2× standard. Call ahead.</li>
+                <li><strong>Oil & Gas/Industrial:</strong> Oilfield work, hydrostatic testing, process water. Non-potable, specialized equipment.</li>
+              </ul>
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                Pricing in Austin: What to Expect
+              </h3>
+              <ul className="list-disc list-inside space-y-2 text-base text-muted-foreground mb-6">
+                <li><strong>Standard load:</strong> Potable $250–$400 (3,000–6,000 gal). Non-potable $150–$300. Price varies by water source, distance, mileage.</li>
+                <li><strong>Emergency:</strong> After-hours, weekend, holiday: add 50–100% to standard rate.</li>
+                <li><strong>Distance/Access:</strong> Mileage fees, hose-run charges, standby time for difficult access. Clarify site constraints upfront.</li>
+                <li><strong>Multiple loads:</strong> Large projects (20K-gal pool, construction): negotiate bulk rates. 3–4 loads often cheaper per-gallon.</li>
+              </ul>
+
+              <h3 className="font-semibold text-lg mb-3" style={{ color: "#005A9C" }}>
+                TCEQ Compliance Checklist
+              </h3>
+              <p className="text-base text-muted-foreground mb-3">Before you order, verify these TCEQ requirements for potable water:</p>
+              <ul className="list-disc list-inside space-y-2 text-base text-muted-foreground mb-6">
+                <li><strong>Approved water source:</strong> Ask hauler: "Is this from a TCEQ-approved municipal source or private well?"</li>
+                <li><strong>Tank sanitation:</strong> Request proof of tank cleaning. Food-grade tanks only for potable water.</li>
+                <li><strong>Chlorine residuals:</strong> TCEQ may require free chlorine residual (0.2–1.0 ppm). Confirm with your hauler.</li>
+                <li><strong>Backflow prevention:</strong> Hauler's equipment must prevent water from flowing back into municipal lines.</li>
+                <li><strong>Labeling:</strong> Tank must be labeled "Potable Water" or "Non-Potable" clearly.</li>
+                <li><strong>Hauler license:</strong> Verify the hauler's TCEQ permit and insurance. Ask for documentation.</li>
+              </ul>
             </div>
           </div>
         </section>
 
         {/* wave */}
         <div style={{ backgroundColor: "#F0F6FC" }}>
-          <WaveDivider topColor="#2A7FC1" />
-        </div>
-
-        {/* ── Quick Answer ── */}
-        <section className="py-8 md:py-8 bg-white scroll-mt-20" style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}>
-          <div className={INNER}>
-            <h2 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#333333" }}>
-              Quick Answer: Who Delivers Bulk Water in Austin Right Now?
-            </h2>
-
-            <div className="space-y-6 mb-8">
-              <div>
-                <h3 className="font-semibold text-base mb-3" style={{ color: "#005A9C" }}>
-                  Potable Water Delivery (Safe to Drink)
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  TCEQ-compliant sources for cisterns, wells, restaurants, healthcare, special events. Ask about tank sanitization history and backflow prevention.
-                </p>
-                {haulers.filter((h) => h.waterType === "potable" || h.waterType === "both").length > 0 && (
-                  <div className="space-y-2">
-                    {haulers
-                      .filter((h) => h.waterType === "potable" || h.waterType === "both")
-                      .slice(0, 2)
-                      .map((h) => (
-                        <Link
-                          key={h.slug}
-                          href={`/haulers/${h.slug}`}
-                          className="block p-4 rounded-lg bg-[#005A9C]/5 border border-[#005A9C]/20 hover:border-[#005A9C]/40 transition-colors"
-                        >
-                          <div className="font-semibold text-sm" style={{ color: "#005A9C" }}>
-                            {h.name}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {h.serviceArea || `${h.city}, ${h.state}`} • {h.truckCapacity ? `${h.truckCapacity} gal` : "Verified"} • {h.isVerifiedPro ? "Pro" : "Listed"}
-                          </div>
-                        </Link>
-                      ))}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-base mb-3" style={{ color: "#005A9C" }}>
-                  Pool Fill & Non-Potable
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Residential & commercial pools, dust control, landscaping. Potable or non-potable. Standard lead time: 24–48 hours.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-base mb-3" style={{ color: "#005A9C" }}>
-                  Emergency 24/7 Service
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Boil-water notices, well failures, construction emergencies. Rapid response available. Call ahead for fastest turnaround.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Services ── */}
-        <div style={{ backgroundColor: "#F0F6FC" }}>
           <WaveDivider topColor="white" />
         </div>
-        <section className="py-8 md:py-8" style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}>
-          <div className={INNER}>
-            <h2 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#333333" }}>
-              Service Types in Austin
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Potable Water</h3>
-                <p className="text-sm text-muted-foreground mb-3">Safe drinking water for cisterns, wells, restaurants, events.</p>
-                <p className="text-xs text-muted-foreground"><strong>Tank size:</strong> 3,000–6,500 gal. <strong>Lead time:</strong> 24–48 hrs.</p>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Pool Fills</h3>
-                <p className="text-sm text-muted-foreground mb-3">Residential and commercial pools. Potable or non-potable.</p>
-                <p className="text-xs text-muted-foreground"><strong>Typical load:</strong> 3–4 tanker trips per 20K-gal pool. <strong>Time:</strong> 2–4 hrs.</p>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Construction/Dust</h3>
-                <p className="text-sm text-muted-foreground mb-3">Job sites, industrial, dust suppression.</p>
-                <p className="text-xs text-muted-foreground"><strong>Flexibility:</strong> Large volumes, flexible schedule. Non-potable OK.</p>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Agricultural</h3>
-                <p className="text-sm text-muted-foreground mb-3">Livestock, irrigation, drought relief.</p>
-                <p className="text-xs text-muted-foreground"><strong>Scale:</strong> High volume. <strong>Timing:</strong> Flexible for season/need.</p>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Emergency 24/7</h3>
-                <p className="text-sm text-muted-foreground mb-3">Boil-water, well failure, urgent need.</p>
-                <p className="text-xs text-muted-foreground"><strong>Rate:</strong> 1.5–2× standard. <strong>Call ahead.</strong></p>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm border-l-4" style={{ borderColor: "#005A9C" }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: "#005A9C" }}>Oil & Gas / Industrial</h3>
-                <p className="text-sm text-muted-foreground mb-3">Oilfield work, hydrostatic testing, process water.</p>
-                <p className="text-xs text-muted-foreground"><strong>Source:</strong> Non-potable. Specialized equipment.</p>
-              </div>
-            </div>
-
-            {/* Pricing Section */}
-            <div className="rounded-xl bg-white p-8 shadow-sm border border-[#005A9C]/10 mb-8">
-              <h3 className="font-semibold text-lg mb-4" style={{ color: "#333333" }}>
-                Pricing in Austin: What to Expect
-              </h3>
-              <div className="space-y-4 text-sm text-muted-foreground">
-                <div className="flex gap-4 pb-4 border-b border-gray-200">
-                  <div className="font-semibold min-w-fit" style={{ color: "#005A9C" }}>Standard Load</div>
-                  <div>
-                    <strong>Potable:</strong> $250–$400 (3,000–6,000 gal). <strong>Non-potable:</strong> $150–$300. Price varies by water source, distance, mileage fees.
-                  </div>
-                </div>
-                <div className="flex gap-4 pb-4 border-b border-gray-200">
-                  <div className="font-semibold min-w-fit" style={{ color: "#005A9C" }}>Emergency</div>
-                  <div>After-hours, weekend, holiday: add 50–100% to standard rate. Same-day service may incur rush fee.</div>
-                </div>
-                <div className="flex gap-4 pb-4 border-b border-gray-200">
-                  <div className="font-semibold min-w-fit" style={{ color: "#005A9C" }}>Distance/Access</div>
-                  <div>Mileage fees, hose-run charges, standby time for difficult access. Always clarify site constraints upfront.</div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="font-semibold min-w-fit" style={{ color: "#005A9C" }}>Multiple Loads</div>
-                  <div>Large projects (20K-gal pool, construction): negotiate bulk rates. 3–4 loads often cheaper per-gallon than single loads.</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Compliance Checklist */}
-            <div className="rounded-xl bg-white p-8 shadow-sm border border-[#005A9C]/10">
-              <h3 className="font-semibold text-lg mb-4" style={{ color: "#333333" }}>
-                TCEQ Compliance Checklist (Before You Order)
-              </h3>
-              <div className="space-y-3">
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Approved water source:</strong>
-                    <p className="text-xs text-muted-foreground">Ask hauler: "Is this from a TCEQ-approved municipal source or private well?"</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Tank sanitation:</strong>
-                    <p className="text-xs text-muted-foreground">Request proof of tank cleaning. Food-grade tanks only for potable water.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Chlorine residuals:</strong>
-                    <p className="text-xs text-muted-foreground">TCEQ may require free chlorine residual (0.2–1.0 ppm). Confirm with your hauler.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Backflow prevention:</strong>
-                    <p className="text-xs text-muted-foreground">Hauler's equipment must prevent water from flowing back into municipal lines.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Labeling:</strong>
-                    <p className="text-xs text-muted-foreground">Tank must be labeled "Potable Water" or "Non-Potable" clearly.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#005A9C" }} />
-                  <div>
-                    <strong className="text-sm">Hauler license:</strong>
-                    <p className="text-xs text-muted-foreground">Verify the hauler's TCEQ permit and insurance. Ask for documentation.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ── Haulers ── */}
-        <div style={{ backgroundColor: "#F0F6FC" }}>
-          <WaveDivider topColor="white" />
-        </div>
-        <section id="all-haulers" className="py-8 md:py-8 bg-white scroll-mt-20" style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}>
+        <section
+          className="py-8 md:py-12 scroll-mt-20"
+          style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
+        >
           <div className={INNER}>
             {haulers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: "#005A9C1A" }}>
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: "#005A9C1A" }}
+                >
                   <MapPin className="w-8 h-8" style={{ color: "#005A9C" }} />
                 </div>
                 <h2 className="font-serif text-xl font-semibold">No haulers found</h2>
@@ -369,12 +246,12 @@ export default function AustinWaterHaulerPage() {
         </section>
 
         {/* ── CTA ── */}
-        <div style={{ backgroundColor: "#F8FBFF" }}>
-          <WaveDivider topColor="#ffffff" />
-        </div>
-        <section className="py-8 md:py-8" style={{ background: "linear-gradient(to bottom, #F8FBFF, #F0F6FC)" }}>
+        <section
+          className="py-8 md:py-12"
+          style={{ background: "linear-gradient(to bottom, #ffffff, #F8F9FA)" }}
+        >
           <div className={INNER}>
-            <div className="rounded-xl bg-white border border-[#005A9C]/20 p-8 text-center shadow-sm">
+            <div className="rounded-lg bg-white p-8 text-center shadow-sm" style={{ borderTop: "4px solid #005A9C" }}>
               <h2 className="font-serif text-2xl font-semibold mb-2" style={{ color: "#333333" }}>
                 Are You a Water Hauler in Austin?
               </h2>
@@ -383,7 +260,7 @@ export default function AustinWaterHaulerPage() {
               </p>
               <Link
                 href="/for-haulers"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-colors hover:opacity-90"
+                className="inline-flex px-6 py-3 rounded-lg text-white font-medium transition-colors hover:opacity-90"
                 style={{ backgroundColor: "#005A9C" }}
               >
                 List Your Business Free
@@ -392,6 +269,7 @@ export default function AustinWaterHaulerPage() {
           </div>
         </section>
       </main>
+
       <Footer />
     </div>
   );
