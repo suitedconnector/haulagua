@@ -231,14 +231,13 @@ export default async function CityPage({ params }: PageProps) {
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3">
                   {displayServices.map(({ name, slug, icon: Icon }) => (
-                    <Link
+                    <div
                       key={slug}
-                      href={`/water-haulers/${state}/${city}/services/${slug === "pool" ? "pool-fill" : slug}`}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/20 hover:border-white/40"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-white bg-white/10 border border-white/20"
                     >
                       <Icon className="h-4 w-4 shrink-0 text-[#F2A900]" />
                       {name}
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
