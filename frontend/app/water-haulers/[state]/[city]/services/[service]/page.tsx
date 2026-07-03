@@ -158,9 +158,23 @@ export default async function CityServicePage({ params }: PageProps) {
     potable: "Potable Water Delivery",
   }[service] || service;
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: content.faqs.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <main className="flex-1">
         {/* ── Hero ── */}
