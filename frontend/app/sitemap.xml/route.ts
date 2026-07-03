@@ -9,6 +9,16 @@ import {
 
 const BASE_URL = 'https://www.haulagua.com';
 
+function isExcludedFromSitemap(url: string): boolean {
+  return url.includes('/login');
+}
+
+function addEntry(entries: UrlEntry[], entry: UrlEntry) {
+  if (!isExcludedFromSitemap(entry.url)) {
+    entries.push(entry);
+  }
+}
+
 function getHaulerSlugs(): string[] {
   const haulers = haulersData as { slug: string; isActive: boolean }[];
   return haulers
@@ -40,32 +50,30 @@ export async function GET() {
   const entries: UrlEntry[] = [];
 
   // Static pages
-  entries.push(
-    { url: `${BASE_URL}/`, lastmod: now, changefreq: 'weekly', priority: '1.0' },
-    { url: `${BASE_URL}/search`, lastmod: now, changefreq: 'daily', priority: '0.9' },
-    { url: `${BASE_URL}/water-haulers`, lastmod: now, changefreq: 'weekly', priority: '0.9' },
-    { url: `${BASE_URL}/resources`, lastmod: now, changefreq: 'weekly', priority: '0.7' },
-    { url: `${BASE_URL}/for-haulers`, lastmod: now, changefreq: 'monthly', priority: '0.7' },
-    { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' }
-  );
+  addEntry(entries, { url: `${BASE_URL}/`, lastmod: now, changefreq: 'weekly', priority: '1.0' });
+  addEntry(entries, { url: `${BASE_URL}/search`, lastmod: now, changefreq: 'daily', priority: '0.9' });
+  addEntry(entries, { url: `${BASE_URL}/water-haulers`, lastmod: now, changefreq: 'weekly', priority: '0.9' });
+  addEntry(entries, { url: `${BASE_URL}/resources`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
+  addEntry(entries, { url: `${BASE_URL}/for-haulers`, lastmod: now, changefreq: 'monthly', priority: '0.7' });
+  addEntry(entries, { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' });
 
   // Location pages
   const states = await getAllStatesWithCounts();
   for (const { abbr } of states) {
     const stateSlug = toStateSlug(abbr);
-    entries.push({ url: `${BASE_URL}/water-haulers/${stateSlug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
+    addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
 
     const haulers = await getHaulersByState(abbr.toUpperCase());
     const cities = groupHaulersByCity(haulers);
     for (const { slug: citySlug } of cities) {
-      entries.push({ url: `${BASE_URL}/water-haulers/${stateSlug}/${citySlug}`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
+      addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}/${citySlug}`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
     }
   }
 
   // Hauler profiles
   const haulerSlugs = getHaulerSlugs();
   for (const slug of haulerSlugs) {
-    entries.push({ url: `${BASE_URL}/haulers/${slug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
+    addEntry(entries, { url: `${BASE_URL}/haulers/${slug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
   }
 
   return new NextResponse(buildXml(entries), {
