@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbList } from "schema-dts";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HaulerCard } from "@/components/hauler-card";
@@ -201,10 +202,33 @@ export default async function StatePage({ params, searchParams }: PageProps) {
         }
       : null;
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.haulagua.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: stateName,
+        item: `https://www.haulagua.com/water-haulers/${state}`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {itemListSchema && (
         <script
           type="application/ld+json"
