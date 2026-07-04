@@ -17,6 +17,7 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.haulagua.com'),
   title: 'Haulagua - Fast, Reliable Bulk Water Delivery',
   description: 'Find trusted professional water haulers for your pool, construction site, or emergency needs. Verified pros, detailed profiles, all services.',
   generator: 'v0.app',

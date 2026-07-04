@@ -185,12 +185,12 @@ export async function generateMetadata({ params }: PageProps) {
       follow: true,
     },
     alternates: {
-      canonical: `https://www.haulaguhauler.com/haulers/${slug}`,
+      canonical: `https://www.haulagua.com/haulers/${slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.haulaguhauler.com/haulers/${slug}`,
+      url: `https://www.haulagua.com/haulers/${slug}`,
       siteName: "Haulagua",
       type: "profile",
     },
