@@ -61,6 +61,11 @@ export default function RootLayout({
   gtag('js', new Date());
   gtag('config', 'G-8W9S9729JY');`}
         </Script>
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="iZNW8jWP43P2TSuW9yWxtA"
+          strategy="afterInteractive"
+        />
       </head>
       <body className={`${montserrat.variable} ${lato.variable} font-sans antialiased`} style={{ background: "linear-gradient(to bottom, #005A9C 140px, white 140px)" }}>
         <SessionProviderWrapper>
