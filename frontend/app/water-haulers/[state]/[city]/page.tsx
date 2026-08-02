@@ -26,6 +26,7 @@ import {
   toCitySlug,
 } from "@/lib/location";
 import haulersFlatData from "@/data/haulers-flat.json";
+import { getValidWebsiteUrl } from "@/lib/website";
 
 type PageProps = { params: Promise<{ state: string; city: string }> };
 
@@ -164,7 +165,8 @@ export default async function CityPage({ params }: PageProps) {
       url: `https://haulagua.com/haulers/${h.slug}`,
     };
     if (h.phone) schema.telephone = h.phone;
-    if (h.website) schema.sameAs = h.website;
+    const validWebsite = getValidWebsiteUrl(h.website);
+    if (validWebsite) schema.sameAs = validWebsite;
     if (h.description) schema.description = h.description;
     return schema;
   });

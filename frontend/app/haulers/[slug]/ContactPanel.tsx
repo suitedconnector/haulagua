@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Phone, Globe, MessageSquare, Eye } from "lucide-react";
+import { getValidWebsiteUrl } from "@/lib/website";
 
 export function ContactPanel({
   phone,
@@ -21,6 +22,7 @@ export function ContactPanel({
   isClaimed: boolean;
 }) {
   const [phoneRevealed, setPhoneRevealed] = useState(false);
+  const validWebsite = getValidWebsiteUrl(website);
 
   return (
     <div className="space-y-3">
@@ -49,13 +51,13 @@ export function ContactPanel({
         </Button>
       )}
 
-      {website && (
+      {validWebsite && (
         <Button
           variant="outline"
           className="w-full h-11 gap-2 border-primary text-primary hover:bg-primary/5 font-semibold"
           asChild
         >
-          <a href={website} target="_blank" rel="noopener noreferrer">
+          <a href={validWebsite} target="_blank" rel="noopener noreferrer">
             <Globe className="h-4 w-4" />
             Visit Website
           </a>
