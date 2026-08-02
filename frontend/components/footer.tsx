@@ -5,13 +5,7 @@ import { WaveDivider } from "@/components/WaveDivider";
 const footerLinks = {
   services: {
     title: "Services",
-    links: [
-      { label: "Swimming Pool Fills", href: "/services/pool" },
-      { label: "Construction Water", href: "/services/construction" },
-      { label: "Emergency Delivery", href: "/services/emergency" },
-      { label: "Agricultural Water", href: "/services/agricultural" },
-      { label: "Potable Water", href: "/services/potable" },
-    ],
+    links: [],
   },
   resources: {
     title: "Resources",
@@ -36,8 +30,8 @@ const footerLinks = {
     links: [
       { label: "About Us", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
     ],
   },
 };
@@ -93,10 +87,10 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Haulagua. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy
             </Link>
-            <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms
             </Link>
             <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
