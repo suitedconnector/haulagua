@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import haulersData from '@/data/haulers-flat.json';
 import {
   getAllStatesWithCounts,
-  getHaulersByState,
-  groupHaulersByCity,
+  getIndexableCityPages,
   toStateSlug,
 } from '@/lib/location';
 
@@ -62,12 +61,14 @@ export async function GET() {
   for (const { abbr } of states) {
     const stateSlug = toStateSlug(abbr);
     addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });
+  }
 
-    const haulers = await getHaulersByState(abbr.toUpperCase());
-    const cities = groupHaulersByCity(haulers);
-    for (const { slug: citySlug } of cities) {
-      addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}/${citySlug}`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
-    }
+  // City pages — only the ones that actually get statically built
+  // (same >= MIN_HAULERS_FOR_CITY_PAGE filter as generateStaticParams
+  // in water-haulers/[state]/[city]/page.tsx)
+  const cityPages = await getIndexableCityPages();
+  for (const { state: stateSlug, city: citySlug } of cityPages) {
+    addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}/${citySlug}`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
   }
 
   // Hauler profiles

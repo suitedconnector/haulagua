@@ -23,9 +23,9 @@ import {
   fromCitySlug,
   getHaulersByCity,
   getLocationByCity,
-  toCitySlug,
+  getIndexableCityPages,
+  MIN_HAULERS_FOR_CITY_PAGE,
 } from "@/lib/location";
-import haulersFlatData from "@/data/haulers-flat.json";
 import { getValidWebsiteUrl } from "@/lib/website";
 
 type PageProps = { params: Promise<{ state: string; city: string }> };
@@ -44,19 +44,14 @@ const SERVICE_TYPES = [
 
 const INNER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 
+// Any state/city not returned by generateStaticParams below 404s instead of
+// being server-rendered on demand with 0 haulers.
+export const dynamicParams = false;
+
 // ─── Static Params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const seen = new Set<string>();
-  const result: { state: string; city: string }[] = [];
-  for (const h of haulersFlatData as { state: string; city: string }[]) {
-    const key = `${h.state.toLowerCase()}/${toCitySlug(h.city)}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      result.push({ state: h.state.toLowerCase(), city: toCitySlug(h.city) });
-    }
-  }
-  return result;
+  return getIndexableCityPages();
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
@@ -66,7 +61,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const abbr = fromStateSlug(state);
   const stateName = STATE_NAMES[state] ?? abbr;
   const cityName = fromCitySlug(city);
-  const location = await getLocationByCity(abbr, cityName);
+  const [location, haulers] = await Promise.all([
+    getLocationByCity(abbr, cityName),
+    getHaulersByCity(abbr, cityName),
+  ]);
 
   const title =
     location?.attributes.metaTitle ??
@@ -79,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     robots: {
-      index: true,
+      index: haulers.length >= MIN_HAULERS_FOR_CITY_PAGE,
       follow: true,
     },
     alternates: {

@@ -111,3 +111,36 @@ export function getLocationByCity(stateAbbr: string, city: string): StrapiLocati
            l.attributes.city?.toLowerCase() === city.toLowerCase()
   ) ?? null;
 }
+
+// ─── City pages that actually get built ────────────────────────────────────────
+// Below this hauler count, a city page 404s (see dynamicParams in
+// water-haulers/[state]/[city]/page.tsx) and is excluded from the sitemap.
+
+export const MIN_HAULERS_FOR_CITY_PAGE = 3;
+
+export async function getIndexableCityPages(): Promise<{ state: string; city: string }[]> {
+  const seen = new Set<string>();
+  const candidates: { state: string; city: string }[] = [];
+  for (const h of allHaulers) {
+    if (!h.state || !h.city) continue;
+    const stateSlug = h.state.toLowerCase();
+    const citySlug = toCitySlug(h.city);
+    if (!citySlug) continue;
+    const key = `${stateSlug}/${citySlug}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      candidates.push({ state: stateSlug, city: citySlug });
+    }
+  }
+
+  const results = await Promise.all(
+    candidates.map(async ({ state, city }) => {
+      const abbr = fromStateSlug(state);
+      const cityName = fromCitySlug(city);
+      const haulers = await getHaulersByCity(abbr, cityName);
+      return haulers.length >= MIN_HAULERS_FOR_CITY_PAGE ? { state, city } : null;
+    })
+  );
+
+  return results.filter((r): r is { state: string; city: string } => r !== null);
+}
