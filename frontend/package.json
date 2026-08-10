@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/check-slug-drift.ts && next build",
     "start": "next start",
     "lint": "eslint .",
     "seed:haulers": "tsx scripts/seed-haulers.ts",
@@ -17,7 +17,8 @@
     "enrich:websites": "tsx scripts/enrich-websites.ts",
     "clean:descriptions": "tsx scripts/clean-descriptions.ts",
     "sync:prod": "tsx scripts/sync-to-production.ts",
-    "cache:city-photos": "tsx scripts/cache-city-photos.ts"
+    "cache:city-photos": "tsx scripts/cache-city-photos.ts",
+    "check:slugs": "tsx scripts/check-slug-drift.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -83,6 +84,7 @@
     "@types/react-dom": "19.2.3",
     "dotenv": "^17.3.1",
     "postcss": "^8.5",
+    "schema-dts": "^2.0.0",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
     "tw-animate-css": "1.3.3",

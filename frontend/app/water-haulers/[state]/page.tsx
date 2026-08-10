@@ -7,16 +7,10 @@ import { HaulerCard } from "@/components/hauler-card";
 import { FaqSection } from "@/components/faq-section";
 import { texasFAQs, arizonaFAQs } from "@/lib/faqs/data";
 import { WaveDivider } from "@/components/WaveDivider";
+import { BrowseByProvider, BrowseByTabs, BrowseByPanel } from "@/components/browse-by-toggle";
 import {
   MapPin,
   ArrowLeft,
-  Waves,
-  Droplets,
-  HardHat,
-  Tractor,
-  Zap,
-  Flame,
-  PartyPopper,
 } from "lucide-react";
 import {
   STATE_NAMES,
@@ -26,22 +20,11 @@ import {
   getHaulersByState,
   groupHaulersByCity,
   getAllStatesWithCounts,
+  isIndexableState,
 } from "@/lib/location";
 import cityPhotoCache from "@/data/city-photos.json";
 
-type PageProps = { params: Promise<{ state: string }>; searchParams: Promise<{ service?: string }> };
-
-// ─── Service Types ─────────────────────────────────────────────────────────────
-
-const SERVICE_TYPES = [
-  { name: "Pool Fills", slug: "pool", icon: Waves, color: "#005A9C" },
-  { name: "Potable Water", slug: "potable", icon: Droplets, color: "#005A9C" },
-  { name: "Construction", slug: "construction", icon: HardHat, color: "#005A9C" },
-  { name: "Agricultural", slug: "agricultural", icon: Tractor, color: "#005A9C" },
-  { name: "Emergency", slug: "emergency", icon: Zap, color: "#F2A900" },
-  { name: "Oil & Gas", slug: "oil-gas", icon: Flame, color: "#005A9C" },
-  { name: "Events", slug: "events", icon: PartyPopper, color: "#005A9C" },
-];
+type PageProps = { params: Promise<{ state: string }> };
 
 // ─── Texas content ────────────────────────────────────────────────────────────
 const TX_INTRO_SHORT =
@@ -117,11 +100,15 @@ export async function generateMetadata({
     state === "tx"
       ? "Find bulk water haulers in Texas for pool fills, potable water delivery, construction dust control, agriculture, and emergencies. Browse verified haulers by city across all Texas regions."
       : `Find trusted bulk water haulers in ${name}. Compare verified pros for pool fills, construction, potable water and more.`;
+  // Thin state pages stay reachable and keep passing link equity, but are not
+  // submitted for indexing. See MIN_HAULERS_FOR_STATE_PAGE in lib/location.ts.
+  const indexable = await isIndexableState(state);
+
   return {
     title,
     description,
     robots: {
-      index: true,
+      index: indexable,
       follow: true,
     },
     alternates: {
@@ -147,24 +134,13 @@ type CityWithPhoto = {
   photo: string | null;
 };
 
-export default async function StatePage({ params, searchParams }: PageProps) {
+export default async function StatePage({ params }: PageProps) {
   const { state } = await params;
-  const { service } = await searchParams;
   const abbr = fromStateSlug(state);
   const stateName = STATE_NAMES[state] ?? abbr;
   const haulers = await getHaulersByState(abbr);
   const cities = groupHaulersByCity(haulers);
   const isTX = state === "tx";
-
-  const activeServiceType = SERVICE_TYPES.find((st) => st.slug === service) ?? null;
-  const displayedHaulers = activeServiceType
-    ? haulers.filter((h) => {
-        return (
-          h.services?.some((s) => s.type === activeServiceType.slug) ||
-          (h.industries?.includes(activeServiceType.slug) ?? false)
-        );
-      })
-    : haulers;
 
   const cache = cityPhotoCache as Record<string, string>;
   const citiesWithPhotos: CityWithPhoto[] = cities.map(
@@ -253,38 +229,14 @@ export default async function StatePage({ params, searchParams }: PageProps) {
               All States
             </Link>
 
-            {/* Two-column hero layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-
-              {/* Left — H1 + short intro + hauler count */}
-              <div>
-                <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                  Bulk Water Delivery in {stateName}
-                </h1>
-                <p className="mt-4 text-lg text-white/85 max-w-xl">
-                  {shortIntro}
-                </p>
-              </div>
-
-              {/* Right — Service type thumbnail links */}
-              <div>
-                <p className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-4">
-                  Browse by Service
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-                  {SERVICE_TYPES.map(({ name, slug, icon: Icon }) => (
-                    <Link
-                      key={slug}
-                      href={`?service=${slug}#all-haulers`}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/20 hover:border-white/40"
-                    >
-                      <Icon className="h-4 w-4 shrink-0 text-[#F2A900]" />
-                      {name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
+            {/* Hero — H1 + short intro */}
+            <div>
+              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                Bulk Water Delivery in {stateName}
+              </h1>
+              <p className="mt-4 text-lg text-white/85 max-w-xl">
+                {shortIntro}
+              </p>
             </div>
           </div>
         </section>
@@ -328,17 +280,10 @@ export default async function StatePage({ params, searchParams }: PageProps) {
                   style={{ color: "#333333" }}
                 >
                   Bulk Water Haulers in {stateName}
-                  <span className="text-sm font-normal text-muted-foreground">· {displayedHaulers.length} hauler{displayedHaulers.length !== 1 ? "s" : ""}</span>
+                  <span className="text-sm font-normal text-muted-foreground">· {haulers.length} hauler{haulers.length !== 1 ? "s" : ""}</span>
                 </h2>
-                {activeServiceType && (
-                  <div className="flex items-center gap-2 mb-5 text-sm">
-                    <span className="text-muted-foreground">Showing: {activeServiceType.name}</span>
-                    <span className="text-muted-foreground">·</span>
-                    <Link href={`/water-haulers/${state}#all-haulers`} className="hover:underline" style={{ color: "#005A9C" }}>Clear filter</Link>
-                  </div>
-                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {displayedHaulers.map((hauler) => (
+                  {haulers.map((hauler) => (
                     <HaulerCard key={hauler.id} hauler={hauler} refPath={`/water-haulers/${state}`} />
                   ))}
                 </div>
@@ -347,111 +292,108 @@ export default async function StatePage({ params, searchParams }: PageProps) {
           </div>
         </section>
 
-        {/* ── Expanded body copy + anchor nav ── */}
+        {/* ── Expanded body copy + browse tabs ── */}
         <div style={{ backgroundColor: "#F0F6FC" }}>
           <WaveDivider topColor="#ffffff" />
         </div>
-        <section
-          className="py-8 md:py-10"
-          style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
-        >
-          <div className={INNER}>
-
-            {/* Long intro copy */}
-            <p className="text-base text-muted-foreground max-w-3xl mb-8 leading-relaxed">
-              {longIntro}
-            </p>
-
-            {/* Anchor nav */}
-            <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
-              <span className="text-muted-foreground mr-1">Browse by:</span>
-              {hasCities && (
-                <a
-                  href="#cities"
-                  className="px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
-                >
-                  Cities
-                </a>
-              )}
-              <a
-                href="#counties"
-                className="px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
-              >
-                Counties
-              </a>
-              {isTX && (
-                <a
-                  href="#regions"
-                  className="px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
-                >
-                  Regions
-                </a>
-              )}
-            </div>
-
-          </div>
-        </section>
-
-        {/* ── Cities ── */}
-        {hasCities && (
-          <section id="cities" className="py-8 md:py-10 bg-white">
+        <BrowseByProvider defaultTabId={hasCities ? "cities" : "counties"}>
+          <section
+            className="py-8 md:py-10"
+            style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
+          >
             <div className={INNER}>
-              <h2
-                className="font-serif text-2xl font-semibold mb-6"
-                style={{ color: "#333333" }}
-              >
-                Browse Cities in {stateName}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {citiesWithPhotos.map(({ city, slug }) => (
-                  <Link
-                    key={slug}
-                    href={`/water-haulers/${state}/${slug}`}
-                    className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium transition-all hover:bg-[#005A9C] hover:text-white"
+
+              {/* Long intro copy */}
+              <p className="text-base text-muted-foreground max-w-3xl mb-8 leading-relaxed">
+                {longIntro}
+              </p>
+
+              {/* Browse tabs */}
+              <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                <BrowseByTabs
+                  tabs={[
+                    ...(hasCities ? [{ id: "cities", label: "Cities" }] : []),
+                    { id: "counties", label: "Counties", badge: "Coming Soon" },
+                  ]}
+                />
+                {isTX && (
+                  <a
+                    href="#regions"
+                    className="px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
                   >
-                    {city}
-                  </Link>
-                ))}
+                    Regions
+                  </a>
+                )}
               </div>
+
             </div>
           </section>
-        )}
 
-        {/* ── Counties — Coming Soon ── */}
-        <section
-          id="counties"
-          className="py-8 md:py-10"
-          style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
-        >
-          <div className={INNER}>
-            <h2
-              className="font-serif text-2xl font-semibold mb-2"
-              style={{ color: "#333333" }}
+          {/* ── Cities ── */}
+          {hasCities && (
+            <BrowseByPanel id="cities">
+              <section id="cities" className="py-8 md:py-10 bg-white">
+                <div className={INNER}>
+                  <h2
+                    className="font-serif text-2xl font-semibold mb-6"
+                    style={{ color: "#333333" }}
+                  >
+                    Browse Cities in {stateName}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {citiesWithPhotos.map(({ city, slug }) => (
+                      <Link
+                        key={slug}
+                        href={`/water-haulers/${state}/${slug}`}
+                        className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium transition-all hover:bg-[#005A9C] hover:text-white"
+                      >
+                        {city}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            </BrowseByPanel>
+          )}
+
+          {/* ── Counties — Coming Soon ── */}
+          <BrowseByPanel id="counties">
+            <section
+              id="counties"
+              className="py-8 md:py-10"
+              style={{ background: "linear-gradient(to bottom, #F0F6FC, #ffffff)" }}
             >
-              Browse by County
-            </h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              County-level pages are coming soon. In the meantime, search by
-              city or browse all haulers above.
-            </p>
-            <div className="rounded-xl border border-dashed border-[#005A9C]/30 bg-white p-10 text-center">
-              <MapPin
-                className="mx-auto mb-3 h-8 w-8"
-                style={{ color: "#005A9C", opacity: 0.4 }}
-              />
-              <p className="text-sm text-muted-foreground">
-                County pages coming soon —{" "}
-                <Link
-                  href="#all-haulers"
-                  className="underline"
-                  style={{ color: "#005A9C" }}
+              <div className={INNER}>
+                <h2
+                  className="font-serif text-2xl font-semibold mb-2"
+                  style={{ color: "#333333" }}
                 >
-                  search all haulers in {stateName}
-                </Link>
-              </p>
-            </div>
-          </div>
-        </section>
+                  Browse by County
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">
+                  County-level pages are coming soon. In the meantime, search by
+                  city or browse all haulers above.
+                </p>
+                <div className="rounded-xl border border-dashed border-[#005A9C]/30 bg-white p-10 text-center">
+                  <MapPin
+                    className="mx-auto mb-3 h-8 w-8"
+                    style={{ color: "#005A9C", opacity: 0.4 }}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    County pages coming soon —{" "}
+                    <Link
+                      href="#all-haulers"
+                      className="underline"
+                      style={{ color: "#005A9C" }}
+                    >
+                      search all haulers in {stateName}
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </section>
+          </BrowseByPanel>
+        </BrowseByProvider>
 
         {/* ── Regions — TX only ── */}
         {isTX && (

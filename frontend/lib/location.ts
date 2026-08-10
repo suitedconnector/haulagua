@@ -144,3 +144,29 @@ export async function getIndexableCityPages(): Promise<{ state: string; city: st
 
   return results.filter((r): r is { state: string; city: string } => r !== null);
 }
+
+// ─── State pages worth indexing ───────────────────────────────────────────────
+// Mirrors the city-page gate above. Unlike city pages, thin state pages are NOT
+// 404'd — the haulers on them are real listings, so the page stays reachable and
+// keeps passing link equity. It is served `noindex, follow` and dropped from the
+// sitemap instead.
+//
+// Why this exists: all 23 state pages previously shipped `index: true` off one
+// template, 18 of them with fewer than 5 haulers and 8 with a single listing.
+// That template-level thinness is the most likely cause of TX and AZ — the two
+// strongest pages in the set — failing to index despite correct on-page tags.
+
+export const MIN_HAULERS_FOR_STATE_PAGE = 5;
+
+export async function isIndexableState(stateSlug: string): Promise<boolean> {
+  const states = await getAllStatesWithCounts();
+  const match = states.find((s) => s.abbr === stateSlug.toLowerCase());
+  return (match?.count ?? 0) >= MIN_HAULERS_FOR_STATE_PAGE;
+}
+
+export async function getIndexableStates(): Promise<
+  { abbr: string; name: string; count: number }[]
+> {
+  const states = await getAllStatesWithCounts();
+  return states.filter((s) => s.count >= MIN_HAULERS_FOR_STATE_PAGE);
+}

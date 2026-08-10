@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
 
+// AI / LLM discovery endpoints (comments cannot be added to generated robots.txt)
+// llms.txt: https://www.haulagua.com/llms.txt
+// llms-full.txt: https://www.haulagua.com/llms-full.txt
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
