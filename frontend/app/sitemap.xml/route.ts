@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import haulersData from '@/data/haulers-flat.json';
 import {
-  getAllStatesWithCounts,
+  getIndexableStates,
   getIndexableCityPages,
   toStateSlug,
 } from '@/lib/location';
@@ -56,8 +56,10 @@ export async function GET() {
   addEntry(entries, { url: `${BASE_URL}/for-haulers`, lastmod: now, changefreq: 'monthly', priority: '0.7' });
   addEntry(entries, { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' });
 
-  // Location pages
-  const states = await getAllStatesWithCounts();
+  // Location pages — only states above MIN_HAULERS_FOR_STATE_PAGE. Thin state
+  // pages are still reachable and crawlable, just noindex, so they are excluded
+  // here to match the robots directive the page itself emits.
+  const states = await getIndexableStates();
   for (const { abbr } of states) {
     const stateSlug = toStateSlug(abbr);
     addEntry(entries, { url: `${BASE_URL}/water-haulers/${stateSlug}`, lastmod: now, changefreq: 'weekly', priority: '0.8' });

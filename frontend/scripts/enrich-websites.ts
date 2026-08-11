@@ -1,8 +1,12 @@
 /**
  * enrich-websites.ts
  *
- * Enriches TX hauler listings in Strapi by crawling their websites with Firecrawl
- * (markdown format) and parsing the raw markdown with regex.
+ * Enriches hauler listings in data/haulers-flat.json by crawling each hauler's
+ * own website with Firecrawl (markdown) and parsing the result with regex.
+ *
+ * Rewritten Aug 2026: previously read and wrote Strapi, which was decommissioned
+ * in April. Now operates directly on the static JSON, works across all states,
+ * and defaults to a dry run.
  *
  * Extracts:
  *   - truckCapacity   — "4,000 gallon", "4000 gal"
@@ -17,51 +21,83 @@
  *   - serviceRadius   — "within X miles", "up to X miles", "X-mile radius"
  *
  * Only fills missing fields — never overwrites existing data.
- * Skips Facebook URLs entirely.
+ * Skips social URLs (Facebook, Instagram, Yelp, LinkedIn, X) entirely.
  *
- * Usage: npm run enrich:websites
+ * Usage — dry run by default; --write is required to modify anything:
+ *   pnpm enrich:websites                              # preview, all states
+ *   pnpm enrich:websites --state TX,AZ --limit 10     # cheap first pass
+ *   pnpm enrich:websites --state TX,AZ --write        # apply
+ *   pnpm enrich:websites --delay 3000                 # slower crawl
+ *
+ * A dry run writes data/enrichment-preview.json for review. A write run backs
+ * up haulers-flat.json to .bak first.
+ *
+ * Requires FIRECRAWL_API_KEY in .env.local.
  */
 
 import * as path from "path";
+import * as fs from "fs";
 import { config as loadDotenv } from "dotenv";
 
 loadDotenv({ path: path.resolve(process.cwd(), ".env.local") });
 loadDotenv({ path: path.resolve(process.cwd(), "..", ".env.local"), override: false });
 
 const FIRECRAWL_KEY = process.env.FIRECRAWL_API_KEY;
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 if (!FIRECRAWL_KEY) {
   console.error("❌  FIRECRAWL_API_KEY is not set in .env.local");
   process.exit(1);
 }
-if (!STRAPI_TOKEN) {
-  console.error("❌  STRAPI_API_TOKEN is not set");
-  process.exit(1);
-}
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+// ─── CLI ──────────────────────────────────────────────────────────────────────
+
+const argv = process.argv.slice(2);
+const hasFlag = (f: string) => argv.includes(f);
+function flagValue(f: string): string | null {
+  const i = argv.indexOf(f);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : null;
+}
+
+/** Default is dry-run. Writing requires an explicit --write. */
+const DRY_RUN = !hasFlag("--write");
+/** Comma-separated state filter, e.g. --state TX,AZ. Omit for all states. */
+const STATES = (flagValue("--state") ?? "")
+  .split(",")
+  .map((s) => s.trim().toUpperCase())
+  .filter(Boolean);
+/** Cap the number of sites crawled — use for a cheap first pass. */
+const LIMIT = Number(flagValue("--limit") ?? "0") || Infinity;
+/** Milliseconds between crawls. These are small business sites; be polite. */
+const DELAY_MS = Number(flagValue("--delay") ?? "1500");
+/** Re-crawl haulers that already carry an `enrichment` stamp. */
+const FORCE = hasFlag("--force");
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface StrapiHauler {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    website: string;
-    description: string | null;
-    serviceArea: string | null;
-    truckCapacity: number | null;
-    hoseLength: number | null;
-    certification: string | null;
-    truckCount: number | null;
-    pumpType: string | null;
-    hoseMaterial: string | null;
-    yearsInBusiness: number | null;
-    serviceRadius: number | null;
-  };
+/** A record in data/haulers-flat.json. Extra keys are preserved on write. */
+interface Hauler {
+  name: string;
+  slug: string;
+  state: string;
+  website?: string | null;
+  description?: string | null;
+  serviceArea?: string | null;
+  isActive?: boolean;
+  // Enrichment targets. truckCapacity is a STRING in haulers-flat.json even
+  // though it holds a number — kept as-is to match the existing shape.
+  truckCapacity?: string | null;
+  certification?: string | null;
+  hoseLength?: number | null;
+  truckCount?: number | null;
+  pumpType?: string | null;
+  hoseMaterial?: string | null;
+  yearsInBusiness?: number | null;
+  serviceRadius?: number | null;
+  /** Provenance: which fields came from a website crawl, and when. */
+  enrichment?: { source: string; at: string; fields: string[] };
+  [key: string]: unknown;
 }
 
 interface ExtractedData {
@@ -251,69 +287,59 @@ function parseMarkdown(md: string): ExtractedData {
   };
 }
 
-// ─── Strapi helpers ───────────────────────────────────────────────────────────
+// ─── haulers-flat.json I/O ────────────────────────────────────────────────────
 
-const strapiHeaders = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${STRAPI_TOKEN}`,
-};
-
-async function fetchTXHaulersWithWebsites(): Promise<StrapiHauler[]> {
-  const all: StrapiHauler[] = [];
-  let page = 1;
-
-  while (true) {
-    const p = new URLSearchParams({
-      "filters[isActive][$eq]": "true",
-      "filters[state][$eq]": "TX",
-      "filters[website][$notNull]": "true",
-      "fields[0]": "name",
-      "fields[1]": "slug",
-      "fields[2]": "website",
-      "fields[3]": "description",
-      "fields[4]": "serviceArea",
-      "fields[5]": "truckCapacity",
-      "fields[6]": "hoseLength",
-      "fields[7]": "certification",
-      "fields[8]": "truckCount",
-      "fields[9]": "pumpType",
-      "fields[10]": "hoseMaterial",
-      "fields[11]": "yearsInBusiness",
-      "fields[12]": "serviceRadius",
-      "pagination[page]": String(page),
-      "pagination[pageSize]": "100",
-    });
-
-    const res = await fetch(`${STRAPI_URL}/api/haulers?${p}`, { headers: strapiHeaders });
-    if (!res.ok) throw new Error(`Strapi fetch failed: HTTP ${res.status}`);
-    const data = await res.json();
-
-    const batch: StrapiHauler[] = (data.data ?? []).filter(
-      (h: StrapiHauler) => !!h.attributes.website
-    );
-    all.push(...batch);
-
-    const { page: cur, pageCount } = data.meta?.pagination ?? {};
-    if (!cur || cur >= pageCount) break;
-    page++;
+/**
+ * Locate the app root by walking up from cwd. Mirrors check-slug-drift.ts so the
+ * script runs from frontend/ or the repo root, under both tsx (CJS) and ESM.
+ */
+function findRoot(): string {
+  let dir = path.resolve(process.cwd());
+  for (let i = 0; i < 6; i++) {
+    if (fs.existsSync(path.join(dir, "data", "haulers-flat.json"))) return dir;
+    if (fs.existsSync(path.join(dir, "frontend", "data", "haulers-flat.json"))) {
+      return path.join(dir, "frontend");
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
   }
-
-  return all;
+  console.error(
+    `enrich-websites: could not locate data/haulers-flat.json from ${process.cwd()}`
+  );
+  process.exit(1);
 }
 
-async function updateHauler(
-  id: number,
-  patch: Record<string, string | number | null>
-): Promise<void> {
-  const res = await fetch(`${STRAPI_URL}/api/haulers/${id}`, {
-    method: "PUT",
-    headers: strapiHeaders,
-    body: JSON.stringify({ data: patch }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message ?? `HTTP ${res.status}`);
-  }
+const ROOT = findRoot();
+const DATA_PATH = path.join(ROOT, "data", "haulers-flat.json");
+
+function loadHaulers(): Hauler[] {
+  return JSON.parse(fs.readFileSync(DATA_PATH, "utf8")) as Hauler[];
+}
+
+/**
+ * Write the full array back, preserving key order and unknown fields.
+ * A .bak is written alongside first — this file is the sole source of truth for
+ * every page on the site, and a bad run should be one `mv` away from undone.
+ */
+function saveHaulers(haulers: Hauler[]): void {
+  fs.copyFileSync(DATA_PATH, `${DATA_PATH}.bak`);
+  fs.writeFileSync(DATA_PATH, JSON.stringify(haulers, null, 2) + "\n");
+}
+
+/** Write the proposed changes to a reviewable file instead of mutating data. */
+function saveDiff(rows: DiffRow[]): string {
+  const out = path.join(ROOT, "data", "enrichment-preview.json");
+  fs.writeFileSync(out, JSON.stringify(rows, null, 2) + "\n");
+  return out;
+}
+
+interface DiffRow {
+  slug: string;
+  name: string;
+  state: string;
+  website: string;
+  patch: Record<string, string | number>;
 }
 
 // ─── Firecrawl (markdown) ─────────────────────────────────────────────────────
@@ -344,94 +370,148 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
+/** Hosts we can't usefully crawl for business copy. */
+const SKIP_HOSTS = ["facebook.com", "instagram.com", "yelp.com", "linkedin.com", "twitter.com", "x.com"];
+
+const isBlank = (v: unknown) => v === null || v === undefined || String(v).trim() === "";
+
 async function main() {
-  console.log("🌐  Haulagua — Website Enricher (TX, markdown mode)\n");
+  const scope = STATES.length ? STATES.join(", ") : "all states";
+  console.log(`🌐  Haulagua — Website Enricher  [${scope}]`);
+  console.log(DRY_RUN ? "    DRY RUN — no files will be modified. Pass --write to apply.\n"
+                      : "    WRITE MODE — data/haulers-flat.json will be updated.\n");
 
-  const haulers = await fetchTXHaulersWithWebsites();
-  console.log(`Fetched ${haulers.length} active TX haulers with websites.\n`);
+  const haulers = loadHaulers();
 
-  let enriched = 0;
-  let noData = 0;
-  let skipped = 0;
-  let failed = 0;
+  const targets = haulers.filter((h) => {
+    if (h.isActive === false) return false;
+    if (isBlank(h.website)) return false;
+    if (STATES.length && !STATES.includes(String(h.state).toUpperCase())) return false;
+    return true;
+  });
 
-  for (const hauler of haulers) {
-    const a = hauler.attributes;
+  console.log(`${haulers.length} haulers loaded — ${targets.length} active with a website in scope.\n`);
 
-    if (a.website.includes("facebook.com")) {
-      console.log(`  ⏭️  skip    ${a.name} (Facebook URL)`);
+  let enriched = 0, noData = 0, skipped = 0, failed = 0, crawled = 0;
+  const diff: DiffRow[] = [];
+
+  for (const h of targets) {
+    if (crawled >= LIMIT) {
+      console.log(`\n  ⏹  limit of ${LIMIT} reached — stopping.`);
+      break;
+    }
+
+    const website = String(h.website);
+
+    if (SKIP_HOSTS.some((d) => website.includes(d))) {
+      console.log(`  ⏭️  skip      ${h.name} (social URL)`);
       skipped++;
       continue;
     }
 
-    const allPresent =
-      a.description && a.serviceArea && a.truckCapacity && a.hoseLength &&
-      a.certification && a.truckCount && a.pumpType && a.hoseMaterial &&
-      a.yearsInBusiness && a.serviceRadius;
-
-    if (allPresent) {
-      console.log(`  ⏭️  skip    ${a.name} (all fields present)`);
+    // Skip anything already crawled. Without this the "all fields present"
+    // check below is almost never true — most sites don't mention pump type or
+    // hose material — so every run would re-crawl every site and re-bill it.
+    if (h.enrichment && !FORCE) {
+      console.log(`  ⏭️  skip      ${h.name} (enriched ${h.enrichment.at}; --force to redo)`);
       skipped++;
       continue;
     }
 
-    console.log(`  🔗  crawling  ${a.name}  →  ${a.website}`);
-    await sleep(500);
+    const wanted = [
+      "description", "serviceArea", "truckCapacity", "hoseLength", "certification",
+      "truckCount", "pumpType", "hoseMaterial", "yearsInBusiness", "serviceRadius",
+    ];
+    if (wanted.every((f) => !isBlank(h[f]))) {
+      console.log(`  ⏭️  skip      ${h.name} (all fields present)`);
+      skipped++;
+      continue;
+    }
+
+    console.log(`  🔗  crawling  ${h.name}  →  ${website}`);
+    crawled++;
+    await sleep(DELAY_MS);
 
     let markdown: string | null;
     try {
-      markdown = await scrapeMarkdown(a.website);
+      markdown = await scrapeMarkdown(website);
     } catch (err) {
-      console.error(`  ❌  failed   ${a.name}: ${err}`);
+      console.error(`  ❌  failed    ${h.name}: ${err}`);
       failed++;
       continue;
     }
 
     if (!markdown || markdown.trim().length < 100) {
-      console.log(`  🈳  no content  ${a.name}`);
+      console.log(`  🈳  no content ${h.name}`);
       noData++;
       continue;
     }
 
-    const extracted = parseMarkdown(markdown);
+    const x = parseMarkdown(markdown);
+    const patch: Record<string, string | number> = {};
 
-    const patch: Record<string, string | number | null> = {};
-    if (!a.description && extracted.description)         patch.description     = extracted.description;
-    if (!a.serviceArea && extracted.serviceArea)         patch.serviceArea     = extracted.serviceArea;
-    if (!a.truckCapacity && extracted.truckCapacity)     patch.truckCapacity   = extracted.truckCapacity;
-    if (!a.hoseLength && extracted.hoseLength)           patch.hoseLength      = extracted.hoseLength;
-    if (!a.certification && extracted.certification)     patch.certification   = extracted.certification;
-    if (!a.truckCount && extracted.truckCount)           patch.truckCount      = extracted.truckCount;
-    if (!a.pumpType && extracted.pumpType)               patch.pumpType        = extracted.pumpType;
-    if (!a.hoseMaterial && extracted.hoseMaterial)       patch.hoseMaterial    = extracted.hoseMaterial;
-    if (!a.yearsInBusiness && extracted.yearsInBusiness) patch.yearsInBusiness = extracted.yearsInBusiness;
-    if (!a.serviceRadius && extracted.serviceRadius)     patch.serviceRadius   = extracted.serviceRadius;
+    // Only ever fill blanks — existing data is never overwritten.
+    // truckCapacity is stored as a string in haulers-flat.json.
+    if (isBlank(h.description) && x.description)         patch.description     = x.description;
+    if (isBlank(h.serviceArea) && x.serviceArea)         patch.serviceArea     = x.serviceArea;
+    if (isBlank(h.truckCapacity) && x.truckCapacity)     patch.truckCapacity   = String(x.truckCapacity);
+    if (isBlank(h.hoseLength) && x.hoseLength)           patch.hoseLength      = x.hoseLength;
+    if (isBlank(h.certification) && x.certification)     patch.certification   = x.certification;
+    if (isBlank(h.truckCount) && x.truckCount)           patch.truckCount      = x.truckCount;
+    if (isBlank(h.pumpType) && x.pumpType)               patch.pumpType        = x.pumpType;
+    if (isBlank(h.hoseMaterial) && x.hoseMaterial)       patch.hoseMaterial    = x.hoseMaterial;
+    if (isBlank(h.yearsInBusiness) && x.yearsInBusiness) patch.yearsInBusiness = x.yearsInBusiness;
+    if (isBlank(h.serviceRadius) && x.serviceRadius)     patch.serviceRadius   = x.serviceRadius;
 
     if (Object.keys(patch).length === 0) {
-      console.log(`  🈳  no data   ${a.name} (crawled, nothing extracted)`);
+      console.log(`  🈳  no data    ${h.name} (crawled, nothing extracted)`);
       noData++;
       continue;
     }
 
-    await sleep(100);
+    diff.push({
+      slug: h.slug,
+      name: h.name,
+      state: h.state,
+      website,
+      patch,
+    });
 
-    try {
-      await updateHauler(hauler.id, patch);
-      const summary = Object.keys(patch).join(", ");
-      console.log(`  ✅  enriched  ${a.name} → ${summary}`);
-      enriched++;
-    } catch (err) {
-      console.error(`  ❌  update failed  ${a.name}: ${err}`);
-      failed++;
+    if (!DRY_RUN) {
+      Object.assign(h, patch);
+      h.enrichment = {
+        source: "website",
+        at: new Date().toISOString().slice(0, 10),
+        fields: Object.keys(patch),
+      };
     }
+
+    console.log(`  ✅  ${DRY_RUN ? "would fill" : "enriched "} ${h.name} → ${Object.keys(patch).join(", ")}`);
+    enriched++;
+  }
+
+  if (diff.length) {
+    const out = saveDiff(diff);
+    console.log(`\n📝  Proposed changes written to ${path.relative(ROOT, out)}`);
+  }
+
+  if (!DRY_RUN && diff.length) {
+    saveHaulers(haulers);
+    console.log(`💾  data/haulers-flat.json updated (backup at haulers-flat.json.bak)`);
   }
 
   console.log("\n─────────────────────────────────────────");
-  console.log(`✅  Enriched  : ${enriched}`);
-  console.log(`🈳  No data   : ${noData}`);
-  console.log(`⏭️  Skipped   : ${skipped}`);
-  console.log(`❌  Failed    : ${failed}`);
-  console.log("─────────────────────────────────────────\n");
+  console.log(`${DRY_RUN ? "🔎  Would enrich" : "✅  Enriched   "} : ${enriched}`);
+  console.log(`🈳  No data     : ${noData}`);
+  console.log(`⏭️  Skipped     : ${skipped}`);
+  console.log(`❌  Failed      : ${failed}`);
+  console.log(`🔗  Crawled     : ${crawled}`);
+  console.log("─────────────────────────────────────────");
+  if (DRY_RUN) {
+    console.log("Review the preview file, then re-run with --write to apply.\n");
+  } else {
+    console.log("Run `pnpm check:slugs` before committing.\n");
+  }
 }
 
 main().catch((err) => {
