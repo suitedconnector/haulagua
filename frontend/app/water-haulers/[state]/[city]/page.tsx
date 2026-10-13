@@ -66,9 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getHaulersByCity(abbr, cityName),
   ]);
 
-  const title =
-    location?.attributes.metaTitle ??
-    `Bulk Water Delivery in ${cityName}, ${stateName} | HaulAgua`;
+  const title = `Bulk Water Delivery in ${cityName}, ${abbr} | Water Haulers Near Me`;
   const description =
     location?.attributes.metaDescription ??
     `Find bulk water haulers in ${cityName}, ${stateName} for pool fills, potable water delivery, construction, and more.`;
@@ -244,7 +242,7 @@ export default async function CityPage({ params }: PageProps) {
               {/* Left — H1 + short intro + hauler count */}
               <div>
                 <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                  Bulk Water Delivery in {cityName}, {stateName}
+                  Bulk Water Delivery in {cityName}, {abbr}
                 </h1>
                 <p className="mt-4 text-lg text-white/85 max-w-xl">
                   {introShort}
