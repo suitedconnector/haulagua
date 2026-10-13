@@ -11,25 +11,19 @@ const footerLinks = {
     title: "Resources",
     links: [
       { label: "Resource Center", href: "/resources" },
-      { label: "New Pool Owner Guide", href: "/resources/new-pool-owner" },
-      { label: "Water Calculator", href: "/resources/calculator" },
-      { label: "FAQs", href: "/faqs" },
+      { label: "Water Calculator", href: "/water-calculator" },
     ],
   },
   haulers: {
     title: "For Haulers",
     links: [
       { label: "Join Haulagua", href: "/for-haulers" },
-      { label: "Pricing", href: "/for-haulers/pricing" },
       { label: "Hauler Dashboard", href: "/dashboard" },
-      { label: "Success Stories", href: "/for-haulers/stories" },
     ],
   },
   company: {
     title: "Company",
     links: [
-      { label: "About Us", href: "/about" },
-      { label: "Contact", href: "/contact" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms of Service", href: "/terms-of-service" },
     ],

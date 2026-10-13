@@ -48,7 +48,7 @@ export function FeaturedArticle() {
               </ul>
 
               <Button asChild className="mt-8 w-fit bg-primary hover:bg-primary/90">
-                <Link href="/resources/new-pool-owner">
+                <Link href="/water-calculator">
                   Read the Guide
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
