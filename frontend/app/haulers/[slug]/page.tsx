@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { TRUCK_PLACEHOLDERS, getPlaceholderImage } from "@/src/lib/placeholders";
-import { toCitySlug, fromCitySlug, STATE_NAMES } from "@/lib/location";
+import { toCitySlug, fromCitySlug, getIndexableCityPages, STATE_NAMES } from "@/lib/location";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactPanel } from "./ContactPanel";
@@ -81,6 +81,10 @@ type StrapiHauler = {
 const allHaulers = haulersData as StrapiHauler[];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+// City pages served by their own static route file instead of
+// water-haulers/[state]/[city]/page.tsx, so getIndexableCityPages() may not list them.
+const STATIC_CITY_PAGES = ["tx/austin"];
 
 const SERVICE_LABEL: Record<string, string> = {
   pool: "Swimming Pool",
@@ -209,6 +213,17 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
   const approvedReviews: never[] = []; // Reviews not yet in static data
   const avgRating = null;
 
+  const stateSlug = hauler.state.toLowerCase();
+  const cityName = hauler.city?.trim() ?? "";
+  const citySlug = cityName ? toCitySlug(cityName) : "";
+  const cityPages = new Set(
+    (await getIndexableCityPages()).map((p) => `${p.state}/${p.city}`)
+  );
+  const cityPageExists =
+    citySlug !== "" &&
+    (cityPages.has(`${stateSlug}/${citySlug}`) ||
+      STATIC_CITY_PAGES.includes(`${stateSlug}/${citySlug}`));
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -221,10 +236,18 @@ export default async function HaulerProfilePage({ params, searchParams }: PagePr
               <span>/</span>
               <Link href="/water-haulers" className="hover:text-foreground">Water Haulers</Link>
               <span>/</span>
-              <Link href={`/water-haulers/${hauler.state.toLowerCase()}`} className="hover:text-foreground">{hauler.state}</Link>
+              <Link href={`/water-haulers/${stateSlug}`} className="hover:text-foreground">{hauler.state}</Link>
               <span>/</span>
-              <Link href={`/water-haulers/${hauler.state.toLowerCase()}/${toCitySlug(hauler.city)}`} className="hover:text-foreground">{hauler.city}</Link>
-              <span>/</span>
+              {cityName && (
+                <>
+                  {cityPageExists ? (
+                    <Link href={`/water-haulers/${stateSlug}/${citySlug}`} className="hover:text-foreground">{cityName}</Link>
+                  ) : (
+                    <span>{cityName}</span>
+                  )}
+                  <span>/</span>
+                </>
+              )}
               <span className="text-foreground font-medium truncate">{hauler.name}</span>
             </nav>
           </div>

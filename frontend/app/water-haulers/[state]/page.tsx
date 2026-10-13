@@ -20,6 +20,7 @@ import {
   getHaulersByState,
   groupHaulersByCity,
   getAllStatesWithCounts,
+  getIndexableCityPages,
   isIndexableState,
 } from "@/lib/location";
 import cityPhotoCache from "@/data/city-photos.json";
@@ -127,6 +128,11 @@ export async function generateMetadata({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const INNER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
+
+// City pages served by their own static route file instead of
+// water-haulers/[state]/[city]/page.tsx, so getIndexableCityPages() may not list them.
+const STATIC_CITY_PAGES = ["tx/austin"];
+
 type CityWithPhoto = {
   city: string;
   slug: string;
@@ -141,6 +147,26 @@ export default async function StatePage({ params }: PageProps) {
   const haulers = await getHaulersByState(abbr);
   const cities = groupHaulersByCity(haulers);
   const isTX = state === "tx";
+
+  // Hauler cards grouped by city (A–Z). getHaulersByState() order is kept
+  // within each city; haulers with no city go in a trailing "Other locations".
+  const haulersByCity = [...cities]
+    .sort((a, b) => a.city.localeCompare(b.city))
+    .map(({ city, slug, count }) => ({
+      city,
+      slug,
+      count,
+      haulers: haulers.filter((h) => h.city === city),
+    }));
+  const haulersWithoutCity = haulers.filter((h) => !h.city);
+
+  // Only link to city pages that actually build; everything else 404s.
+  const cityPages = new Set(
+    (await getIndexableCityPages()).map((p) => `${p.state}/${p.city}`)
+  );
+  const cityPageExists = (citySlug: string) =>
+    cityPages.has(`${state}/${citySlug}`) ||
+    STATIC_CITY_PAGES.includes(`${state}/${citySlug}`);
 
   const cache = cityPhotoCache as Record<string, string>;
   const citiesWithPhotos: CityWithPhoto[] = cities.map(
@@ -282,10 +308,37 @@ export default async function StatePage({ params }: PageProps) {
                   Bulk Water Haulers in {stateName}
                   <span className="text-sm font-normal text-muted-foreground">· {haulers.length} hauler{haulers.length !== 1 ? "s" : ""}</span>
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {haulers.map((hauler) => (
-                    <HaulerCard key={hauler.id} hauler={hauler} refPath={`/water-haulers/${state}`} />
+                <div className="space-y-10">
+                  {haulersByCity.map(({ city, slug, count, haulers: cityHaulers }) => (
+                    <section key={slug} id={slug} className="scroll-mt-20">
+                      <h3
+                        className="font-serif text-xl font-semibold mb-4"
+                        style={{ color: "#333333" }}
+                      >
+                        {city}, {abbr} ({count})
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {cityHaulers.map((hauler) => (
+                          <HaulerCard key={hauler.slug} hauler={hauler} refPath={`/water-haulers/${state}`} />
+                        ))}
+                      </div>
+                    </section>
                   ))}
+                  {haulersWithoutCity.length > 0 && (
+                    <section id="other-locations" className="scroll-mt-20">
+                      <h3
+                        className="font-serif text-xl font-semibold mb-4"
+                        style={{ color: "#333333" }}
+                      >
+                        Other locations
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {haulersWithoutCity.map((hauler) => (
+                          <HaulerCard key={hauler.slug} hauler={hauler} refPath={`/water-haulers/${state}`} />
+                        ))}
+                      </div>
+                    </section>
+                  )}
                 </div>
               </>
             )}
@@ -341,15 +394,24 @@ export default async function StatePage({ params }: PageProps) {
                     Browse Cities in {stateName}
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {citiesWithPhotos.map(({ city, slug }) => (
-                      <Link
-                        key={slug}
-                        href={`/water-haulers/${state}/${slug}`}
-                        className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium transition-all hover:bg-[#005A9C] hover:text-white"
-                      >
-                        {city}
-                      </Link>
-                    ))}
+                    {citiesWithPhotos.map(({ city, slug }) =>
+                      cityPageExists(slug) ? (
+                        <Link
+                          key={slug}
+                          href={`/water-haulers/${state}/${slug}`}
+                          className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium transition-all hover:bg-[#005A9C] hover:text-white"
+                        >
+                          {city}
+                        </Link>
+                      ) : (
+                        <span
+                          key={slug}
+                          className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#005A9C] text-[#005A9C] text-sm font-medium"
+                        >
+                          {city}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               </section>
@@ -432,15 +494,24 @@ export default async function StatePage({ params }: PageProps) {
                       </p>
                       {regionCities.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                          {regionCities.map((city, i) => (
-                            <Link
-                              key={city}
-                              href={`/water-haulers/tx/${slugs[i]}`}
-                              className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#F0F6FC] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
-                            >
-                              {city}
-                            </Link>
-                          ))}
+                          {regionCities.map((city, i) =>
+                            cityPageExists(slugs[i]) ? (
+                              <Link
+                                key={city}
+                                href={`/water-haulers/tx/${slugs[i]}`}
+                                className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#F0F6FC] text-[#005A9C] hover:bg-[#005A9C] hover:text-white transition-colors"
+                              >
+                                {city}
+                              </Link>
+                            ) : (
+                              <span
+                                key={city}
+                                className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#F0F6FC] text-[#005A9C]"
+                              >
+                                {city}
+                              </span>
+                            )
+                          )}
                         </div>
                       )}
                     </div>
