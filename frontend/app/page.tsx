@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: "HAULAGUA — FIND BULK WATER HAULERS IN TEXAS & ARIZONA",
+  title: "FIND BULK WATER HAULERS IN TEXAS & ARIZONA | HAULAGUA",
   description: "Search and compare verified bulk water haulers for pool fills, construction, agriculture, and emergencies. Free to search across Texas and Arizona.",
   robots: {
     index: true,
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.haulagua.com',
   },
   openGraph: {
-    title: "HAULAGUA — FIND BULK WATER HAULERS IN TEXAS & ARIZONA",
+    title: "FIND BULK WATER HAULERS IN TEXAS & ARIZONA | HAULAGUA",
     description: "Search and compare verified bulk water haulers for pool fills, construction, agriculture, and emergencies.",
     url: "https://www.haulagua.com",
     siteName: "Haulagua",
