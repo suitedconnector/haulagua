@@ -8,7 +8,7 @@ import { strapiGet } from "@/src/lib/strapi";
 import { BookOpen } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Resource Center — Haulagua",
+  title: "RESOURCE CENTER | HAULAGUA",
   description: "Guides, tips, and articles about bulk water hauling, pool fills, construction water, and more.",
   robots: {
     index: true,
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.haulagua.com/resources',
   },
   openGraph: {
-    title: "Resource Center — Haulagua",
+    title: "RESOURCE CENTER | HAULAGUA",
     description: "Guides, tips, and articles about bulk water hauling, pool fills, construction water, and more.",
     url: "https://www.haulagua.com/resources",
     siteName: "Haulagua",

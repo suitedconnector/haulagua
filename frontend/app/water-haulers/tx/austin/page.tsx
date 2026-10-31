@@ -11,7 +11,7 @@ import haulersFlatData from "@/data/haulers-flat.json";
 const INNER = "mx-auto max-w-4xl px-4 sm:px-6 lg:px-8";
 
 export const metadata: Metadata = {
-  title: "Find Verified Water Haulers in Austin, Texas — Potable, Pool Fill, Emergency 24/7",
+  title: "FIND VERIFIED WATER HAULERS IN AUSTIN, TEXAS — POTABLE, POOL FILL, EMERGENCY 24/7 | HAULAGUA",
   description: "Connect with TCEQ-compliant bulk water haulers in Austin for potable delivery, pool fills, construction, and emergency service. Verified listings, transparent pricing, same-day availability.",
   robots: { index: true, follow: true },
   alternates: {

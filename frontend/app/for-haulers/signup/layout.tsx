@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Create Your Free Listing — Haulagua",
+  title: "CREATE YOUR FREE LISTING | HAULAGUA",
   description: "Sign up as a water hauler on Haulagua. Create your free listing, showcase your equipment, and start connecting with customers today.",
   robots: {
     index: true,
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.haulagua.com/for-haulers/signup',
   },
   openGraph: {
-    title: "Create Your Free Listing — Haulagua",
+    title: "CREATE YOUR FREE LISTING | HAULAGUA",
     description: "Sign up as a water hauler on Haulagua. Free listing, verified badge available.",
     url: "https://www.haulagua.com/for-haulers/signup",
     siteName: "Haulagua",

@@ -95,8 +95,8 @@ export async function generateMetadata({
   const name = STATE_NAMES[state] ?? abbr;
   const title =
     state === "tx"
-      ? "Bulk Water Delivery in Texas | Find Local Water Haulers | HaulAgua"
-      : `Water Haulers in ${name} | HaulAgua`;
+      ? "BULK WATER DELIVERY IN TEXAS | FIND LOCAL WATER HAULERS | HAULAGUA"
+      : `WATER HAULERS IN ${name} | HAULAGUA`.toUpperCase();
   const description =
     state === "tx"
       ? "Find bulk water haulers in Texas for pool fills, potable water delivery, construction dust control, agriculture, and emergencies. Browse verified haulers by city across all Texas regions."

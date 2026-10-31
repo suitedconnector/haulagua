@@ -3,7 +3,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | HaulAgua",
+  title: "TERMS OF SERVICE | HAULAGUA",
   description:
     "Read the terms and conditions for using the HaulAgua bulk water hauling directory.",
 }

@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { getAllStatesWithCounts } from "@/lib/location";
 
 export const metadata: Metadata = {
-  title: "Find Bulk Water Haulers in Your State | Haulagua",
+  title: "FIND BULK WATER HAULERS IN YOUR STATE | HAULAGUA",
   description:
     "Haulagua is the only directory built specifically for bulk water hauling. Browse verified haulers by state for pool fills, construction water, potable delivery, agricultural use, and more.",
   robots: {

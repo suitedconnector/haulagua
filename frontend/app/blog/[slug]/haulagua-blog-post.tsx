@@ -19,7 +19,7 @@ import { ChevronLeft } from 'lucide-react';
  */
 
 export const metadata: Metadata = {
-  title: 'Bulk Water Delivery Guide: Potable & Non-Potable Services | HaulAgua',
+  title: 'BULK WATER DELIVERY GUIDE: POTABLE & NON-POTABLE SERVICES | HAULAGUA',
   description: 'Complete guide to bulk water delivery services. Learn about potable vs non-potable water, pricing factors, booking process, and use cases for residential, commercial, and emergency delivery.',
   keywords: ['bulk water delivery', 'potable water', 'non-potable water', 'pool filling', 'dust control', 'emergency water'],
   openGraph: {

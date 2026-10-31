@@ -31,12 +31,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPost(slug);
   if (!post) {
     return {
-      title: "Post Not Found — Haulagua",
+      title: "POST NOT FOUND | HAULAGUA",
       robots: { index: false, follow: false },
     };
   }
   const a = post.attributes;
-  const title = `${a.title} — Haulagua`;
+  const title = `${a.title} | HAULAGUA`.toUpperCase();
   const description = a.excerpt ?? `Read ${a.title} on the Haulagua Resource Center.`;
   return {
     title,
