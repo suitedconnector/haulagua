@@ -13,5 +13,7 @@ export type FaqSectionProps = {
   faqs: FaqItem[];
   /** Accordion item id to open by default */
   defaultOpen?: string;
+  /** Render every answer open so the text is in the initial HTML */
+  expandAll?: boolean;
   className?: string;
 };

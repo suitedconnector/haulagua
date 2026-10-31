@@ -3,7 +3,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | HaulAgua",
+  title: "PRIVACY POLICY | HAULAGUA",
   description:
     "Learn how HaulAgua collects, uses, and protects your information when you use our bulk water hauling directory.",
 }

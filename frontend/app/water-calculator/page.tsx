@@ -7,14 +7,14 @@ import WaterCalculatorQuiz from "@/components/WaterCalculatorQuiz";
 
 export const metadata: Metadata = {
   title:
-    "Bulk Water Calculator | Free Pool Gallon Calculator & Water Estimate Tool | HaulAgua",
+    "BULK WATER CALCULATOR | FREE POOL GALLON CALCULATOR & WATER ESTIMATE TOOL | HAULAGUA",
   description:
     "Free pool gallon calculator and bulk water estimate tool. Calculate exactly how many gallons your pool holds, or estimate water needs for construction, cisterns, agricultural, and emergency delivery. Get matched with local haulers in Texas and Arizona.",
   alternates: {
     canonical: "https://www.haulagua.com/water-calculator",
   },
   openGraph: {
-    title: "Bulk Water Calculator | HaulAgua",
+    title: "BULK WATER CALCULATOR | HAULAGUA",
     description:
       "Free pool gallon calculator and bulk water estimate tool. Calculate pool gallons or estimate water needs for construction, cisterns, ag, and emergency delivery.",
     url: "https://www.haulagua.com/water-calculator",

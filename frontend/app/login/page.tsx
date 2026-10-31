@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Sign In — Haulagua",
+  title: "SIGN IN | HAULAGUA",
   description: "Sign in to your Haulagua account to manage your listing or saved haulers.",
   robots: {
     index: false,
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.haulagua.com/login',
   },
   openGraph: {
-    title: "Sign In — Haulagua",
+    title: "SIGN IN | HAULAGUA",
     description: "Sign in to your Haulagua account.",
     url: "https://www.haulagua.com/login",
     siteName: "Haulagua",

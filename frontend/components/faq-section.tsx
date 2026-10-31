@@ -14,6 +14,7 @@ export function FaqSection({
   subtitle,
   faqs,
   defaultOpen,
+  expandAll = false,
   className = '',
 }: FaqSectionProps) {
   const schema = {
@@ -54,9 +55,9 @@ export function FaqSection({
         </div>
 
         <Accordion
-          type="single"
-          collapsible
-          defaultValue={defaultOpen}
+          {...(expandAll
+            ? { type: 'multiple' as const, defaultValue: faqs.map((f) => f.id) }
+            : { type: 'single' as const, collapsible: true, defaultValue: defaultOpen })}
           className="divide-y divide-[#005A9C]/10 rounded-xl border border-[#005A9C]/10 bg-white shadow-sm"
         >
           {faqs.map((item) => (

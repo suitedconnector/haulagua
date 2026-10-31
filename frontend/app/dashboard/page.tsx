@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, MessageSquare, Users, PenLine, CheckCircle, AlertCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Haulagua",
+  title: "DASHBOARD | HAULAGUA",
   description: "Manage your Haulagua listing, view stats, and update your profile.",
   robots: {
     index: false,

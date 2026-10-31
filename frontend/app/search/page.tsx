@@ -7,7 +7,7 @@ import type { StrapiHauler } from "@/components/hauler-card";
 import haulersData from "@/data/haulers-flat.json";
 
 export const metadata: Metadata = {
-  title: "Find Bulk Water Haulers | Search by Location & Service | Haulagua",
+  title: "FIND BULK WATER HAULERS | SEARCH BY LOCATION & SERVICE | HAULAGUA",
   description:
     "Search verified bulk water haulers in Texas and Arizona. Filter by pool fills, potable water, construction, agricultural and more.",
   robots: {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.haulagua.com/search',
   },
   openGraph: {
-    title: "Find Bulk Water Haulers | Search by Location & Service | Haulagua",
+    title: "FIND BULK WATER HAULERS | SEARCH BY LOCATION & SERVICE | HAULAGUA",
     description:
       "Search verified bulk water haulers in Texas and Arizona. Filter by pool fills, potable water, construction, agricultural and more.",
     url: "https://www.haulagua.com/search",

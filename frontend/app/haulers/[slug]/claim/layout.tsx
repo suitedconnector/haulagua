@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Claim Your Listing — Haulagua",
+  title: "CLAIM YOUR LISTING | HAULAGUA",
   description: "Claim your water hauling business listing on Haulagua. Verify your information, upload insurance, and get a verified badge.",
   robots: {
     index: false,
