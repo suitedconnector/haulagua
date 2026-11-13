@@ -23,7 +23,7 @@ import {
   fromCitySlug,
   getHaulersByCity,
   getLocationByCity,
-  getIndexableCityPages,
+  getBuildableCityPages,
   MIN_HAULERS_FOR_CITY_PAGE,
 } from "@/lib/location";
 import { getValidWebsiteUrl } from "@/lib/website";
@@ -51,7 +51,7 @@ export const dynamicParams = false;
 // ─── Static Params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  return getIndexableCityPages();
+  return getBuildableCityPages();
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────

@@ -145,6 +145,37 @@ export async function getIndexableCityPages(): Promise<{ state: string; city: st
   return results.filter((r): r is { state: string; city: string } => r !== null);
 }
 
+// ─── Legacy thin city pages ───────────────────────────────────────────────────
+// City URLs that Google already knew (Search Console, 28 days to 2026-11-13)
+// but that fall under MIN_HAULERS_FOR_CITY_PAGE. They were 404ing after the
+// threshold change, losing ~64 impressions and 4 clicks. They are built so the
+// URLs resolve, served `noindex, follow` by the page's own robots rule
+// (haulers < MIN_HAULERS_FOR_CITY_PAGE), and kept OUT of the sitemap and the
+// internal-link set, which both use getIndexableCityPages().
+// Add a city here only when it has at least one active hauler.
+export const LEGACY_THIN_CITY_PAGES: readonly string[] = [
+  "tx/three-rivers", "tx/san-angelo", "tx/gainesville",
+  "ca/wrightwood", "ca/acton", "ca/escondido", "ca/bakersfield",
+  "ca/grass-valley", "ca/healdsburg", "ca/agua-dulce", "ca/kneeland",
+  "ca/topanga", "ca/auberry",
+  "in/terre-haute", "nj/juliustown", "co/lyons", "co/loveland",
+  "or/medford", "mo/bonne-terre", "oh/springfield", "nv/reno",
+  "tn/pigeon-forge", "az/el-mirage",
+];
+
+/** Every city route to build: indexable pages plus the legacy noindex ones. */
+export async function getBuildableCityPages(): Promise<{ state: string; city: string }[]> {
+  const indexable = await getIndexableCityPages();
+  const seen = new Set(indexable.map((p) => `${p.state}/${p.city}`));
+  const legacy = LEGACY_THIN_CITY_PAGES
+    .filter((k) => !seen.has(k))
+    .map((k) => {
+      const [state, city] = k.split("/");
+      return { state, city };
+    });
+  return [...indexable, ...legacy];
+}
+
 // ─── State pages worth indexing ───────────────────────────────────────────────
 // Mirrors the city-page gate above. Unlike city pages, thin state pages are NOT
 // 404'd — the haulers on them are real listings, so the page stays reachable and
