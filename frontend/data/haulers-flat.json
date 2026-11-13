@@ -677,7 +677,16 @@
     "isVerifiedPro": false,
     "isClaimed": false,
     "description": "We deliver bulk water straight to your storage tanks. Whether you need water for irrigation, livestock, or emergency reserves, we ensure fast and efficient delivery to keep your tanks full.",
-    "certification": ""
+    "certification": "TCEQ Certified, NSF Approved",
+    "hoseMaterial": "NSF 61",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "certification",
+        "hoseMaterial"
+      ]
+    }
   },
   {
     "name": "Hills of Texas Bulk Water",
@@ -745,7 +754,16 @@
     "isVerifiedPro": false,
     "isClaimed": false,
     "description": "Samantha Springs is Texas's leading provider of bulk spring water, sourced from our historic underground spring in Keller, TX. Originally rediscovered in 1984, the spring was fully developed and began delivering water in 1996. Whether you need bulk water for industrial use, pool filling, breweries, co-packers, or private-label bottling, we deliver 6,250 gallons per tanker directly to your site fast, fresh, and hassle-free.",
-    "certification": ""
+    "certification": "TCEQ Certified",
+    "yearsInBusiness": 30,
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "certification",
+        "yearsInBusiness"
+      ]
+    }
   },
   {
     "name": "Live Oak Water Delivery",
@@ -949,7 +967,15 @@
     "isVerifiedPro": false,
     "isClaimed": false,
     "description": "A family-owned operation started in Blanco, Texas. Serving the Texas Hill Country since 2012 to deliver bulk potable water for storage tanks, rain tanks, cisterns, and pools. We can deliver 1000, 2000, 2400, 3000, & 4000 gallons at an affordable rate.",
-    "certification": "Texas Commission on Environmental Quality. (TX 0160053)"
+    "certification": "Texas Commission on Environmental Quality. (TX 0160053)",
+    "yearsInBusiness": 14,
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "yearsInBusiness"
+      ]
+    }
   },
   {
     "name": "H 2 O 2 U",
@@ -1374,7 +1400,15 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX0160048"
+    "certification": "TX0160048",
+    "description": "Delivering Bulk Water to Blanco, Dripping Springs, Wimberley and Surrounding Areas",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description"
+      ]
+    }
   },
   {
     "name": "Hanna Water Hauler",
@@ -1408,7 +1442,17 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX1050235"
+    "certification": "TX1050235",
+    "description": "You can rely on Oasis Water Delivery to provide certified and safe drinking water. We are licensed with the Texas Commission on Environmental Quality (TCEQ) #1050235 and our water undergoes rigorous testing to ensure it meets the highest standards of purity and safety.",
+    "truckCapacity": "2000",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description",
+        "truckCapacity"
+      ]
+    }
   },
   {
     "name": "Consolidated Water Bostic Water Hauler",
@@ -1425,7 +1469,19 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX0270161"
+    "certification": "TX0270161",
+    "description": "Consolidated Water has been serving Central Texas since 2007 — and now we deliver. Our bulk water delivery service brings clean, TCEQ-certified potable water directly to your property, wherever you are in the Hill Country or Highland Lakes region.",
+    "truckCapacity": "2000",
+    "yearsInBusiness": 19,
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description",
+        "truckCapacity",
+        "yearsInBusiness"
+      ]
+    }
   },
   {
     "name": "Water Boy",
@@ -1442,7 +1498,15 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX2270372"
+    "certification": "TX2270372",
+    "description": "WaterBoy is a certified, insured, locally owned, family-operated potable water delivery company.",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description"
+      ]
+    }
   },
   {
     "name": "Willda Beast Water Hauler",
@@ -1459,7 +1523,15 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX0070035"
+    "certification": "TX0070035",
+    "description": "Our goal at Willda Beast is to ensure that our local Texas bulk water delivery, septic, truck, and moving services are above your expectations.",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description"
+      ]
+    }
   },
   {
     "name": "J & A Water Hauling Service",
@@ -1493,7 +1565,15 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX1280020"
+    "certification": "TX1280020",
+    "description": "Integrated infrastructure, power, and flow control systems built to reduce downtime, increase eﬃciency, and keep your jobsite running at peak performance.",
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description"
+      ]
+    }
   },
   {
     "name": "South Central",
@@ -1527,7 +1607,17 @@
     "isVerifiedPro": false,
     "isActive": true,
     "isClaimed": false,
-    "certification": "TX1013667"
+    "certification": "TX1013667",
+    "description": "Overview Services Products - Chevron Lubricants - Fuels - Chemicals - Other Products Cardlock",
+    "yearsInBusiness": 16,
+    "enrichment": {
+      "source": "website",
+      "at": "2026-08-11",
+      "fields": [
+        "description",
+        "yearsInBusiness"
+      ]
+    }
   },
   {
     "name": "Water Tech",
