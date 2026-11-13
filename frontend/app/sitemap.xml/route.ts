@@ -55,6 +55,7 @@ export async function GET() {
   addEntry(entries, { url: `${BASE_URL}/resources`, lastmod: now, changefreq: 'weekly', priority: '0.7' });
   addEntry(entries, { url: `${BASE_URL}/for-haulers`, lastmod: now, changefreq: 'monthly', priority: '0.7' });
   addEntry(entries, { url: `${BASE_URL}/for-haulers/signup`, lastmod: now, changefreq: 'monthly', priority: '0.6' });
+  addEntry(entries, { url: `${BASE_URL}/water-calculator`, lastmod: now, changefreq: 'monthly', priority: '0.7' });
 
   // Location pages — only states above MIN_HAULERS_FOR_STATE_PAGE. Thin state
   // pages are still reachable and crawlable, just noindex, so they are excluded
