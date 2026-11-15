@@ -529,6 +529,7 @@ export default async function StatePage({ params }: PageProps) {
         {stateFaqs && (
           <FaqSection
             faqs={stateFaqs}
+            expandAll
             title={`Frequently Asked Questions About Bulk Water Delivery in ${stateName}`}
           />
         )}
